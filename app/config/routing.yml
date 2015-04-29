@@ -1,7 +1,4 @@
 app:
-    resource: @AppBundle/Controller/
-    type:     annotation
-
-web:
-    defaults: { _controller: AppBundle:Default:index }
-    path:   /
+    resource: @AppBundle/Resources/config/routing.yml
+    prefix:   /
+    #host: dev.ariasfreire.com
