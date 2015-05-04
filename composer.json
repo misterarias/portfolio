@@ -17,9 +17,13 @@
         "symfony/monolog-bundle": "~2.4",
         "sensio/distribution-bundle": "~3.0.12",
         "sensio/framework-extra-bundle": "~3.0",
-        "incenteev/composer-parameter-handler": "~2.0"
-    },
-    "require-dev": {
+        "incenteev/composer-parameter-handler": "~2.0",
+        "behat/behat": "3.0.x-dev"
+
+asd
+      asda
+
+      "require-dev": {
         "sensio/generator-bundle": "~2.3"
     },
     "scripts": {
