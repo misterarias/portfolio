@@ -1,4 +1,9 @@
 app:
     resource: @AppBundle/Resources/config/routing.yml
-    prefix:   /
+    prefix:   /example
     #host: dev.ariasfreire.com
+
+agency:
+  resource: @AgencyBundle/Resources/config/routing.yml
+  prefix: /
+ # host: me.ariasfreire.com
