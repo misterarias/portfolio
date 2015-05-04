@@ -1,9 +1,8 @@
 <?php
 
-namespace AppBundle;
+namespace AF\BioBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class AppBundle extends Bundle
-{
+class AFBioBundle extends Bundle {
 }

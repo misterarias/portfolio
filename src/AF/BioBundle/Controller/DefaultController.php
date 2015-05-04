@@ -1,8 +1,7 @@
 <?php
 
-namespace AgencyBundle\Controller;
+namespace AF\BioBundle\Controller;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class DefaultController extends Controller {
@@ -24,6 +23,6 @@ class DefaultController extends Controller {
 
         $viewData = array();
         $viewData["sections"] = $availableSections;
-        return $this->render('@Agency/default/index.html.twig', $viewData);
+        return $this->render("@AFBio/default/index.html.twig", $viewData);
     }
 }

@@ -2,12 +2,7 @@ af_project:
     resource: @AFProjectBundle/Resources/config/routing.yml
     prefix:   /
 
-app:
-    resource: @AppBundle/Resources/config/routing.yml
-    prefix:   /example
-    #host: dev.ariasfreire.com
-
-agency:
-  resource: @AgencyBundle/Resources/config/routing.yml
+af_bio:
+  resource: @AFBioBundle/Resources/config/routing.yml
   prefix: /
  # host: me.ariasfreire.com

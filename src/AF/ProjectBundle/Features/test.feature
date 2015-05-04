@@ -1,4 +1,4 @@
-@integration
+@project
 Feature: Page Elements
   In order to present my project
   As a web user

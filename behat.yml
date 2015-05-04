@@ -18,5 +18,11 @@ default:
             contexts:
               - AF\ProjectBundle\Features\Context\WebContext
             filters:
-                tags: @web, @integration
-
+                tags: @web, @project
+        bio_features:
+            bundle: AFBioBundle
+            type: symfony_bundle
+            contexts:
+              - AF\BioBundle\Features\Context\WebContext
+            filters:
+                tags: @web, @bio

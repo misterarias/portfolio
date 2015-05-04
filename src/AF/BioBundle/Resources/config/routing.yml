@@ -1,0 +1,3 @@
+af_bio:
+    defaults: { _controller: AFBioBundle:Default:index }
+    path:   /bio
