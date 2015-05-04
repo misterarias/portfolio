@@ -2,18 +2,28 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         {% block extra_headers %}{% endblock %}
         <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
-        <link rel="shortcut icon" href="{{ asset('favicon.ico') }}"/>
 
+        <!-- Bootstrap Core CSS -->
+        <link href="{{ asset('css/bootstrap.css') }}" rel="stylesheet">
+        {% block stylesheets %}{% endblock %}
+
+        <link rel="shortcut icon" href="{{ asset('favicon.ico') }}"/>
     </head>
+
     <body id="page-top" class="index">
     {% block body %}{% endblock %}
+
+    <!-- jQuery -->
+    <script src="{{ asset('js/jquery.js') }}"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="{{ asset('js/bootstrap.js') }}"></script>
+
     {% block javascripts %}{% endblock %}
     </body>
 </html>
