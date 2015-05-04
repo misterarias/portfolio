@@ -1,0 +1,22 @@
+# behat.yml
+default:
+    extensions:
+        Behat\MinkExtension:
+            base_url: http://localhost:8001
+            goutte:
+                guzzle_parameters:
+                    ssl.certificate_authority: false
+            selenium2: ~
+            sessions:
+                default:
+                    goutte: ~
+        Behat\Symfony2Extension: ~
+    suites:
+        project_features:
+            bundle: AFProjectBundle
+            type: symfony_bundle
+            contexts:
+              - AF\ProjectBundle\Features\Context\WebContext
+            filters:
+                tags: @web, @integration
+

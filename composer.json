@@ -7,46 +7,50 @@
         "psr-0": { "": "src/", "SymfonyStandard": "app/" }
     },
     "require": {
-        "php": "5.5.*",
-        "symfony/symfony": "2.6.*",
-        "doctrine/orm": "~2.2,>=2.2.3",
-        "doctrine/doctrine-bundle": "~1.2",
-        "twig/extensions": "~1.0",
-        "symfony/assetic-bundle": "~2.3",
-        "symfony/swiftmailer-bundle": "~2.3",
-        "symfony/monolog-bundle": "~2.4",
-        "sensio/distribution-bundle": "~3.0.12",
-        "sensio/framework-extra-bundle": "~3.0",
-        "incenteev/composer-parameter-handler": "~2.0",
-        "behat/behat": "3.0.x-dev"
+      "php": "5.5.*",
+      "symfony/symfony": "2.5.*",
+      "doctrine/orm": "~2.2,>=2.2.3",
+      "doctrine/doctrine-bundle": "~1.2",
+      "twig/extensions": "~1.0",
+      "symfony/assetic-bundle": "~2.3",
+      "symfony/swiftmailer-bundle": "~2.3",
+      "symfony/monolog-bundle": "~2.4",
+	  "sensio/distribution-bundle": "~3.0",
+	  "sensio/framework-extra-bundle": "~3.0",
+      "sensio/generator-bundle": "~2.3",
 
-asd
-      asda
+      "incenteev/composer-parameter-handler": "~2.0"
+    },
 
-      "require-dev": {
-        "sensio/generator-bundle": "~2.3"
+  "require-dev": {
+		"behat/behat": "~3.0.14",
+		"behat/symfony2-extension": "~2.0.0",
+		"behat/mink-extension": "~2.0.1",
+		"behat/mink-goutte-driver": "~1.1.0",
+		"behat/mink-selenium2-driver": "~1.2.0",
+		"phpunit/phpunit": "~4.3"
     },
-    "scripts": {
-        "post-root-package-install": [
-            "SymfonyStandard\\Composer::hookRootPackageInstall"
-        ],
-        "post-install-cmd": [
-            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles"
-        ],
-        "post-update-cmd": [
-            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles"
-        ]
-    },
+  "scripts": {
+    "post-root-package-install": [
+      "SymfonyStandard\\Composer::hookRootPackageInstall"
+    ],
+    "post-install-cmd": [
+      "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles"
+    ],
+    "post-update-cmd": [
+      "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles"
+    ]
+  },
     "config": {
         "bin-dir": "bin"
     },
