@@ -1,3 +1,7 @@
+af_home:
+    resource: "@AFHomeBundle/Resources/config/routing.yml"
+    prefix:   /
+
 af_project:
     resource: @AFProjectBundle/Resources/config/routing.yml
     prefix:   /
