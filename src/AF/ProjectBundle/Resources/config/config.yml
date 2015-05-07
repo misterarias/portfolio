@@ -1,0 +1,3 @@
+twig:
+  globals:
+    projectName: %projectName%

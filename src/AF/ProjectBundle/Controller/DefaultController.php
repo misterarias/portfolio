@@ -2,12 +2,12 @@
 
 namespace AF\ProjectBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use AF\Controller\AFController;
+use Symfony\Component\HttpFoundation\Response;
 
-class DefaultController extends Controller
-{
-    public function indexAction()
-    {
-        return $this->render("@AFProject/Default/index.html.twig");
-    }
+class DefaultController extends AFController {
+
+	public function indexAction() {
+		return $this->render("@AFProject/Default/index.html.twig");
+	}
 }
