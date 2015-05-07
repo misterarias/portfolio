@@ -13,3 +13,4 @@
 .idea/*
 composer.lock
 logs/**
+.idea
