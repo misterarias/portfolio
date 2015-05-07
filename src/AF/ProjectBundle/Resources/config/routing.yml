@@ -1,3 +1,3 @@
 af_project:
     defaults: { _controller: AFProjectBundle:Default:index }
-    path:   /project
+    path:   /

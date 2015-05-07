@@ -1,12 +1,11 @@
 af_home:
     resource: "@AFHomeBundle/Resources/config/routing.yml"
-    prefix:   /
+    host: web.%domain%
 
 af_project:
-    resource: @AFProjectBundle/Resources/config/routing.yml
-    prefix:   /
+    resource: "@AFProjectBundle/Resources/config/routing.yml"
+    host: "project.%domain%"
 
 af_bio:
-  resource: @AFBioBundle/Resources/config/routing.yml
-  prefix: /
- # host: me.ariasfreire.com
+  resource: "@AFBioBundle/Resources/config/routing.yml"
+  host: "bio.%domain%"
