@@ -1,0 +1,9 @@
+apache:
+    build: ./httpd
+    expose:
+        - "80"
+    volumes:
+        - .:/var/www/symfony
+    command:   "sudo service apache2 restart && tail -f /var/logs/apache2/*"
+    ports:
+        - "8080:80"       
