@@ -1,69 +1,44 @@
-Symfony Standard Edition
-========================
+Portfolio/Project
+==================
 
-Welcome to the Symfony Standard Edition - a fully-functional Symfony2
-application that you can use as the skeleton for your new applications.
+This Symfony 2.6 project contains the Bootstrap templates for:
+
+* A personal portfolio project, courtesy of the [Agency][2] template.
+* A personal project page, based on Bootstrap's [Jumbotron][3] template.
+
+## The author
+
+Me!
+
+## Routing
+In order to work with these, I've decided to go for subdomain routing, both in 
+production and in development, so you need to add proper "bio.*" and "project.*" entries
+in your Hosting and in your ```/etc/hosts```, along with the proper _domain_ variable in the parameters configuration.
 
 For details on how to download and get started with Symfony, see the
 [Installation][1] chapter of the Symfony Documentation.
 
-What's inside?
---------------
+## Docker 
+An Apache server in Ubuntu has been configured as a Docker container, ready to be launched and used, 
+with support for live code editing, just like the embedded symfony server.
 
-The Symfony Standard Edition is configured with the following defaults:
+Since the plan is to have more containers as the project grows, I've started using [Docker composer][5]
 
-  * An AppBundle you can use to start coding;
+You can find details here on how to install [docker][4] and [composer][6]. They're not complicated to setup, 
+If you follow my recomendation you'd stay away from Python packages and Ubuntu defaults, and stick to the links
+in the docker site.
 
-  * Twig as the only configured template engine;
+### boot2docker
+Support pending, it *should* work, now that I'm using a data volume; but it's a tricky beast.
 
-  * Doctrine ORM/DBAL;
+## Future plans
 
-  * Swiftmailer;
-
-  * Annotations enabled for everything.
-
-It comes pre-configured with the following bundles:
-
-  * **FrameworkBundle** - The core Symfony framework bundle
-
-  * [**SensioFrameworkExtraBundle**][6] - Adds several enhancements, including
-    template and routing annotation capability
-
-  * [**DoctrineBundle**][7] - Adds support for the Doctrine ORM
-
-  * [**TwigBundle**][8] - Adds support for the Twig templating engine
-
-  * [**SecurityBundle**][9] - Adds security by integrating Symfony's security
-    component
-
-  * [**SwiftmailerBundle**][10] - Adds support for Swiftmailer, a library for
-    sending emails
-
-  * [**MonologBundle**][11] - Adds support for Monolog, a logging library
-
-  * [**AsseticBundle**][12] - Adds support for Assetic, an asset processing
-    library
-
-  * **WebProfilerBundle** (in dev/test env) - Adds profiling functionality and
-    the web debug toolbar
-
-  * **SensioDistributionBundle** (in dev/test env) - Adds functionality for
-    configuring and working with Symfony distributions
-
-  * [**SensioGeneratorBundle**][13] (in dev/test env) - Adds code generation
-    capabilities
-
-All libraries and bundles included in the Symfony Standard Edition are
-released under the MIT or BSD license.
-
-Enjoy!
+* Adding some nice graphs using d3.js
+* Content!
 
 [1]:  http://symfony.com/doc/2.6/book/installation.html
-[6]:  http://symfony.com/doc/2.6/bundles/SensioFrameworkExtraBundle/index.html
-[7]:  http://symfony.com/doc/2.6/book/doctrine.html
-[8]:  http://symfony.com/doc/2.6/book/templating.html
-[9]:  http://symfony.com/doc/2.6/book/security.html
-[10]: http://symfony.com/doc/2.6/cookbook/email.html
-[11]: http://symfony.com/doc/2.6/cookbook/logging/monolog.html
-[12]: http://symfony.com/doc/2.6/cookbook/assetic/asset_management.html
-[13]: http://symfony.com/doc/2.6/bundles/SensioGeneratorBundle/index.html
+[2]:  http://startbootstrap.com/template-overviews/agency/  
+[3]:  http://getbootstrap.com/examples/jumbotron/
+[4]:  https://docs.docker.com/installation/ubuntulinux/
+[5]:  https://github.com/docker/compose/
+[6]:  https://docs.docker.com/compose/install/
