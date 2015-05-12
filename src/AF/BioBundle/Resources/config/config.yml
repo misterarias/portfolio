@@ -1,0 +1,7 @@
+imports:
+    - { resource: "@AFBioBundle/Resources/config/services.yml" }
+
+twig:
+  globals:
+    projectName: %projectName%
+    projectSubname: %projectsubname%

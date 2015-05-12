@@ -1,3 +1,6 @@
+imports:
+    - { resource: "@AFProjectBundle/Resources/config/services.yml" }
+
 twig:
   globals:
     projectName: %projectName%

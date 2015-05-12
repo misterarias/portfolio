@@ -1,8 +1,9 @@
 imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
-    - { resource: "@AFProjectBundle/Resources/config/services.yml" }
     - { resource: "@AFProjectBundle/Resources/config/config.yml" }
+    - { resource: "@AFBioBundle/Resources/config/config.yml" }
+
 
 framework:
     #esi:             ~
