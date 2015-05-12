@@ -7,5 +7,5 @@ af_project:
     host: "project.%domain%"
 
 af_bio:
-  resource: "@AFBioBundle/Resources/config/routing.yml"
-  host: "bio.%domain%"
+    resource: "@AFBioBundle/Resources/config/routing.yml"
+    host: "bio.%domain%"

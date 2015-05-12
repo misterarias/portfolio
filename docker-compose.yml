@@ -1,9 +1,18 @@
 apache:
-    build: ./httpd
+    build: httpd/
     expose:
         - "80"
     volumes:
-        - .:/var/www/symfony
-    command:   "sudo service apache2 restart && tail -f /var/logs/apache2/*"
+      - .:/var/www/symfony
+    volumes_from:
+        - data
     ports:
         - "8080:80"       
+    command:  
+        ./start.sh
+
+data:
+    image: busybox
+    volumes:
+        - app/cache
+        - app/logs
