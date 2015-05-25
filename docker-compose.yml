@@ -3,16 +3,27 @@ apache:
     expose:
         - "80"
     volumes:
-      - .:/var/www/symfony
+      - symfony:/var/www/symfony
     volumes_from:
-        - data
+        - symfonydata
     ports:
         - "8080:80"       
+    links:
+        - elastic
     command:  
         ./start.sh
 
-data:
+symfonydata:
     image: busybox
     volumes:
-        - app/cache
-        - app/logs
+        - symfony/app/cache
+        - symfony/app/logs
+
+elastic:
+    image: elasticsearch
+    ports:
+        - "9200:9200"
+        - "9300:9300"
+    volumes:
+        - esdata:/data
+

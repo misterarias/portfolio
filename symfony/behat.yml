@@ -2,7 +2,7 @@
 default:
     extensions:
         Behat\MinkExtension:
-            base_url: http://localhost:8001
+            base_url: http://localhost:8080
             goutte:
                 guzzle_parameters:
                     ssl.certificate_authority: false
