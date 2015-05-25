@@ -30,6 +30,12 @@ in the docker site.
 
 ### boot2docker
 Support pending, it *should* work, now that I'm using a data volume; but it's a tricky beast.
+*Note* It works!
+
+## Elastic Search
+
+The [official docker image][7] for Elastic Search has been added to the docker-compose file, it is going to be
+the frontend database, and also the place where Spark will store its findings.
 
 ## Future plans
 
@@ -42,3 +48,4 @@ Support pending, it *should* work, now that I'm using a data volume; but it's a 
 [4]:  https://docs.docker.com/installation/ubuntulinux/
 [5]:  https://github.com/docker/compose/
 [6]:  https://docs.docker.com/compose/install/
+[7]:  https://registry.hub.docker.com/_/elasticsearch/
