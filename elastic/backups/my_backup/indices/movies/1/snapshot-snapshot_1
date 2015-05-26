@@ -1,0 +1,35 @@
+{
+  "name" : "snapshot_1",
+  "index_version" : 4,
+  "start_time" : 1432682195730,
+  "time" : 33,
+  "number_of_files" : 4,
+  "total_size" : 3363,
+  "files" : [ {
+    "name" : "__0",
+    "physical_name" : "_0.cfs",
+    "length" : 2620,
+    "checksum" : "1llnafv",
+    "written_by" : "4.10.4"
+  }, {
+    "name" : "__1",
+    "physical_name" : "_0.cfe",
+    "length" : 367,
+    "checksum" : "11iezta",
+    "written_by" : "4.10.4"
+  }, {
+    "name" : "__2",
+    "physical_name" : "_0.si",
+    "length" : 248,
+    "checksum" : "1wo3dxw",
+    "written_by" : "4.10.4",
+    "meta_hash" : "P9dsFxNMdWNlbmU0NlNlZ21lbnRJbmZvAAAAAQY0LjEwLjQAAAABAQAAAAgJdGltZXN0YW1wDTE0MzI2ODAxMTc1MjMKb3MudmVyc2lvbhEzLjE2LjAtMzQtZ2VuZXJpYwJvcwVMaW51eA5sdWNlbmUudmVyc2lvbgY0LjEwLjQGc291cmNlBWZsdXNoB29zLmFyY2gFYW1kNjQMamF2YS52ZXJzaW9uCDEuNy4wXzc5C2phdmEudmVuZG9yEk9yYWNsZSBDb3Jwb3JhdGlvbgAAAAMGXzAuY2ZzBl8wLmNmZQVfMC5zacAok+gAAAAAAAAAAPd9EVQ="
+  }, {
+    "name" : "__3",
+    "physical_name" : "segments_4",
+    "length" : 128,
+    "checksum" : "1elmvji",
+    "written_by" : "4.10.4",
+    "meta_hash" : "P9dsFwhzZWdtZW50cwAAAAMAAAAAAAAAAwAAAAEAAAABAl8wCUx1Y2VuZTQxMP//////////AAAAAP////////////////////8AAAAAAAAAAAAAAAELdHJhbnNsb2dfaWQNMTQzMjY3OTA4NDM0NcAok+gAAAAAAAAAALZehi4="
+  } ]
+}

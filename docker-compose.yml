@@ -4,12 +4,13 @@ apache:
         - "80"
     volumes:
       - symfony:/var/www/symfony
+      - logs:/var/log/apache2
     volumes_from:
         - symfonydata
     ports:
         - "8080:80"       
     links:
-        - elastic
+        - elasticmaster
     command:  
         ./start.sh
 
@@ -19,11 +20,28 @@ symfonydata:
         - symfony/app/cache
         - symfony/app/logs
 
-elastic:
+elasticmaster:
     image: elasticsearch
     ports:
         - "9200:9200"
         - "9300:9300"
     volumes:
-        - esdata:/data
+        - elastic:/data
+        - logs:/data/log
+    command:
+        elasticsearch -Des.config=/data/elasticsearch.yml -Des.node.name=master -Des.node.master=true
 
+elasticslave1:
+    image: elasticsearch
+    volumes:
+        - elastic:/data
+        - logs:/data/log
+    command:
+        elasticsearch -Des.config=/data/elasticsearch.yml -Des.node.name=slave1 -Des.node.data=true -Des.node.master=false
+elasticslave2:
+    image: elasticsearch
+    volumes:
+        - elastic:/data
+        - logs:/data/log
+    command:
+        elasticsearch -Des.config=/data/elasticsearch.yml -Des.node.name=slave2 -Des.node.data=true -Des.node.master=false

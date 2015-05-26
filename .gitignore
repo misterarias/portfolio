@@ -17,4 +17,4 @@ symfony/composer.lock
 logs/**
 
 .idea
-esdata/elasticsearch/
+elastic/elasticsearch
