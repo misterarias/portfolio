@@ -1,0 +1,31 @@
+div.bar {
+    display: inline-block;
+    width: 20px;
+    height: 75px; /* We'll override this later */
+    background-color: teal;
+    margin-right: 2px;
+}
+
+.graph {
+    border: 1px black;
+}
+
+.main {
+    background-color: #a2feaa;
+}
+
+span.title {
+    font-weight: bold;
+}
+
+.canvas {
+    padding-top: 0.5em;
+}
+
+.texto {
+    font-size: 10px;
+}
+
+#barScale .slider-selection {
+    background: #BABABA;
+}

@@ -1,0 +1,22 @@
+{% extends 'AFProjectBundle:Default:project_base.html.twig' %}
+
+{% block content %}
+    <!-- Example row of columns -->
+    <div class="row">
+        <div class="col-md-2">
+            <h2>Juan Arias</h2>
+
+            <p>Hablar de mí, enlace sy tal </p>
+
+            <p><a class="btn btn-default" href="{{ path('af_bio') }}" role="button">Sobre m&iacute; &raquo;</a></p>
+        </div>
+        <div class="col-md-10">
+            <h2>Dashboard</h2>
+
+            <p>Gráficas y demás</p>
+
+            <p><a class="btn btn-default hide" href="#" role="button">View details &raquo;</a></p>
+        </div>
+    </div>
+
+{% endblock %}

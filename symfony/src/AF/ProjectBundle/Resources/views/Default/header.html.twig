@@ -2,12 +2,16 @@
 
 <!-- Main jumbotron for a primary marketing message or call to action -->
 <div class="jumbotron">
-  <div class="container">
-    <h2>{{ projectName }}</h2>
+    <div class="container">
+        <h2>{{ projectName }}</h2>
 
-    <p>Uso de la base de datos GDELT para extraer y analizar noticias
-      publicadas en diarios online españoles desde 1980.</p>
+        <p>Uso de la base de datos GDELT para extraer y analizar noticias
+            publicadas en diarios online españoles desde 1980.</p>
 
-    <p><a class="btn btn-primary btn-lg" href="#" role="button">Saber más &raquo;</a></p>
-  </div>
+        {% if module == "index" %}
+            <p>
+                <a class="btn btn-primary btn-lg" href="#" role="button">Saber más &raquo;</a>
+            </p>
+        {% endif %}
+    </div>
 </div>

@@ -1,3 +1,7 @@
 af_project:
     defaults: { _controller: AFProjectBundle:Default:index }
     path:   /
+
+af_project_scraper:
+  defaults: { _controller: AFProjectBundle:Default:scraper }
+  path: /scraper

@@ -1,0 +1,64 @@
+{% extends 'AFProjectBundle:Default:project_base.html.twig' %}
+
+{% block stylesheets %}
+
+    {{ parent() }}
+    {% stylesheets
+    '@AFProjectBundle/Resources/public/css/bootstrap-slider.css' %}
+    <link rel="stylesheet" href="{{ asset_url }}">
+    {% endstylesheets %}
+
+{% endblock %}
+{% block content %}
+    <h2>Scraping data summary</h2>
+    <div id="graph1" class="col-md-8">
+
+
+    </div>
+    <form class="form-horizontal col-md-4">
+        <div class="form-group well">
+            <div class="radio">
+                <label>
+                    <input type="radio" name="optionsRadios" id="primero" value="option1" checked>
+                    Dataset #1
+                </label>
+            </div>
+            <div class="radio disabled">
+                <label>
+                    <input type="radio" name="optionsRadios" id="segundo" value="option2" disabled>
+                    Dataset #2
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="optionsRadios" id="random" value="option3">
+                    Random data
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group well">
+            <label class="col-sm-4">Set scale</label>
+
+            <div class="col-sm-8 slider slider-horizontal">
+                <input id="barScale" data-slider-id='barScale' type="text"/>
+            </div>
+        </div>
+
+
+    </form>
+{% endblock %}
+
+{% block javascripts %}
+
+    {{ parent() }}
+
+    {# TODO: Find a way to autocomplete this $shit#}
+    {% javascripts
+    '@AFProjectBundle/Resources/public/js/d3.js'
+    '@AFProjectBundle/Resources/public/js/bootstrap-slider.js'
+    '@AFProjectBundle/Resources/public/js/scraper_viz.js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}
