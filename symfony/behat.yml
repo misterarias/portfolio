@@ -1,28 +1,38 @@
 # behat.yml
 default:
-    extensions:
-        Behat\MinkExtension:
-            base_url: http://localhost:8080
-            goutte:
-                guzzle_parameters:
-                    ssl.certificate_authority: false
-            selenium2: ~
-            sessions:
-                default:
-                    goutte: ~
-        Behat\Symfony2Extension: ~
-    suites:
-        project_features:
-            bundle: AFProjectBundle
-            type: symfony_bundle
-            contexts:
-              - AF\ProjectBundle\Features\Context\WebContext
-            filters:
-                tags: @web, @project
-        bio_features:
-            bundle: AFBioBundle
-            type: symfony_bundle
-            contexts:
-              - AF\BioBundle\Features\Context\WebContext
-            filters:
-                tags: @web, @bio
+  extensions:
+    Behat\MinkExtension:
+      goutte:
+        guzzle_parameters:
+            ssl.certificate_authority: false
+      selenium2: ~
+      sessions:
+          default:
+              goutte: ~
+    Behat\Symfony2Extension: ~
+  suites:
+    project:
+      bundle: AFProjectBundle
+      type: symfony_bundle
+      contexts:
+        - AF\ProjectBundle\Features\Context\WebContext
+      filters:
+          tags: @web, @project
+
+    bio_features:
+      bundle: AFBioBundle
+      type: symfony_bundle
+      contexts:
+        - AF\BioBundle\Features\Context\WebContext
+      filters:
+          tags: @web, @bio
+
+project:
+  extensions:
+    Behat\MinkExtension:
+      base_url: http://project.devarias.com:8080
+
+bio_features:
+  extensions:
+    Behat\MinkExtension:
+      base_url: http://bio.devarias.com:8080

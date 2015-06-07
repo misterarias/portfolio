@@ -12,9 +12,9 @@ var numbersSecond = [
     24, 9, 3, 22, 29, 11, 26, 11, 8, 19];
 var randomData = randomDataset(numbers.length);
 var currentDataset = numbers,
-    width = $('#graph1').width(),
+    width = $('#main_graph').width(),
     margin = 20,
-    height = 240;  //$('#graph1').height();
+    height = 240;
 
 function randomDataset(dataLen) {
     var data = [];
@@ -29,7 +29,7 @@ var xScale = d3.scale.linear().domain([0, numbers.length]).range([margin, width 
 var cScale = d3.scale.linear().domain([0, maximumValue]).range(['blue', 'red']);
 
 
-var svg = d3.select("#graph1").append("svg")
+var svg = d3.select("#main_graph").append("svg")
     .classed("canvas", true)
     .attr("width", width)
     .attr("height", height);

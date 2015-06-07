@@ -17,12 +17,17 @@ class DefaultController extends AFController {
         return $this->render("AFProjectBundle:Scraper:main.html.twig");
     }
 
+	public function dataAction() {
+		$this->setCurrentModule("data");
+		return $this->render("AFProjectBundle:Data:main.html.twig");
+	}
+
     /**
      * Array of currently enabled modules
      * @return array
      */
     function getAllowedModules()
     {
-        return array("index", "scraper");
+        return array("index", "scraper", "data");
     }
 }
