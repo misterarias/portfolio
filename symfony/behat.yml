@@ -2,13 +2,11 @@
 default:
   extensions:
     Behat\MinkExtension:
-      goutte:
-        guzzle_parameters:
-            ssl.certificate_authority: false
+      javascript_session: 'selenium2'
       selenium2: ~
       sessions:
           default:
-              goutte: ~
+              selenium2: ~
     Behat\Symfony2Extension: ~
   suites:
     project:
@@ -31,6 +29,7 @@ project:
   extensions:
     Behat\MinkExtension:
       base_url: http://project.devarias.com:8080
+
 
 bio_features:
   extensions:

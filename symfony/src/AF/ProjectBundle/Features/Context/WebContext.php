@@ -33,15 +33,15 @@ class WebContext extends BaseWebContext {
 	 */
 	public function iShouldFindANavigationBarEntryNamedWithLink($arg1, $arg2) {
 		$this->assertSession()->elementExists("xpath", "//div['@id=navbar']/ul/li/a[contains(text(),'$arg1')]");
-		$href = $this->getPage()->find("xpath", "//div['@id=navbar']/ul/li/a[contains(text(),'$arg1')]/@href");
-		var_dump($href);
+//		$href = $this->getPage()->find("xpath", "//div['@id=navbar']/ul/li/a[contains(text(),'$arg1')]/@href");
+	//	\PHPUnit_Framework_Assert::assertEquals($href, $arg2);
 	}
 
 	/**
 	 * @Then /^I should find a graph$/
 	 */
 	public function iShouldFindAGraph() {
-		usleep(1000);
-		$this->assertSession()->elementExists("css", "div#main_graph svg.canvas");
+		usleep(2000);
+		$this->assertSession()->elementExists("css", "div#main_graph");
 	}
 }
