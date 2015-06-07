@@ -11,6 +11,18 @@ namespace AF\ProjectBundle\Features\Context;
 class WebContext extends BaseWebContext {
 
 	/**
+	 * TODO USe this function as a fallback case
+	 */
+	public function saveCurrentPage() {
+		$pageHtml = $this->getSession()->getPage()->getHtml();
+		$pagePng = $this->getSession()->getScreenshot();
+		$randSeed = rand(1000000, 20000000);
+		file_put_contents("screenie$randSeed.png", $pagePng);
+		file_put_contents("screenie$randSeed.html", $pageHtml);
+
+	}
+
+	/**
 	 * @Then /^I should find a navigation bar with (\d+) items$/
 	 * @param $nItems
 	 */
@@ -34,14 +46,13 @@ class WebContext extends BaseWebContext {
 	public function iShouldFindANavigationBarEntryNamedWithLink($arg1, $arg2) {
 		$this->assertSession()->elementExists("xpath", "//div['@id=navbar']/ul/li/a[contains(text(),'$arg1')]");
 //		$href = $this->getPage()->find("xpath", "//div['@id=navbar']/ul/li/a[contains(text(),'$arg1')]/@href");
-	//	\PHPUnit_Framework_Assert::assertEquals($href, $arg2);
+		//	\PHPUnit_Framework_Assert::assertEquals($href, $arg2);
 	}
 
 	/**
 	 * @Then /^I should find a graph$/
 	 */
 	public function iShouldFindAGraph() {
-		usleep(2000);
-		$this->assertSession()->elementExists("css", "div#main_graph");
+		$this->assertSession()->elementExists("xpath", "//div['@id=main_graph']/*[name()='svg']/*[name()='rect']");
 	}
 }
