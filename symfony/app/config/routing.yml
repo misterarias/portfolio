@@ -1,7 +1,3 @@
-af_home:
-    resource: "@AFHomeBundle/Resources/config/routing.yml"
-    host: web.%domain%
-
 af_project:
     resource: "@AFProjectBundle/Resources/config/routing.yml"
     host: "project.%domain%"

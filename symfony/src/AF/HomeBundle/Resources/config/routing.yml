@@ -1,3 +1,0 @@
-af_home_homepage:
-    path:     /
-    defaults: { _controller: AFHomeBundle:Default:index }
