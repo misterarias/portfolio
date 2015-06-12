@@ -6,5 +6,5 @@ Feature: Page Elements
   And I expect to find basic elements
 
   Scenario: Navigation bar
-    Given I am on "/bio"
+    Given I am on "/"
     Then I should find a navigation bar with 6 items

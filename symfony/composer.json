@@ -13,54 +13,54 @@
       "symfony/assetic-bundle": "~2.3",
       "symfony/swiftmailer-bundle": "~2.3",
       "symfony/monolog-bundle": "~2.4",
-	  "sensio/distribution-bundle": "~3.0",
-	  "sensio/framework-extra-bundle": "~3.0",
+      "sensio/distribution-bundle": "~3.0",
+      "sensio/framework-extra-bundle": "~3.0",
       "sensio/generator-bundle": "~2.3",
 
       "incenteev/composer-parameter-handler": "~2.0"
     },
 
-  "require-dev": {
-		"behat/behat": "~3.0.14",
-		"behat/symfony2-extension": "~2.0.0",
-		"behat/mink-extension": "~2.0.1",
-		"behat/mink-goutte-driver": "~1.1.0",
-		"behat/mink-selenium2-driver": "~1.2.0",
-		"phpunit/phpunit": "~4.3"
+    "require-dev": {
+      "behat/behat": "~3.0.14",
+      "behat/symfony2-extension": "~2.0.0",
+      "behat/mink-extension": "~2.0.1",
+      "behat/mink-goutte-driver": "~1.1.0",
+      "behat/mink-selenium2-driver": "~1.2.0",
+      "phpunit/phpunit": "~4.3"
     },
-  "scripts": {
-    "post-root-package-install": [
-      "SymfonyStandard\\Composer::hookRootPackageInstall"
-    ],
-    "post-install-cmd": [
-      "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
+    "scripts": {
+      "post-root-package-install": [
+        "SymfonyStandard\\Composer::hookRootPackageInstall"
+        ],
+      "post-install-cmd": [
+        "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
       "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
       "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
       "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
       "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
       "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles"
-    ],
-    "post-update-cmd": [
-      "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
+        ],
+      "post-update-cmd": [
+        "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
       "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
       "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
       "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
       "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
       "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles"
-    ]
-  },
+        ]
+    },
     "config": {
-        "bin-dir": "bin"
+      "bin-dir": "bin"
     },
     "extra": {
-        "symfony-app-dir": "app",
-        "symfony-web-dir": "web",
-        "symfony-assets-install": "relative",
-        "incenteev-parameters": {
-            "file": "app/config/parameters.yml"
-        },
-        "branch-alias": {
-            "dev-master": "2.6-dev"
-        }
+      "symfony-app-dir": "app",
+      "symfony-web-dir": "web",
+      "symfony-assets-install": "relative",
+      "incenteev-parameters": {
+        "file": "app/config/parameters.yml"
+      },
+      "branch-alias": {
+        "dev-master": "2.6-dev"
+      }
     }
 }

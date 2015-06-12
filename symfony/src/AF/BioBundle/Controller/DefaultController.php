@@ -23,6 +23,6 @@ class DefaultController extends Controller {
 
         $viewData = array();
         $viewData["sections"] = $availableSections;
-        return $this->render("@AFBio/default/project_base.html.twig", $viewData);
+        return $this->render("AFBioBundle:default:index.html.twig", $viewData);
     }
 }

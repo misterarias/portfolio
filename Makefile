@@ -24,8 +24,10 @@ ARCH=$(shell uname -s)
 all: env-start
 
 env-start:
-	@echo -e "${GREENCOLOR}+++ Starting development environment${ENDCOLOR}"
-	@docker-compose up -d
+	@echo -e "${GREENCOLOR}+++ Starting development environment${ENDCOLOR}" 
+	docker-compose up -d
+	$(MAKE) symfony-cache-clear symfony-assets-symlink
+
 
 env-stop: 
 	@echo -e "${REDCOLOR}--- Stopping development environment${ENDCOLOR}"
@@ -43,20 +45,26 @@ test:
 	@$(MAKE) clean ;\
 	$(MAKE) env-start
 	$(MAKE) test-frontend
+# Run the behat tests...faster ;)
+test-fast:
+	$(MAKE) test-frontend
 
 test-frontend:
-	@(cd ${TOPDIR}/symfony && bin/behat --format pretty,junit --out ,junit)
+	(cd ${TOPDIR}/symfony && bin/behat --format pretty --suite=project --profile=project)
+	(cd ${TOPDIR}/symfony && bin/behat --format pretty --suite=bio --profile=bio)
 
 info:
-	@echo -e "${BLUECOLOR}Scraper UI${ENDCOLOR}: http://$(PROJECT_HOST):$(HTTP_PORT)"
-	@echo -e "${BLUECOLOR}Data UI${ENDCOLOR}: http://$(PROJECT_HOST):$(HTTP_PORT)"
+	@echo -e "${BLUECOLOR}Scraper UI${ENDCOLOR}: http://$(PROJECT_HOST):$(HTTP_PORT)/scraper"
+	@echo -e "${BLUECOLOR}Data UI${ENDCOLOR}: http://$(PROJECT_HOST):$(HTTP_PORT)/data"
 	@echo -e "${BLUECOLOR}Bio UI${ENDCOLOR}: http://$(BIO_HOST):$(HTTP_PORT)"
 	@echo -e "${BLUECOLOR}Elastic Search${ENDCOLOR}: http://$(ES_MASTER):$(ES_PORT)"
 
 help:
 	@echo -e "${BLUECOLOR}make all${ENDCOLOR} - create and bring up environment"
+	@echo -e "${BLUECOLOR}make clean${ENDCOLOR} - Stop env and clean logs"
 	@echo -e "${BLUECOLOR}make info${ENDCOLOR} - list ports and commands to access the environment"
 	@echo -e "${BLUECOLOR}make test${ENDCOLOR} - Clean and run tests"
+	@echo -e "${BLUECOLOR}make test-fast${ENDCOLOR} - Clean and run tests w/o rebuilding environment"
 	@echo -e "---------------------------------------"
 	@echo -e "${BLUECOLOR}make docker-cleanup${ENDCOLOR} - Delete all Docker images and containers"
 	@echo -e "${BLUECOLOR}make docker-compose-rebuild${ENDCOLOR} - Recreate images in docker-compose.yml"
@@ -81,6 +89,11 @@ cluster-start:
 
 cluster-stop:
 	@(cd ${TOPDIR}/vagrant && vagrant suspend)
+
+symfony-cache-clear:
+	(cd ${SYMFONY_DIR} && php app/console cache:clear)
+symfony-assets-symlink:
+	(cd ${SYMFONY_DIR} && php app/console assets:install --symlink)
 
 composer-update:
 	(cd ${SYMFONY_DIR} && composer update)

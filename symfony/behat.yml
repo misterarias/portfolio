@@ -17,7 +17,7 @@ default:
       filters:
           tags: @web, @project
 
-    bio_features:
+    bio:
       bundle: AFBioBundle
       type: symfony_bundle
       contexts:
@@ -30,8 +30,7 @@ project:
     Behat\MinkExtension:
       base_url: http://project.devarias.com:8080
 
-
-bio_features:
+bio:
   extensions:
     Behat\MinkExtension:
       base_url: http://bio.devarias.com:8080
