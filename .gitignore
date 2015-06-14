@@ -17,4 +17,5 @@ symfony/composer.lock
 logs/**
 
 .idea
-elastic/elasticsearch
+elastic/data
+elastic/logs

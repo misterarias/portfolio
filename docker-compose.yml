@@ -35,8 +35,7 @@ elasticmaster:
         - "9200:9200"
         - "9300:9300"
     volumes:
-        - elastic:/data
-        - logs:/data/log
+      - elastic:/data
     command:
         elasticsearch -Des.config=/data/elasticsearch.yml -Des.node.name=master -Des.node.master=true
 
@@ -44,13 +43,12 @@ elasticslave1:
     image: elasticsearch
     volumes:
         - elastic:/data
-        - logs:/data/log
     command:
         elasticsearch -Des.config=/data/elasticsearch.yml -Des.node.name=slave1 -Des.node.data=true -Des.node.master=false
+
 elasticslave2:
     image: elasticsearch
     volumes:
         - elastic:/data
-        - logs:/data/log
     command:
         elasticsearch -Des.config=/data/elasticsearch.yml -Des.node.name=slave2 -Des.node.data=true -Des.node.master=false
