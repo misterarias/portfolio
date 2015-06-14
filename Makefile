@@ -21,12 +21,12 @@ ES_PORT=9200
 
 ARCH=$(shell uname -s)
 
-all: env-start
+all: help info
 
 env-start:
 	@echo -e "${GREENCOLOR}+++ Starting development environment${ENDCOLOR}" 
 	docker-compose up -d
-	$(MAKE) symfony-cache-clear symfony-assets-symlink
+	$(MAKE) symfony-cache-clear symfony-assets-install
 
 
 env-stop: 
@@ -54,12 +54,14 @@ test-frontend:
 	(cd ${TOPDIR}/symfony && bin/behat --format pretty --suite=bio --profile=bio)
 
 info:
+	@echo -e "\n${GREENCOLOR}Useful links${ENDCOLOR}:"
 	@echo -e "${BLUECOLOR}Scraper UI${ENDCOLOR}: http://$(PROJECT_HOST):$(HTTP_PORT)/scraper"
 	@echo -e "${BLUECOLOR}Data UI${ENDCOLOR}: http://$(PROJECT_HOST):$(HTTP_PORT)/data"
 	@echo -e "${BLUECOLOR}Bio UI${ENDCOLOR}: http://$(BIO_HOST):$(HTTP_PORT)"
 	@echo -e "${BLUECOLOR}Elastic Search${ENDCOLOR}: http://$(ES_MASTER):$(ES_PORT)"
 
 help:
+	@echo -e "\n${GREENCOLOR}Useful targets${ENDCOLOR}:"
 	@echo -e "${BLUECOLOR}make all${ENDCOLOR} - create and bring up environment"
 	@echo -e "${BLUECOLOR}make clean${ENDCOLOR} - Stop env and clean logs"
 	@echo -e "${BLUECOLOR}make info${ENDCOLOR} - list ports and commands to access the environment"
@@ -68,6 +70,13 @@ help:
 	@echo -e "---------------------------------------"
 	@echo -e "${BLUECOLOR}make docker-cleanup${ENDCOLOR} - Delete all Docker images and containers"
 	@echo -e "${BLUECOLOR}make docker-compose-rebuild${ENDCOLOR} - Recreate images in docker-compose.yml"
+	@echo -e "---------------------------------------"
+	@echo -e "${BLUECOLOR}make cluster-start${ENDCOLOR} - Start the 3-node Ambari cluster from spanpshot"
+	@echo -e "${BLUECOLOR}make cluster-stop${ENDCOLOR} - Leave the cluster in a suspended state"
+	@echo -e "---------------------------------------"
+	@echo -e "${BLUECOLOR}make symfony-cache-clear${ENDCOLOR} - Clear symfony cache"
+	@echo -e "${BLUECOLOR}make symfony-assets-install${ENDCOLOR} - Install ALL Bundles' assets as under 'web'"
+	@echo -e "${BLUECOLOR}make composer-update${ENDCOLOR} - Updates all symfony's libraries"
 
 cleanlogs:
 	@for file in $(shell ls $(LOGDIR)) ; do > $(LOGDIR)/$$file ; done
@@ -92,8 +101,9 @@ cluster-stop:
 
 symfony-cache-clear:
 	(cd ${SYMFONY_DIR} && php app/console cache:clear)
-symfony-assets-symlink:
-	(cd ${SYMFONY_DIR} && php app/console assets:install --symlink)
+
+symfony-assets-install:
+	(cd ${SYMFONY_DIR} && php app/console assets:install)
 
 composer-update:
 	(cd ${SYMFONY_DIR} && composer update)
