@@ -18,8 +18,11 @@
 
 {% block stylesheets %}
 
-    <link href="{{ asset("bundles/afbio/css/agency.css") }}" rel="stylesheet" type="text/html">
-    <link href="{{ asset("bundles/afbio/font-awesome/css/font-awesome.min.css") }}" rel="stylesheet" type="text/html">
+    {% stylesheets
+    'bundles/afbio/css/agency.css' 'bundles/afbio/font-awesome/css/font-awesome.min.css'
+    filter='cssrewrite' %}
+    <link rel="stylesheet" type="text/css" href="{{ asset_url }}">
+    {% endstylesheets %}
 
     <!-- Custom Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
