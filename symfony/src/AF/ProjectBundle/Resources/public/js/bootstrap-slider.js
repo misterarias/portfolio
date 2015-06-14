@@ -446,9 +446,8 @@
 				createAndAppendTooltipSubElements(sliderTooltipMin);
 
 				var sliderTooltipMax = document.createElement("div");
-				sliderTooltipMax.className = "tooltip tooltip-max";
+				sliderTooltipMax.className = "tooltip tooltip-max hidden";
 				createAndAppendTooltipSubElements(sliderTooltipMax);
-
 
 				/* Append components to sliderElem */
 				this.sliderElem.appendChild(sliderTrack);

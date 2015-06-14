@@ -1,0 +1,24 @@
+{%- macro minMaxSlider(id, label, minValue, maxValue, minValLabel, maxValLabel) -%}
+    <div class="form-group ">
+        <div class="row">
+            <label class="col-sm-10">{{ label }}</label>
+        </div>
+
+        <div class="col-lg-offset-2">
+            {% if minValue is defined %}
+                {% set label = minValLabel|default(minValue) %}
+                <label id="{{ id }}_min" class="small right">{{ label }}</label>
+            {% endif %}
+
+            <input class="slider slider-horizontal" id="{{ id }}" data-slider-id="{{ id }}"
+                   {% if maxValue is defined %}data-slider-max="{{ maxValue }}"{% endif %}
+                    {% if minValue is defined %}data-slider-min="{{ minValue }}"{% endif %}
+                   type="text"/>
+            {% if maxValue is defined %}
+                {% set label = maxValLabel|default(maxValue) %}
+                <label id="{{ id }}_max" class="small left">{{ label }}</label>
+            {% endif %}
+
+        </div>
+    </div>
+{%- endmacro -%}
