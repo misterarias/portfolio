@@ -9,4 +9,4 @@ Feature: Scraper UI Elements
   @javascript
   Scenario: Main graph
     Given I am on "/scraper"
-    Then I should find a graph
+    Then I should see "Nothing here yet..." in the ".jumbotron div.container h2" element

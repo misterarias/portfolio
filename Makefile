@@ -25,9 +25,8 @@ all: help info
 
 env-start:
 	@echo -e "${GREENCOLOR}+++ Starting development environment${ENDCOLOR}" 
-	docker-compose up -d
-	$(MAKE) symfony-cache-clear symfony-assets-install
-
+	@docker-compose up -d
+	@$(MAKE) composer-update
 
 env-stop: 
 	@echo -e "${REDCOLOR}--- Stopping development environment${ENDCOLOR}"
@@ -45,6 +44,7 @@ test:
 	@$(MAKE) clean ;\
 	$(MAKE) env-start
 	$(MAKE) test-frontend
+
 # Run the behat tests...faster ;)
 test-fast:
 	$(MAKE) test-frontend
@@ -62,7 +62,8 @@ info:
 
 help:
 	@echo -e "\n${GREENCOLOR}Useful targets${ENDCOLOR}:"
-	@echo -e "${BLUECOLOR}make all${ENDCOLOR} - create and bring up environment"
+	@echo -e "${BLUECOLOR}make env-start${ENDCOLOR} - create and bring up environment"
+	@echo -e "${BLUECOLOR}make env-restart${ENDCOLOR} - reset environment"
 	@echo -e "${BLUECOLOR}make clean${ENDCOLOR} - Stop env and clean logs"
 	@echo -e "${BLUECOLOR}make info${ENDCOLOR} - list ports and commands to access the environment"
 	@echo -e "${BLUECOLOR}make test${ENDCOLOR} - Clean and run tests"
@@ -77,6 +78,8 @@ help:
 	@echo -e "${BLUECOLOR}make symfony-cache-clear${ENDCOLOR} - Clear symfony cache"
 	@echo -e "${BLUECOLOR}make symfony-assets-install${ENDCOLOR} - Install ALL Bundles' assets as under 'web'"
 	@echo -e "${BLUECOLOR}make composer-update${ENDCOLOR} - Updates all symfony's libraries"
+	@echo -e "---------------------------------------"
+	@echo -e "${BLUECOLOR}make prod-launch${ENDCOLOR} - To be used in production ONLY"
 
 cleanlogs:
 	@for file in $(shell ls $(LOGDIR)) ; do > $(LOGDIR)/$$file ; done
