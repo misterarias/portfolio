@@ -8,7 +8,7 @@ This Symfony 2.6 project contains the Bootstrap templates for:
 
 ## The author
 
-Me!
+[Me!][8]
 
 ## Routing
 In order to work with these, I've decided to go for subdomain routing, both in 
@@ -49,3 +49,4 @@ the frontend database, and also the place where Spark will store its findings.
 [5]:  https://github.com/docker/compose/
 [6]:  https://docs.docker.com/compose/install/
 [7]:  https://registry.hub.docker.com/_/elasticsearch/
+[8]:  https://blog.ariasfreire.com

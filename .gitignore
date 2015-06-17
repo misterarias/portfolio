@@ -19,3 +19,5 @@ logs/**
 .idea
 elastic/data
 elastic/logs
+spark/target/
+dependency-reduced-pom.xml
