@@ -18,6 +18,7 @@ BIO_HOST:=bio.${DOMAIN}
 ES_MASTER:=master.${DOMAIN}
 HTTP_PORT=8080
 ES_PORT=9200
+AMBARI_MASTER=c6401.ambari.apache.org:8080
 
 ARCH=$(shell uname -s)
 
@@ -55,13 +56,16 @@ test-frontend:
 
 info:
 	@echo -e "\n${GREENCOLOR}Useful links${ENDCOLOR}:"
-	@echo -e "${BLUECOLOR}Scraper UI${ENDCOLOR}: http://$(PROJECT_HOST):$(HTTP_PORT)/scraper"
-	@echo -e "${BLUECOLOR}Data UI${ENDCOLOR}: http://$(PROJECT_HOST):$(HTTP_PORT)/data"
-	@echo -e "${BLUECOLOR}Bio UI${ENDCOLOR}: http://$(BIO_HOST):$(HTTP_PORT)"
-	@echo -e "${BLUECOLOR}Elastic Search${ENDCOLOR}: http://$(ES_MASTER):$(ES_PORT)"
+	@echo -e "${BLUECOLOR}Scraper UI${ENDCOLOR}:\t\thttp://$(PROJECT_HOST):$(HTTP_PORT)/scraper"
+	@echo -e "${BLUECOLOR}Data UI${ENDCOLOR}:\t\thttp://$(PROJECT_HOST):$(HTTP_PORT)/data"
+	@echo -e "${BLUECOLOR}Bio UI${ENDCOLOR}:\t\t\thttp://$(BIO_HOST):$(HTTP_PORT)"
+	@echo -e "${BLUECOLOR}Elastic Search${ENDCOLOR}:\t\thttp://$(ES_MASTER):$(ES_PORT)"
+	@echo -e "${BLUECOLOR}Ambari panel${ENDCOLOR}:\t\thttp://${AMBARI_MASTER}"
 
 help:
 	@echo -e "\n${GREENCOLOR}Useful targets${ENDCOLOR}:"
+	@echo -e "${BLUECOLOR}make full-start${ENDCOLOR} - create an environment with a 3-node Hadoop cluster"
+	@echo -e "${BLUECOLOR}make full-stop${ENDCOLOR} - create an environment with a 3-node Hadoop cluster"
 	@echo -e "${BLUECOLOR}make env-start${ENDCOLOR} - create and bring up environment"
 	@echo -e "${BLUECOLOR}make env-restart${ENDCOLOR} - reset environment"
 	@echo -e "${BLUECOLOR}make clean${ENDCOLOR} - Stop env and clean logs"
@@ -95,12 +99,9 @@ docker-compose-rebuild:
 	@echo -e "${GREENCOLOR}+++ Rebuilding docker images with docker-compose${ENDCOLOR}"
 	@docker-compose build
 
-# Targets for easier life
-cluster-start:
-	@${TOPDIR}/vagrant/snapshot.sh go 1 3 RUNNING_SSH_SETUP
+full-start: env-start cluster-start
 
-cluster-stop:
-	@(cd ${TOPDIR}/vagrant && vagrant suspend)
+full-stop:	env-stop cluster-stop
 
 symfony-cache-clear:
 	(cd ${SYMFONY_DIR} && php app/console cache:clear)
@@ -112,4 +113,5 @@ composer-update:
 	(cd ${SYMFONY_DIR} && composer update)
 
 # Includes
-include ${TOPDIR}/elastic/elastic.mk
+include ${TOPDIR}/vagrant/build.mk
+include ${TOPDIR}/elastic/build.mk

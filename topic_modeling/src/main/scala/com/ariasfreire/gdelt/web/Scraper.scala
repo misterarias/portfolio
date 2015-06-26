@@ -1,8 +1,7 @@
 package com.ariasfreire.gdelt.web
 
+import com.ariasfreire.gdelt.extractors.LargestContentExtractor
 import org.apache.spark.{SparkContext, SparkConf}
-import org.jsoup.Jsoup
-import org.jsoup.nodes._
 
 /**
  * Given a date, or date range, scrape the gdelt archive for files that have
@@ -28,21 +27,15 @@ object Scraper {
     // 4. Parse downloaded data
     val downloadedFile = args(0)
     val gdeltDataFile = sc.textFile(downloadedFile, 4)
+    println(gdeltDataFile.collect().toString)
     val rowsRDD = RowParser.parse(gdeltDataFile)
 
     // 5. insert stats on db
 
     // 6. extract text from parsed URLs and store in HDFS
     rowsRDD.map( row =>{
-      val doc = Jsoup.connect(row.sourceURL).get
-      val body = doc.select("body").text
-      println(s"Text for document ${row.globalEventId} and URL ${row.sourceURL}:\n${body}")
-    })
-
-    // 7. Configure Topic Modeling
-
-    // 8. Run algorithm
-
-    // 9. Store results in db
+      val extractor = new LargestContentExtractor(row.sourceURL)
+      println(extractor.text)
+    }).collect()
   }
 }

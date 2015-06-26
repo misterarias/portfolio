@@ -20,5 +20,6 @@ logs/**
 elastic/data
 elastic/logs
 
-topic_modeling/project/
-topic_modeling/target/
+topic_modeling/project/project/
+topic_modeling/project/target/
+target/
