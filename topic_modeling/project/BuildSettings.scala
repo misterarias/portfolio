@@ -1,22 +1,26 @@
+import sbt.Keys._
 import sbt._
-import Keys._
 
 object BuildSettings {
 
+  import Dependencies._
+
   // Basic settings for our app
   lazy val basicSettings = Seq[Setting[_]](
-    name          := "topic_modeling",
-    organization  := "com.ariasfreire",
-    version       := "0.3.0",
-    description   := "AAA",
-    scalaVersion  := "2.10.4",
+    name := "topic_modeling",
+    organization := "com.ariasfreire",
+    version := "0.3.0",
+    description := "Project for scraping data off the GDELT site, and doing a research on given topics",
+    scalaVersion := V.scala,
     scalacOptions := Seq("-deprecation", "-encoding", "utf8"),
-    resolvers     ++= Dependencies.resolutionRepos
+    resolvers ++= Dependencies.resolutionRepos
   )
 
   // sbt-assembly settings for building a fat jar
+
   import sbtassembly.Plugin._
   import AssemblyKeys._
+
   lazy val sbtAssemblySettings = assemblySettings ++ Seq(
 
     mainClass in assembly := Some("com.ariasfreire.gdelt.web.Scraper"),
@@ -40,14 +44,15 @@ object BuildSettings {
       cp filter { jar => excludes(jar.data.getName) }
     },
 
-    mergeStrategy in assembly <<= (mergeStrategy in assembly) {
-      (old) => {
-        case x if x.startsWith("META-INF") => MergeStrategy.discard // Bumf
-        case x if x.endsWith(".html") => MergeStrategy.discard // More bumf
-        case x if x.contains("org/cyberneko/html") => MergeStrategy.first
-        case PathList("com", "esotericsoftware", xs @ _*) => MergeStrategy.last // For Log$Logger.class
-        case x => old(x)
-      }
+    mergeStrategy in assembly := {
+      case x if x.startsWith("META-INF") => MergeStrategy.discard // Bumf
+      case x if x.endsWith(".html") => MergeStrategy.discard // More bumf
+      case x if x.contains("slf4j-api") => MergeStrategy.last
+      case x if x.contains("org/cyberneko/html") => MergeStrategy.first
+      case PathList("com", "esotericsoftware", xs@_ *) => MergeStrategy.last // For Log$Logger.class
+      case x =>
+        val oldStrategy = (mergeStrategy in assembly).value
+        oldStrategy(x)
     }
   )
 

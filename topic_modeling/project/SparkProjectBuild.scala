@@ -1,10 +1,10 @@
+import sbt.Keys._
 import sbt._
-import Keys._
 
-object SparkExampleProjectBuild extends Build {
+object SparkProjectBuild extends Build {
 
-  import Dependencies._
   import BuildSettings._
+  import Dependencies._
 
   // Configure prompt to show current project
   override lazy val settings = super.settings :+ {
@@ -18,11 +18,13 @@ object SparkExampleProjectBuild extends Build {
       libraryDependencies ++= Seq(
         Libraries.sparkCore,
         Libraries.sparkMllib,
- 
+        // Additional libs
         Libraries.scopt,
         Libraries.jsoup,
-        Libraries.boilerpipe
-        // Add your additional libraries here (comma-separated)...
+        Libraries.boilerpipe,
+
+        // Test libs
+        Libraries.scalaTest
       )
     )
 }

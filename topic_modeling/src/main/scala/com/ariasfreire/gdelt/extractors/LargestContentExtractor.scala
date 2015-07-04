@@ -19,7 +19,6 @@ class LargestContentExtractor(sourceUrl: String) extends BaseExtractor(sourceUrl
     } catch {
       case _: Throwable =>
         // Log this event somewhere
-        println("NO HAY NA")
         ""
     }
   }

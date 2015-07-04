@@ -14,7 +14,7 @@ package com.ariasfreire.gdelt.models
  *
  * Created by juanito on 19/06/15.
  */
-class Actor(actorData: Array[String]) {
+class Actor(actorData: Array[String]) extends Serializable {
 
   var code: String = actorData(0)
   var name: String = actorData(1)
@@ -26,4 +26,13 @@ class Actor(actorData: Array[String]) {
   var type1Code: String = actorData(7)
   var type2Code: String = actorData(8)
   var type3Code: String = actorData(9)
+
+  def toArray: Array[String] = {
+    Array(code, name, countryCode, knownGroupCode, ethnicCode, religion1Code, religion2Code,
+      type1Code, type2Code, type3Code)
+  }
+
+  def this() {
+    this(Array("", "", "", "", "", "", "", "", "", ""))
+  }
 }

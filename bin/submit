@@ -1,3 +1,4 @@
 #!/bin/sh
 # This is the command to submit to my local cluster, all things considered
-spark-submit --master yarn-client --class com.ariasfreire.gdelt.web.Scraper --conf hdp.version=2.2.6.0-2800 target/scala-2.10/topic_modeling-0.3.0.jar gdelt.tsv
+spark-submit --master yarn-client --class com.ariasfreire.gdelt.web.Scraper --conf hdp.version=2.2.6.0-2800
+target/scala-2.10/topic_modeling-0.3.0.jar $1

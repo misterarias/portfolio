@@ -2,6 +2,8 @@ package com.ariasfreire.gdelt.models
 
 import com.ariasfreire.gdelt.models.utils.ModelUtils
 
+import scala.collection.mutable.ArrayBuffer
+
 /**
  * Created by juanito on 18/06/15.
  */
@@ -18,7 +20,7 @@ class Row(tsvRowData: Array[String]) extends Serializable {
   var monthYear: Int = -1
   var year: Int = -1
   /**
-   * Rouch measure of the % this year is in
+   * Rough measure of the % this year is in
    */
   var fractionDate: Float = 0f // (MONTH * 30 + DAY) / 365
 
@@ -104,7 +106,7 @@ class Row(tsvRowData: Array[String]) extends Serializable {
    */
   var sourceURL = ""
 
-  def parse():Row = {
+  def parse(): Row = {
     globalEventId = ModelUtils.getInt(tsvRowData(0))
     day = ModelUtils.getInt(tsvRowData(1))
     monthYear = ModelUtils.getInt(tsvRowData(2))

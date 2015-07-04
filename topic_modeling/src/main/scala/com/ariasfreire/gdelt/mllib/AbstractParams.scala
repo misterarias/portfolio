@@ -17,10 +17,6 @@
 
 package com.ariasfreire.gdelt.mllib
 
-/**
- * Created by juanito on 18/06/15.
- */
-
 import scala.reflect.runtime.universe._
 
 /**

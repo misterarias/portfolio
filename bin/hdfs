@@ -2,4 +2,4 @@
 SCRIPT=$0
 SCRIPTDIR=`dirname ${SCRIPT}`
 VAGRANTDIR=$(cd ${SCRIPTDIR}/../vagrant ; pwd )
-(cd ${VAGRANTDIR} && vagrant ssh c6401 -c "hadoop fs $*")
+(cd ${VAGRANTDIR} && vagrant ssh c6401 -c "sudo -u hdfs hadoop fs $*")

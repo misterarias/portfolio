@@ -10,7 +10,7 @@ import com.ariasfreire.gdelt.models.utils.ModelUtils
  *
  * Created by juanito on 19/06/15.
  */
-class Geography(actorData: Array[String]) {
+class Geography(actorData: Array[String]) extends Serializable {
 
   /**
    * This field specifies the geographic resolution of the match type and holds one of the following
@@ -41,4 +41,14 @@ class Geography(actorData: Array[String]) {
    * The GNS or GNIS FeatureID for this location
    */
   var geoFeatureID: String = actorData(6)
+
+  def toArray: Array[String] = {
+    Array(geoType.toString, geoFullname, geoCountryCode, geoADM1Code,
+      geoLatitude.toString, geoLongitude.toString,
+      geoFeatureID)
+  }
+
+  def this() = {
+    this(Array("-1", "", "", "", "0.0", "0.0", ""))
+  }
 }
