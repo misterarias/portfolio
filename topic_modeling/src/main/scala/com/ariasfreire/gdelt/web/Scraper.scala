@@ -18,12 +18,12 @@ object Scraper {
     // get valid context to read given file
     val conf = new SparkConf()
       .setAppName(s"Spark GDELT Project")
-      //.setMaster("local[*]")
+      .setMaster("local[*]")
       // So that output directory gets overwritten
       .set("spark.hadoop.validateOutputSpecs", "false")
       // Supposedly up to 10x faster serialization
-      .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
-    conf.registerKryoClasses(Array(classOf[ConditionsMatcher], classOf[Row], classOf[Actor], classOf[Geography]))
+    //  .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+    //conf.registerKryoClasses(Array(classOf[ConditionsMatcher], classOf[Row], classOf[Actor], classOf[Geography]))
     val sc = new SparkContext(conf)
 
     // 1. check input parameters
@@ -33,7 +33,18 @@ object Scraper {
     val dirName = indexName + "/" + scrapedDate
 
     // 2. Check against db, to see if we've already parsed this data/country/topic combo
-    val conditionsMatcher = new ConditionsMatcher(location = null, actor = null, eventCodes = null)
+    val eventCodes = Seq(
+      "091", // Investigate crime, corruption
+      "1121", // Accuse of crime, corruption
+      "1322", // Threaten to ban political parties or politicians - Un poco justo
+      "1722" // Ban political parties or politicians - idem
+    )
+    val conditionLocation = new Geography()
+    conditionLocation.geoType = 1
+    conditionLocation.geoCountryCode = "SP"
+    conditionLocation.geoADM1Code = "ESP"
+
+    val conditionsMatcher = new ConditionsMatcher(location = conditionLocation, eventCodes = eventCodes)
 
     // 3. Download data
 
