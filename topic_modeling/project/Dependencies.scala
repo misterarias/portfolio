@@ -7,8 +7,8 @@ object Dependencies {
 
   object V {
     val spark = "1.4.0"
-    val scala = "2.11.6"
-    val scala_maven = "2.11"
+    val scala = "2.10.4"
+    val scala_short = "2.10"
     // Add versions for your additional libraries here...
   }
 
@@ -20,7 +20,8 @@ object Dependencies {
     val jsoup = "org.jsoup" % "jsoup" % "1.8.2"
 
     // Scala (test only)
-    val scalaTest = "org.scalatest" % "scalatest_2.11" % "2.2.5" % "test"
+    val scalaTest_ver = "scalatest_" + V.scala_short
+    val scalaTest = "org.scalatest" % scalaTest_ver % "2.2.5" % "test"
   }
 
 }
