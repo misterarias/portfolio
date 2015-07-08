@@ -10,10 +10,9 @@ import org.jsoup.Jsoup
  */
 class JsonExtractor(sourceUrl: String) extends BaseExtractor(sourceUrl) {
 
-  override def text(): String = {
+  override def text: String = {
     val doc = Jsoup.connect(sourceUrl).get
     val body = doc.select("body").text
-    //println(s"Text for URL ${sourceUrl}:\n${body}")
 
     body
   }

@@ -1,6 +1,7 @@
-package com.ariasfreire.gdelt.web
+package com.ariasfreire.gdelt.matchers
 
 import com.ariasfreire.gdelt.models.{Actor, Geography, Row}
+import com.ariasfreire.gdelt.utils.StringUtils
 
 /**
  * Given a set of conditions, a matcher checks if a Row object has to be processed
@@ -22,8 +23,11 @@ class ConditionsMatcher(
   }
 
   private def actorCheck(currentActor: Actor): Boolean = {
-    // TODO - filter by actor
-    true
+    if (currentActor == null) {
+      return false
+    }
+
+    StringUtils.gdeltCompare(currentActor.countryCode, actor.countryCode)
   }
 
   private def geoCheck(row: Row): Boolean = {
@@ -32,28 +36,26 @@ class ConditionsMatcher(
       return true
     }
 
-    val geoFlag: Boolean = row.actor1Geography != null && geoCheck(row.actor1Geography) ||
-      row.actor2Geography != null && geoCheck(row.actor2Geography) ||
-      row.actionGeography != null && geoCheck(row.actionGeography)
-    if (!geoFlag)
-      return false
-    true
+    geoCheck(row.actor1Geography) ||
+      geoCheck(row.actor2Geography) ||
+      geoCheck(row.actionGeography)
   }
 
   private def geoCheck(currentGeography: Geography): Boolean = {
+    if (currentGeography == null) {
+      return false
+    }
 
-    (currentGeography.geoType == location.geoType) &&
-      (
-        location.geoADM1Code.equalsIgnoreCase(currentGeography.geoADM1Code) ||
-          location.geoCountryCode.equalsIgnoreCase(currentGeography.geoCountryCode) ||
-          location.geoFullname.equalsIgnoreCase(currentGeography.geoFullname)
-        )
+    // geoType limits too much
+    // currentGeography.geoType == location.geoType ||
+    StringUtils.gdeltCompare(location.geoADM1Code, currentGeography.geoADM1Code) ||
+      StringUtils.gdeltCompare(location.geoCountryCode, currentGeography.geoCountryCode)
   }
 
   private def eventCodesCheck(currentEventCodes: Seq[String]): Boolean = {
     if (eventCodes == null) {
       // if no condition is sent, assume true
-      return true;
+      return true
     }
     currentEventCodes.foreach(code => {
       if (eventCodes.contains(code)) {
@@ -65,10 +67,15 @@ class ConditionsMatcher(
 
   /**
    * Match given row against this object's conditions
-   * @param row
-   * @return
+   * @param row Input row to compare, if it's null the comparison is false
+   * @return True if input row matches against conditions; Returns false if Row is null
    */
   def checkConditions(row: Row): Boolean = {
+
+    if (row == null) {
+      return false
+    }
+
     if (!actorCheck(row))
       return false
 
@@ -76,8 +83,9 @@ class ConditionsMatcher(
       return false
     }
 
-    if (!eventCodesCheck(Seq(row.rootEventCode, row.baseEventCode, row.eventCode)))
+    if (!eventCodesCheck(Seq(row.rootEventCode, row.baseEventCode, row.eventCode))) {
       return false
+    }
 
     true
   }

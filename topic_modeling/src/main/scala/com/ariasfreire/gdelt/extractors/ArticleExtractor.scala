@@ -15,7 +15,7 @@ class ArticleExtractor(sourceUrl: String) extends BaseExtractor(sourceUrl) {
 
   override def text: String = {
     val extractor = CommonExtractors.ARTICLE_EXTRACTOR
-    val htmlArticleExtractor = HtmlArticleExtractor.INSTANCE;
+    val htmlArticleExtractor = HtmlArticleExtractor.INSTANCE
     val url = new URL(sourceUrl)
 
     htmlArticleExtractor.process(extractor, url)

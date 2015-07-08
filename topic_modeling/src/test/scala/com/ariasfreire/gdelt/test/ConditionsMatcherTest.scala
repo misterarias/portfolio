@@ -1,7 +1,7 @@
 package com.ariasfreire.gdelt.test
 
-import com.ariasfreire.gdelt.models.{Geography, Row}
-import com.ariasfreire.gdelt.web.ConditionsMatcher
+import com.ariasfreire.gdelt.matchers.ConditionsMatcher
+import com.ariasfreire.gdelt.models.{Actor, Geography, Row}
 import org.scalatest.FunSuite
 
 /**
@@ -70,6 +70,60 @@ class ConditionsMatcherTest extends FunSuite {
     assert(matcher.checkConditions(row))
     row.eventCode = badCode
     assert(!matcher.checkConditions(row))
+  }
+
+  test("Filter by actor works - just by country") {
+    val fakeActor = new Actor(Array("POL", "Fake man", "ESP", "", "", "", "", "", "", ""))
+    val conditionActor = new Actor()
+    conditionActor.countryCode = "ESP"
+
+    val matcher = new ConditionsMatcher(actor = conditionActor)
+    val row = new Row(Array(""))
+    row.actor1Data = fakeActor
+    assert(matcher.checkConditions(row))
+
+    row.actor1Data = null
+    row.actor2Data = fakeActor
+    assert(matcher.checkConditions(row))
+  }
+
+  test("Multiple condition matches") {
+    val eventCodes = Seq("100", "01")
+    val fakeActor = new Actor(Array("POL", "Fake man", "ESP", "", "", "", "", "", "", ""))
+    val fakeLocation = new Geography(Array("1", "Fake Country", "FK", "FKC", "0.0", "0.0", "FAKE"))
+
+    val conditionLocation = new Geography()
+    conditionLocation.geoType = 1
+    conditionLocation.geoCountryCode = "FK"
+
+    val conditionActor = new Actor()
+    conditionActor.countryCode = "ESP"
+
+    val matcher = new ConditionsMatcher(
+      actor = conditionActor,
+      location = conditionLocation,
+      eventCodes = eventCodes)
+
+    val row = new Row(Array(""))
+
+    // All good
+    val goodCode = "100"
+    row.rootEventCode = goodCode
+    assert(!matcher.checkConditions(row))
+    row.actor1Data = fakeActor
+    assert(!matcher.checkConditions(row))
+    row.actionGeography = fakeLocation
+    assert(matcher.checkConditions(row))
+
+    // BAd event code
+    val badCode = "123"
+    row.rootEventCode = badCode
+    assert(!matcher.checkConditions(row))
+
+    // Bad actor
+
+
+    // Bad location
   }
 
 }

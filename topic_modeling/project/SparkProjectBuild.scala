@@ -18,6 +18,7 @@ object SparkProjectBuild extends Build {
       libraryDependencies ++= Seq(
         Libraries.sparkCore,
         Libraries.sparkMllib,
+
         // Additional libs
         Libraries.scopt,
         Libraries.jsoup,
