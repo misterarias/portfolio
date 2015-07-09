@@ -1,6 +1,6 @@
 package com.ariasfreire.gdelt.test
 
-import com.ariasfreire.gdelt.matchers.ConditionsMatcher
+import com.ariasfreire.gdelt.processors.matchers.ConditionsMatcher
 import com.ariasfreire.gdelt.models.{Actor, Geography, Row}
 import org.scalatest.FunSuite
 

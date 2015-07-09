@@ -2,8 +2,6 @@ package com.ariasfreire.gdelt.models
 
 import com.ariasfreire.gdelt.models.utils.ModelUtils
 
-import scala.collection.mutable.ArrayBuffer
-
 /**
  * Created by juanito on 18/06/15.
  */
@@ -16,9 +14,9 @@ class Row(tsvRowData: Array[String]) extends Serializable {
    * If duplicates are to be found, it's considered safe to ignore them
    */
   var globalEventId: Int = -1
-  var day: Int = -1
-  var monthYear: Int = -1
-  var year: Int = -1
+  var day: String = ""
+  var monthYear: String = ""
+  var year: String = ""
   /**
    * Rough measure of the % this year is in
    */
@@ -106,36 +104,51 @@ class Row(tsvRowData: Array[String]) extends Serializable {
    */
   var sourceURL = ""
 
-  def parse(): Row = {
-    globalEventId = ModelUtils.getInt(tsvRowData(0))
-    day = ModelUtils.getInt(tsvRowData(1))
-    monthYear = ModelUtils.getInt(tsvRowData(2))
-    year = ModelUtils.getInt(tsvRowData(3))
-    fractionDate = ModelUtils.getFloat(tsvRowData(4))
+  var index: Int = 0
 
-    actor1Data = new Actor(tsvRowData.slice(5, 15))
-    actor2Data = new Actor(tsvRowData.slice(15, 25))
+  def next: String = {
+    val something: String = tsvRowData(index)
+    index += 1
+    something
+  }
 
-    isRootEvent = "1".equalsIgnoreCase(tsvRowData(25))
-    eventCode = tsvRowData(26)
-    baseEventCode = tsvRowData(27)
-    rootEventCode = tsvRowData(28)
-    quadClass = ModelUtils.getInt(tsvRowData(29))
-    goldsteinScale = ModelUtils.getFloat(tsvRowData(30))
-    numMentions = ModelUtils.getInt(tsvRowData(31))
-    numSources = ModelUtils.getInt(tsvRowData(32))
-    numArticles = ModelUtils.getInt(tsvRowData(33))
-    avgTone = ModelUtils.getFloat(tsvRowData(34))
+  def nextWindow(length: Int): Array[String] = {
+    val something = tsvRowData.slice(index, index + length + 1) // it reads up to the element before that!
+    index += length
+    something
+  }
 
-    actor1Geography = new Geography(tsvRowData.slice(35, 42))
-    actor2Geography = new Geography(tsvRowData.slice(42, 49))
-    actionGeography = new Geography(tsvRowData.slice(49, 56))
+  def parse(fromGoogle: Boolean): Row = {
 
-    dateAdded = ModelUtils.getInt(tsvRowData(56))
+    globalEventId = ModelUtils.getInt(next)
+    day = next
+    monthYear = next
+    year = next
+    fractionDate = ModelUtils.getFloat(next)
+
+    actor1Data = new Actor(nextWindow(10))
+    actor2Data = new Actor(nextWindow(10))
+
+    isRootEvent = "1".equalsIgnoreCase(next)
+    eventCode = next
+    baseEventCode = next
+    rootEventCode = next
+    quadClass = ModelUtils.getInt(next)
+    goldsteinScale = ModelUtils.getFloat(next)
+    numMentions = ModelUtils.getInt(next)
+    numSources = ModelUtils.getInt(next)
+    numArticles = ModelUtils.getInt(next)
+    avgTone = ModelUtils.getFloat(next)
+
+    actor1Geography = new Geography(nextWindow(7))
+    actor2Geography = new Geography(nextWindow(7))
+    actionGeography = new Geography(nextWindow(7))
+
+    dateAdded = ModelUtils.getInt(next)
 
     // Careful with this, ideally I should check the date but this seems faster
     if (tsvRowData.length == 58) {
-      sourceURL = tsvRowData(57)
+      sourceURL = next
     }
 
     this

@@ -48,7 +48,13 @@ object BuildSettings {
       case x if x.startsWith("META-INF") => MergeStrategy.discard // Bumf
       case x if x.endsWith(".html") => MergeStrategy.discard // More bumf
       case x if x.contains("slf4j-api") => MergeStrategy.last
+      case x if x.contains("org/objectweb/asm/") => MergeStrategy.discard
       case x if x.contains("org/cyberneko/html") => MergeStrategy.first
+      case x if x.contains("com/google/common/base/" ) => MergeStrategy.first
+      case x if x.contains("javax/xml/") => MergeStrategy.first
+      case x if x.contains("org/apache/commons/logging/") => MergeStrategy.last
+      case x if x.contains("org/apache/hadoop/yarn/") => MergeStrategy.last
+      case x if x.contains("org/apache/spark") => MergeStrategy.last
       case PathList("com", "esotericsoftware", xs@_ *) => MergeStrategy.last // For Log$Logger.class
       case x =>
         val oldStrategy = (mergeStrategy in assembly).value

@@ -10,7 +10,7 @@ import com.ariasfreire.gdelt.models.utils.ModelUtils
  *
  * Created by juanito on 19/06/15.
  */
-class Geography(actorData: Array[String]) extends Serializable {
+class Geography(geoData: Array[String]) extends Serializable {
 
   /**
    * This field specifies the geographic resolution of the match type and holds one of the following
@@ -20,27 +20,27 @@ class Geography(actorData: Array[String]) extends Serializable {
    * 4=WORLDCITY (match was to a city or landmark outside the US),
    * 5=WORLDSTATE (match was to an  Administrative Division 1 outside the US – roughly equivalent to a US state).
    */
-  var geoType: Int = ModelUtils.getInt(actorData(0))
+  var geoType: Int = ModelUtils.getInt(geoData(0))
 
   /**
    * This is the full human-readable name of the matched location.
    */
-  var geoFullname = actorData(1)
+  var geoFullname = geoData(1)
   /**
    * 2-character FIPS10-4 country code for the location
    */
-  var geoCountryCode = actorData(2)
+  var geoCountryCode = geoData(2)
   /**
    * The 2-character FIPS10-4 country code followed by 2-character FIPS10-4
    * administrative division housing the landmark.
    */
-  var geoADM1Code = actorData(3)
-  var geoLatitude: Float = ModelUtils.getFloat(actorData(4))
-  var geoLongitude: Float = ModelUtils.getFloat(actorData(5))
+  var geoADM1Code = geoData(3)
+  var geoLatitude: Float = ModelUtils.getFloat(geoData(4))
+  var geoLongitude: Float = ModelUtils.getFloat(geoData(5))
   /**
    * The GNS or GNIS FeatureID for this location
    */
-  var geoFeatureID: String = actorData(6)
+  var geoFeatureID: String = geoData(6)
 
   def toArray: Array[String] = {
     Array(geoType.toString, geoFullname, geoCountryCode, geoADM1Code,

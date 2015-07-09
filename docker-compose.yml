@@ -29,6 +29,17 @@ symfonydata:
         - symfony/app/cache
         - symfony/app/logs
 
+kibana:
+  image: balsamiq/docker-kibana
+  ports:
+    - "9400:80"
+  expose:
+    - "9400"
+  links:
+    - elasticmaster:es
+  environment:
+    KIBANA_SECURE: false
+
 elasticmaster:
     image: elasticsearch
     ports:

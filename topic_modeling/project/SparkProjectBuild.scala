@@ -23,6 +23,7 @@ object SparkProjectBuild extends Build {
         Libraries.scopt,
         Libraries.jsoup,
         Libraries.boilerpipe,
+        Libraries.elasticSearch,
 
         // Test libs
         Libraries.scalaTest

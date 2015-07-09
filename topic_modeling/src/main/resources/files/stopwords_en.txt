@@ -569,3 +569,5 @@ yourself
 yourselves
 z
 zero
+http
+https

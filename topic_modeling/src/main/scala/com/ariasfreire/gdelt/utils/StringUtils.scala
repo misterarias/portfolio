@@ -4,6 +4,14 @@ package com.ariasfreire.gdelt.utils
  * Created by juanito on 8/07/15.
  */
 object StringUtils {
+  def gdeltCompare(seq_s1: Seq[String], s2: String): Boolean = {
+    seq_s1.foreach(s => {
+      if (gdeltCompare(s, s2))
+        return true
+    })
+    false
+  }
+
   /**
    * Returns true if both strings are equal, ignoring case, but only if they have
    * something to compare
