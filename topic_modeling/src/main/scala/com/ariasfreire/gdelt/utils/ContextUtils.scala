@@ -10,6 +10,11 @@ import org.apache.spark.SparkConf
 object ContextUtils {
 
   /**
+   * If set to true, override output directory
+   */
+  var overwrite: Boolean = false
+
+  /**
    * After calling this, and before creating a SparkContext, the applications must set the Kryo classes
    * @return
    */
@@ -17,10 +22,12 @@ object ContextUtils {
     val conf = new SparkConf()
       .setAppName(s"Spark GDELT Project")
       .setMaster("local[*]")
-      // So that output directory gets overwritten
-      .set("spark.hadoop.validateOutputSpecs", "false")
       // Supposedly up to 10x faster serialization (Note: Holy **** it's fast)
       .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+
+    // So that output directory gets overwritten
+    if (overwrite)
+      conf.set("spark.hadoop.validateOutputSpecs", "false")
 
     conf.registerKryoClasses(Array(classOf[GdeltRowParser], classOf[LargestContentExtractor]))
 
