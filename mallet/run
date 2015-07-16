@@ -1,0 +1,10 @@
+#!/bin/sh
+[ "$#" != "1" ] && echo "Input dir is needed" && exit 1
+DIR=$1
+mallet import-dir --input ../topic_modeling/target/scala-2.10/gdelt_mallet/${DIR}/ --keep-sequence --remove-stopwords --output ${DIR}.topic.mallet --stoplist-file ../topic_modeling/target/scala-2.10/classes/files/stopwords_en.txt
+mallet train-topics --input ${DIR}.topic.mallet --num-topics 50 --random-seed 2 \
+  --output-topic-keys ${DIR}.topic.keys --num-iterations 5000 --inferencer-filename \
+  ${DIR}.inferencer --output-doc-topics ${DIR}.doc.topics --optimize-interval 20
+mallet import-dir --input test/ --keep-sequence --remove-stopwords --output test.mallet \
+  --use-pipe-from ${DIR}.topic.mallet
+mallet infer-topics --input test.mallet --inferencer ${DIR}.inferencer --output-doc-topics incoming.topics --num-iterations 1000

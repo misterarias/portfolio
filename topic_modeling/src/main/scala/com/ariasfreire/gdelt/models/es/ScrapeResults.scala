@@ -2,7 +2,7 @@ package com.ariasfreire.gdelt.models.es
 
 import java.time.LocalDate
 
-import com.ariasfreire.gdelt.models.lda.TopicData
+import com.ariasfreire.gdelt.models.lda.TopicTermModel
 
 /**
  * This object will model the scrape results, to be shared between steps of a topic modeling session
@@ -16,8 +16,7 @@ class ScrapeResults(
                      var invalidUrls: Long = 0,
                      var failedRows: Long = 0,
                      var lowContentUrls: Long = 0,
-                     var duplicatedRows: Long = 0,
-                     var topicData: Array[Array[TopicData]] = Array()) {
+                     var duplicatedRows: Long = 0) {
   def summary(): Unit = {
     printf("Finished parsing file for date %s\n" +
       "Matched rows:\t\t\t%d (%.2f %%)\n" +
@@ -32,31 +31,14 @@ class ScrapeResults(
       lowContentUrls, 100.0 * lowContentUrls / totalRows,
       invalidUrls, 100.0 * invalidUrls / totalRows
     )
-    val topicNumber = topicData.length
-    println(s"$topicNumber topics:")
-    topicData.zipWithIndex.foreach { case (topic: Array[TopicData], i) =>
-      println(s"TOPIC $i")
-      topic.foreach { topic: TopicData =>
-        println(s"$topic.term\t$topic.weight")
-      }
-      println()
-    }
+
   }
 
   def toJson: String = {
-    var index: Int = 0
-    val topicString = topicData map { topics=>
-      index += 1
-      s"""{ "name": "Topic $index", "topics": [""" +
-        topics.map {
-          _.toJson
-        }.mkString(",") + "]}"
-    } mkString(",")
     s"""{
       "name": "${name}", "ok": ${okRows}, "failed":${failedRows},
       "invalid": ${invalidUrls},
-      "total": ${totalRows}, "lowContent": ${lowContentUrls},
-      "topics": [ ${topicString} ]
+      "total": ${totalRows}, "lowContent": ${lowContentUrls}
       }"""
   }
 }

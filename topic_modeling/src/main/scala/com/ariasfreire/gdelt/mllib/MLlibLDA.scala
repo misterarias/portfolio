@@ -1,6 +1,6 @@
 package com.ariasfreire.gdelt.mllib
 
-import com.ariasfreire.gdelt.models.lda.TopicData
+import com.ariasfreire.gdelt.models.lda.{TopicTermModel, TopicTermsDataModel}
 import com.ariasfreire.gdelt.utils.{ContextUtils, SimpleTokenizer}
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.mllib.clustering._
@@ -16,7 +16,7 @@ import scala.collection.mutable
  * Created by juanito on 11/07/15.
  */
 class MLlibLDA(
-                input: Seq[String] = Seq.empty,
+                inputDir: String,
                 k: Int = 30,
                 maxIterations: Int = 20,
                 maxTermsPerTopic: Int = 15,
@@ -35,9 +35,9 @@ class MLlibLDA(
     new SparkContext(conf)
   }
 
-  def run: Array[Array[TopicData]] = {
+  def run: Array[TopicTermsDataModel] = {
 
-    Logger.getRootLogger.setLevel(Level.WARN)
+    Logger.getRootLogger.setLevel(Level.INFO)
 
     // Load documents, and prepare them for LDA.
     val (corpus, vocabArray, actualCorpusSize) = preProcess
@@ -77,14 +77,28 @@ class MLlibLDA(
       case _ =>
     }
 
-    // Print the topics, showing the top-weighted terms for each topic.
     val topicIndices: Array[(Array[Int], Array[Double])] = ldaModel.describeTopics(maxTermsPerTopic)
-    val topics: Array[Array[TopicData]] = topicIndices.map { case (terms, termWeights) =>
-      terms.zip(termWeights).map { case (term, weight) => new TopicData(vocabArray(term.toInt), weight) }
+    val topicModelArray: Array[TopicTermsDataModel] =
+      topicIndices.zipWithIndex.map { case ((terms, termWeights), index: Int) =>
+        val topicData: Array[TopicTermModel] = terms.zip(termWeights).map { case (term, weight) =>
+          new TopicTermModel(vocabArray(term.toInt), weight)
+        }
+        new TopicTermsDataModel(inputDir, s"Topic $index", topicData)
+      }
+
+    // Print the topics, showing the top-weighted terms for each topic.
+    val topicNumber = topicModelArray.length
+    println(s"$topicNumber topics:")
+    topicModelArray.foreach { case topic =>
+      println(s"TOPIC ${topic.topicName}")
+      topic.termsData foreach { topic: TopicTermModel =>
+        println(s"$topic.term\t$topic.weight")
+      }
+      println()
     }
 
     sc.stop()
-    topics
+    topicModelArray
   }
 
   /**
@@ -94,8 +108,7 @@ class MLlibLDA(
   def preProcess: (RDD[(Long, Vector)], Array[String], Long) = {
     val preprocessStart = System.nanoTime()
 
-    val textRDD: RDD[String] =
-      sc.textFile(input.mkString(","))
+    val textRDD: RDD[String] = sc.textFile(inputDir)
 
     // Split text into words
     val tokenizer = new SimpleTokenizer(sc, stopWordsFile)
