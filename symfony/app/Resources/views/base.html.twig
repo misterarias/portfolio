@@ -20,7 +20,8 @@
 <body id="page-top" class="index">
 {% block body %}{% endblock %}
 
-{% javascripts 'js/jquery.js' 'js/bootstrap.js' %}
+{% javascripts 'js/jquery.js' 'js/bootstrap.js'
+filter=""%}
 <script src="{{ asset_url }}"></script>
 {% endjavascripts %}
 

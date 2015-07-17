@@ -1,2 +1,3 @@
 parameters:
-  projectName: "Análisis de la evolución temporal de la corrupción española en medios de prensa"
+  shortProjectName: "Topic modeling GDELT historical data"
+  projectDescription: "Distributed discovery of topics over GDELT data, using LDA algorithm from Spark's MLLib and Elastic Search"

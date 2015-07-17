@@ -1,26 +1,112 @@
 {% extends 'AFProjectBundle:Default:project_base.html.twig' %}
-
-{% block content_header %}
-    {% include 'AFProjectBundle:Index:header.html.twig' %}
-{% endblock %}
+{% import '@AFProject/Default/widgets.html.twig' as widgets %}
 
 {% block content %}
-    <!-- Example row of columns -->
-    <div class="row">
-        <div class="col-md-2">
-            <h2>Juan Arias</h2>
 
-            <p>Hablar de mí, enlace sy tal </p>
+  {{ widgets.sectionStart(
+  "Project description") }}
 
-            <p><a class="btn btn-default" href="{{ path('af_bio') }}" role="button">Sobre m&iacute; &raquo;</a></p>
-        </div>
-        <div class="col-md-10">
-            <h2>Dashboard</h2>
+  <p class="quote">
+    &quot;To better understand history, first you need to know what has already happened&quot;&nbsp;&nbsp;(Random guy)
+  </p>
 
-            <p>Gráficas y demás</p>
+  <p>
+    The process of digging into out past has been done by scholars, historians, and journalist in the past years. But all of
+    these professionals of information retrieval and research have always faced the same root problems: Way too many things have
+    happened, not all of them are recored on the same way, and there is no uniform way to access that information. ¿Could we
+    apply technologies such as Computer Science and Machine Learning to solve such a problem?
+  </p>
 
-            <p><a class="btn btn-default hide" href="#" role="button">View details &raquo;</a></p>
-        </div>
-    </div>
+  <p>
+    Big Data technologies are known for solving problems related to the processing huge volumes of data, from a potentially huge
+    variety of sources and in a reasonable amount of time: ¿Could this help the journalists of the future find research topics that might have
+    been hidden like a needle in a haystack?
+  </p>
+
+  <p>
+    The automated handling and analysis of historical information, digitalized and stored in various Internet datastores,
+    is one of the many areas where new technologies such as Hadoop, YARN, Spark, Elastic Search, and Kibana, along with the
+    knowledge and experience of Data Engineers, unlock solutions to solve problems in ways that were never thought to be possible.
+  </p>
+
+  <p>
+    This site describes the tools, techniques and computer systems I have used for the retrieval, analysis and visualization of
+    the historical data contained in <a href="http://www.gdelt.org" target="_blank">the GDELT project</a>.
+  </p>
+
+  {{ widgets.sectionEnd() }}
+
+  {{ widgets.sectionStart(
+  "What is the GDELT project?"
+  ) }}
+  <p class="todo">Copy some text and graphics from the web, and make sure the URL above is right</p>
+  {{ widgets.sectionEnd() }}
+
+  {{ widgets.sectionStart(
+  "Goals of the project"
+  ) }}
+
+  <p>
+    As this project had an estimated length of 60 hours, time was the major constraint: I needed a set of achievable goals,
+    so that I could focus on key areas to have some results that I could share and that could be played with:
+  </p>
+  <ul class="goals">
+    <li>
+      Study different Topic Modeling tools, and choose one based on criteria such as horizontal scalability, speed,
+      memory usage, documentation, maturity, ...
+    </li>
+    <li>
+      Get hands-on experience with Spark as an <i>state-of-the-art</i> technology for distributed Big Data processing thanks to,
+      among other reasons, the speed of its in-memory processing model and the huge amount of libraries that are
+      made available every day.
+    </li>
+    <li>
+      A data store is needed for the results to live in, and HDFS is not fast enough for the queries over the data needed
+      to show visual results: I wanted to study different NoSQL databases, and choose one with that allows for very
+      fast performance and the ability to take advantage of living inside a cluster.
+    </li>
+    <li>
+      As a Big Data project, just playing around in a laptop was obviously not going to allow me to take advantage of
+      the tools I had chosen, so I had the ambition to run my application on a <i>real</i> cluster: There are many options
+      available if you don't have a datacenter at your disposal but you've got some serious horsepower at home,
+      so I added the tools needed to create my own virtualized <a href="#" target="_blank">Apache Ambari</a> cluster.
+    </li>
+    <li>
+      No research project is done without a graphical visualization of the results, and this one is no exception.
+      There are many technologies such as <i>d3.js</i>, Tableau, Kibana or CartoDB that can be used to interact with
+      Big Data storage systems and give a meaning to all the algorithms, models, and numbers created in the process.
+    </li>
+    <li>
+      Finally, and probably the most important point: design a project around many technologies
+      that can grow well beyond the initial scope, by having a very strong code base based on my 8-years experience
+      in Computer Science.
+    </li>
+  </ul>
+  <p class="todo">
+    Poner gráfica de contribuciones a Spark, y comparitiva de velocidades
+    <br/>
+    URL de Ambari
+  </p>
+
+  {{ widgets.sectionEnd() }}
+
+  {{ widgets.sectionStart(
+  "Participants"
+  ) }}
+
+  <div class="col-sm-4">
+    {{ widgets.teamMember(juan) }}
+  </div>
+  <div class="col-sm-4">
+    {{ widgets.teamMember(utad) }}
+  </div>
+
+  <div class="col-sm-4">
+    {{ widgets.teamMember(juan) }}
+  </div>
+  <div class="col-sm-4">
+  </div>
+
+  {{ widgets.sectionEnd() }}
 
 {% endblock %}

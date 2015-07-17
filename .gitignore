@@ -23,3 +23,6 @@ elastic/logs
 topic_modeling/project/project/
 topic_modeling/project/target/
 target/
+
+docs/gdelt_data/
+vendor/

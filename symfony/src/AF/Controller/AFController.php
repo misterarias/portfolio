@@ -8,9 +8,9 @@
 
 namespace AF\Controller;
 
+use AF\Controller\Modules\Module;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\OptionsResolver\Exception\AccessException;
 
 /**
  * Class AFController
@@ -19,32 +19,58 @@ use Symfony\Component\OptionsResolver\Exception\AccessException;
  *
  * @package AF\Controller
  */
-abstract class AFController extends Controller
-{
-    protected $currentModule = null;
+abstract class AFController extends Controller {
+	/** @var Module */
+	protected $currentModule = null;
 
-    /**
-     * Array of currently enabled modules
-     * @return array
-     */
-    abstract function getAllowedModules();
+	/**
+	 * Array of currently enabled modules
+	 * @return array[Modules]
+	 */
+	abstract function getAllowedModules();
 
-    protected function setCurrentModule($moduleName)
-    {
-        if (in_array($moduleName, $this->getAllowedModules())) {
-            $this->currentModule = $moduleName;
-        } else {
-            throw new AccessException("Trying to access unconfigured module: $moduleName");
-        }
-    }
+	/**
+	 * @param String $moduleName
+	 */
+	protected function setCurrentModule($moduleName) {
+		/** @var Module $module */
+		foreach ($this->getAllowedModules() as $module) {
+			if ($module->getName() === $moduleName) {
+				$this->currentModule = $module;
 
-    public function render($view, array $parameters = array(), Response $response = null)
-    {
-        // This is used in the navbar
-        $parameters["module"] = $this->currentModule;
+				return;
+			}
+		}
+		throw new \RuntimeException("Trying to access unconfigured module: " . $module->getName());
+	}
 
-        return parent::render($view, $parameters, $response);
-    }
+	protected function setNextModule($moduleName) {
+		/** @var Module $module */
+		foreach ($this->getAllowedModules() as $module) {
+			if ($module->getName() === $moduleName) {
+				$this->currentModule->setNextModule($module);
+				return;
+			}
+		}
+	}
+
+	protected function setPreviousModule($moduleName) {
+		/** @var Module $module */
+		foreach ($this->getAllowedModules() as $module) {
+			if ($module->getName() === $moduleName) {
+				$this->currentModule->setPreviousModule($module);
+				return;
+			}
+		}
+	}
+
+	public function render($view, array $parameters = array(), Response $response = null) {
+		// This is used in the navbar
+		$parameters["activeModule"] = $this->currentModule;
+		$parameters["availableModules"] = $this->getAllowedModules();
+
+		return parent::render($view, $parameters, $response);
+	}
 
 
 }

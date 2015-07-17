@@ -1,11 +1,15 @@
 af_project:
-    defaults: { _controller: AFProjectBundle:Default:index }
+    defaults: { _controller: AFProjectBundle:Project:index }
     path:   /
 
-af_project_scraper:
-  defaults: { _controller: AFProjectBundle:Default:scraper }
-  path: /scraper
+af_project_processor:
+  defaults: { _controller: AFProjectBundle:Project:processor }
+  path: /processor
 
 af_project_data:
-  defaults: { _controller: AFProjectBundle:Default:data }
+  defaults: { _controller: AFProjectBundle:Project:data }
   path: /data
+
+af_project_project:
+  defaults: { _controller: AFProjectBundle:Project:project }
+  path: /project

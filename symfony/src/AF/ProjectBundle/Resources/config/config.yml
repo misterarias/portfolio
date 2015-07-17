@@ -3,4 +3,5 @@ imports:
 
 twig:
   globals:
-    projectName: %projectName%
+    projectDescription: %projectDescription%
+    shortProjectName: %shortProjectName%

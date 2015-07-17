@@ -5,30 +5,43 @@
 {% endblock %}
 
     {% block title %}
-        Juan Arias Freire
+      Juan Arias Freire
     {% endblock %}
 
 {% block stylesheets %}
 
-    {% stylesheets
-    '@AFProjectBundle/Resources/public/css/project.css'
-    '@AFProjectBundle/Resources/public/css/scraper_viz.css'
-    %}
-    <link rel="stylesheet" href="{{ asset_url }}">
-    {% endstylesheets %}
+  {% stylesheets
+  'bundles/afproject/css/project.css'
+  'bundles/afproject/font-awesome/css/font-awesome.css'
+  filter='cssrewrite' %}
+  <link rel="stylesheet" href="{{ asset_url }}">
+  {% endstylesheets %}
 
 {% endblock %}
 
 {% block body %}
-    {% include("AFProjectBundle:Default:navbar.html.twig") %}
 
-    {% block content_header %}{% endblock %}
+  <header>
+    {% include("@AFProject/Default/navbar.html.twig") %}
+  </header>
 
-    <div class="container">
-        {% block content %}{% endblock %}
-    </div>
+  <div class="container">
+    {% block content %}{% endblock %}
 
-    {% include("AFProjectBundle:Default:footer.html.twig") %}
+    {{ widgets.navigationButtons(activeModule) }}
+  </div>
+
+  {% include("@AFProject/Default/footer.html.twig") %}
+
+{% endblock %}
+
+{% block javascripts %}
+
+  {% javascripts
+  '@AFProjectBundle/Resources/public/js/navbarShrink.js'
+  '@AFProjectBundle/Resources/public/js/project.js' %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
 
 {% endblock %}
 
