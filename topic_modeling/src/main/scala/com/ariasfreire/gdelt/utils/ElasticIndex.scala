@@ -1,6 +1,6 @@
 package com.ariasfreire.gdelt.utils
 
-import com.ariasfreire.gdelt.models.lda.{TopicData, TopicModel}
+import com.ariasfreire.gdelt.models.lda.{TopicTermModel, TopicTermsDataModel}
 import com.sksamuel.elastic4s.ElasticClient
 import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.source.Indexable
@@ -15,20 +15,21 @@ object ElasticIndex {
 
     val client = ElasticClient.remote("master.devarias.com", 9300)
 
-    implicit object TopicModelIndexable extends Indexable[TopicModel] {
-      override def json(t: TopicModel): String =
+    implicit object TopicModelIndexable extends Indexable[TopicTermsDataModel] {
+      override def json(t: TopicTermsDataModel): String =
         t.toJson.stripMargin
     }
 
     val topicData = Array(
-      Array(new TopicData("term1", 0.9), new TopicData("term2", 0.1)),
-      Array(new TopicData("term3", 0.4), new TopicData("term2", 0.6)),
-      Array(new TopicData("term1", 0.1), new TopicData("term4", 0.2), new TopicData("term5", 0.7))
+
+      Array(new TopicTermModel("term1", 0.9), new TopicTermModel("term2", 0.1)),
+      Array(new TopicTermModel("term3", 0.4), new TopicTermModel("term2", 0.6)),
+      Array(new TopicTermModel("term1", 0.1), new TopicTermModel("term4", 0.2), new TopicTermModel("term5", 0.7))
     )
 
-    val topicModels = new Array[TopicModel](topicData.length)
-    topicData.zipWithIndex.foreach { case (topics: Array[TopicData], id) =>
-      topicModels(id) = new TopicModel("test_dataset", s"Topic $id", topics)
+    val topicModels = new Array[TopicTermsDataModel](topicData.length)
+    topicData.zipWithIndex.foreach { case (topics: Array[TopicTermModel], id) =>
+      topicModels(id) = new TopicTermsDataModel("test_dataset", s"Topic $id", topics)
     }
 
     // Store corpus-inferred topics into ES

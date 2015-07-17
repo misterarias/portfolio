@@ -21,7 +21,7 @@ import org.apache.spark.{Logging, SparkContext}
  *
  * Created by juanito on 23/06/15.
  */
-abstract class Processor extends Serializable with Logging {
+abstract class DataProcessor extends Serializable with Logging {
   /**
    * Method used to parse input rows into data
    * @param inputRow a Row from a CSV File
@@ -54,7 +54,7 @@ abstract class Processor extends Serializable with Logging {
     val conf = ContextUtils.conf
     conf.registerKryoClasses(
       Array(classOf[SimpleMatcher],
-        classOf[Row], classOf[Actor], classOf[Geography], classOf[MyMultipleTextOutputFormat[String, String]]))
+        classOf[Row], classOf[Actor], classOf[Geography]))
     val sc = new SparkContext(conf)
 
     // Prepare some flags to update output model
@@ -137,21 +137,4 @@ abstract class Processor extends Serializable with Logging {
     sc.stop()
     outputModel
   }
-
-  class MyMultipleTextOutputFormat[K, V] extends MultipleOutputFormat[K, V] {
-    override def generateFileNameForKeyValue(key: K, value: V, name: String): String = {
-      key.asInstanceOf[String] + Path.SEPARATOR + name
-    }
-
-    private var theTextOutputFormat: TextOutputFormat[K, V] = null
-
-    @throws(classOf[IOException])
-    protected def getBaseRecordWriter(fs: FileSystem, job: JobConf, name: String, arg3: Progressable): RecordWriter[K, V] = {
-      if (theTextOutputFormat == null) {
-        theTextOutputFormat = new TextOutputFormat[K, V]
-      }
-      return theTextOutputFormat.getRecordWriter(fs, job, name, arg3)
-    }
-  }
-
 }
