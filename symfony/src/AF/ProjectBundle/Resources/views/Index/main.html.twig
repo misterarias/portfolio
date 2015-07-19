@@ -82,26 +82,27 @@
     As this project had an estimated length of 60 hours, time was the major constraint: I needed a set of achievable goals,
     so that I could focus on key areas to have some results that I could share and that could be played with:
   </p>
-  <ul class="goals">
+  <ul class="bullets">
     <li>
       Study different Topic Modeling tools, and choose one based on criteria such as horizontal scalability, speed,
       memory usage, documentation, maturity, ...
     </li>
     <li>
-      Get hands-on experience with Spark as a <i>state-of-the-art</i> technology for distributed Big Data processing thanks to,
-      among other reasons, the speed of its in-memory processing model and the huge amount of libraries that are
-      made available every day.
-    </li>
-    <li>
-      A data store is needed for the results to live in, and HDFS is not fast enough for the queries over the data needed
-      to show visual results: I wanted to study different NoSQL databases, and choose one with that allows for very
-      fast performance and the ability to take advantage of living inside a cluster.
+      Get hands-on experience with <a href="http://spark.apache.org/" target="_blank">Spark</a> as a
+      <i>state-of-the-art</i> technology for large-scale data processing.
+      Reasons for this include the speed of its in-memory processing model, the amount of libraries that it has
+      available, and the huge rise in popularity since top companies started shifting towards Spark.
     </li>
     <li>
       As a Big Data project, just playing around in a laptop was obviously not going to allow me to take advantage of
       the tools I had chosen, so I had the ambition to run my application on a <i>real</i> cluster: There are many options
       available if you don't have a datacenter at your disposal but you've got some serious horsepower at home,
       so I added the tools needed to create my own virtualized <a href="https://ambari.apache.org/" target="_blank">Apache Ambari</a> cluster.
+    </li>
+    <li>
+      A data store is needed for the results to live in, and HDFS is not fast enough for the queries over the data needed
+      to show visual results: I wanted to study different NoSQL databases, and to choose one that allows for very
+      fast read performance and the ability to take advantage of living inside a cluster.
     </li>
     <li>
       No research project is done without a graphical visualization of the results, and this one is no exception.
@@ -142,12 +143,6 @@
   </div>
   <div class="col-sm-4">
     {{ widgets.teamMember(utad) }}
-  </div>
-
-  <div class="col-sm-4">
-    {{ widgets.teamMember(juan) }}
-  </div>
-  <div class="col-sm-4">
   </div>
 
   {{ widgets.sectionEnd() }}

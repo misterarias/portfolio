@@ -16,7 +16,7 @@ class DataModule extends Module {
 	const NAME = "data";
 
 	public function __construct() {
-		parent::__construct(DataModule::NAME, "The data", "af_project_data");
+		parent::__construct(DataModule::NAME, "Visualization", "af_project_data");
 
 		$this->setHeaderTitle("The data visualization layer")
 			->setHeaderSubtitle("Representation of the topics inferred from the data");

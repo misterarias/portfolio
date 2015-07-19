@@ -4,9 +4,41 @@
 {% block content %}
 
   {{ widgets.sectionStart(
-  "Project description"
+  "Getting the data into the system"
   ) }}
 
+  {{ widgets.subSectionStart(
+  "Data retrieval phase"
+  ) }}
+
+  {{ widgets.subSectionEnd() }}
+
+  {{ widgets.subSectionStart(
+  "Data cleaning phase"
+  ) }}
+
+  {{ widgets.subSectionEnd() }}
+
   {{ widgets.sectionEnd() }}
+
+
+  {{ widgets.sectionStart(
+  "Analyzing data: LDA Topic Modeling"
+  ) }}
+
+  {{ widgets.subSectionStart(
+  "Training the algorithm"
+  ) }}
+
+  {{ widgets.subSectionEnd() }}
+
+  {{ widgets.subSectionStart(
+  "Topic inference"
+  ) }}
+
+  {{ widgets.subSectionEnd() }}
+
+  {{ widgets.sectionEnd() }}
+
 
 {% endblock %}

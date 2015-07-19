@@ -46,6 +46,17 @@
 </div>
 {%- endmacro -%}
 
+{%- macro subSectionStart(sub_section_title) -%}
+<div class="row">
+  <div class="col-sm-12">
+      <h4>{{ sub_section_title }}</h4>
+      {%- endmacro -%}
+
+      {%- macro subSectionEnd() -%}
+  </div>
+</div>
+{%- endmacro -%}
+
 {%- macro teamMember(actor) -%}
   {% import _self as functions %}
   <div class="team-member">

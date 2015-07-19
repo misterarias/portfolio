@@ -9,6 +9,7 @@
 
 .jumbotron {
     padding: 30px 0;
+    z-index: 100;
 }
 
 .navbar {
@@ -31,17 +32,15 @@
     background: transparent;
 }
 
-/*
-
 .navbar-collapse {
-    border-top: 1px solid transparent;
-    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset;
+
+    text-align: right;
     overflow-x: visible;
     padding-left: 15px;
     padding-right: 15px;
-    background: rgba(255, 255, 255, 0.8);
+    z-index: 9999;
 }
-
+/*
 .navbar-collapse .navbar-nav > .active > a,
 .navbar-collapse .navbar-nav > .active > a:hover,
 .navbar-collapse .navbar-nav > .active > a:focus {
@@ -162,13 +161,11 @@ body {
     font-style: italic;
     display: block;
 
-    width: 80%;
-    padding: 20px;
+    padding: 15px;
 
     background: #FFF;
     /*border: solid 1px #aaa; */
     border-radius: 8px;
-    pointer-events: none;
     z-index: 1500;
     text-align: center;
 
@@ -183,7 +180,7 @@ body {
     border-radius: 8px;
 }
 
-ul.goals li {
+ul.bullets li {
     padding: 5px 0;
     margin-left: -10px;
 }

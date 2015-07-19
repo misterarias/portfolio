@@ -19,6 +19,6 @@ class IndexModule extends Module {
 		parent::__construct(IndexModule::NAME, "Home", "af_project");
 
 		$this->setHeaderTitle("Topic modeling historical data")
-			->setHeaderSubtitle("Distributed discovery of topics over GDELT data using LDA Spark's MLLib and Elastic Search");
+			->setHeaderSubtitle("Distributed discovery of topics over GDELT data using Spark's MLLib and Elastic Search");
 	}
 }

@@ -5,9 +5,85 @@
 
 
   {{ widgets.sectionStart(
-  "Project description"
+  "Building blocks"
   ) }}
 
+  <p>
+    In every Big Data project, there are some key blocks that need to be present; they may come in many different shapes,
+    and they can be as different as the technologies underneath, but the core is usually:
+  </p>
+
+  <ol class="bullets">
+    <li>
+      <strong>Data acquisition</strong>&nbsp;Getting the data from external sources into the system, and adapting it to the formats
+      that our applications understand.
+    </li>
+    <li>
+      <strong>Distributed analysis</strong>&nbsp;
+    </li>
+    <li>
+      <strong>Presentation of the results</strong>&nbsp;
+    </li>
+  </ol>
+
+  <p>
+    Let's go a little deeper into the details for each point, as we explore the different choices that have to be done along the way.
+  </p>
+  {{ widgets.sectionEnd() }}
+
+  {{ widgets.sectionStart(
+  "Data acquisition"
+  ) }}
+
+  {{ widgets.subSectionStart(
+  "Scraping data from GDELT"
+  ) }}
+
+  {{ widgets.subSectionEnd() }}
+
+  {{ widgets.subSectionStart(
+  "Fetching web text"
+  ) }}
+
+  {{ widgets.subSectionEnd() }}
+
+  {{ widgets.sectionEnd() }}
+
+  {{ widgets.sectionStart(
+  "Distributed analysis"
+  ) }}
+
+  {{ widgets.subSectionStart(
+  "Local vs. Cluster vs. Cloud"
+  ) }}
+
+  {{ widgets.subSectionEnd() }}
+
+
+  {{ widgets.subSectionStart(
+  "LDA: Local or distributed?"
+  ) }}
+
+
+  {{ widgets.subSectionEnd() }}
+
+  {{ widgets.sectionEnd() }}
+
+  {{ widgets.sectionStart(
+  "Presentation of the results"
+  ) }}
+
+  {{ widgets.subSectionStart(
+  "Fast data retrieval"
+  ) }}
+
+  {{ widgets.subSectionEnd() }}
+
+  {{ widgets.subSectionStart(
+  "The ELK stack: Kibana for visualization"
+  ) }}
+
+  {{ widgets.subSectionEnd() }}
   {{ widgets.sectionEnd() }}
 
 
