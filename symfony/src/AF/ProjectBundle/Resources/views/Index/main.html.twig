@@ -7,14 +7,14 @@
   "Project description") }}
 
   <p class="quote">
-    &quot;To better understand history, first you need to know what has already happened&quot;&nbsp;&nbsp;(Random guy)
+    &quot;... those who cannot remember the past are condemned to repeat it&quot;&nbsp;&nbsp;(George Santayana)
   </p>
 
   <p>
-    The process of digging into out past has been done by scholars, historians, and journalist in the past years. But all of
-    these professionals of information retrieval and research have always faced the same root problems: Way too many things have
-    happened, not all of them are recored on the same way, and there is no uniform way to access that information. ¿Could we
-    apply technologies such as Computer Science and Machine Learning to solve such a problem?
+    The process of digging into out past has historically been done by groups of scholars and researchers, recently joined by journalists.
+    But all of these professionals of information retrieval and research have always faced the same root problems: Way too many things have
+    happened, not all of them are recorded on the same way, and with no uniform way to access that information... ¿Could we
+    apply technologies such as Distributed Computing, Systems Engineering and Machine Learning to solve such problem?
   </p>
 
   <p>
@@ -25,13 +25,15 @@
 
   <p>
     The automated handling and analysis of historical information, digitalized and stored in various Internet datastores,
-    is one of the many areas where new technologies such as Hadoop, YARN, Spark, Elastic Search, and Kibana, along with the
-    knowledge and experience of Data Engineers, unlock solutions to solve problems in ways that were never thought to be possible.
+    is one of the many areas where technologies such as Hadoop, YARN, Spark, Elastic Search, and Kibana, along with the
+    knowledge and experience of Data Engineers, can unlock solutions to problems in ways that were never thought they would be be possible.
   </p>
 
   <p>
-    This site describes the tools, techniques and computer systems I have used for the retrieval, analysis and visualization of
-    the historical data contained in <a href="http://www.gdelt.org" target="_blank">the GDELT project</a>.
+    In this project I will describe the tools, techniques and technologies that I have used for automatically finding out what are the conversation
+    topics that can be found in web pages related to Spain. In other words, I'll describe how it's possible to use an algorithm to learn what
+    do these pages have been (broadly speaking) <i>talking about</i> for the past two years; for such a big endeavour, I will retrieve and analyze
+    data coming from the <a href="http://gdeltproject.org/" target="_blank">GDELT</a> project's event database.
   </p>
 
   {{ widgets.sectionEnd() }}
@@ -39,7 +41,37 @@
   {{ widgets.sectionStart(
   "What is the GDELT project?"
   ) }}
-  <p class="todo">Copy some text and graphics from the web, and make sure the URL above is right</p>
+  <p>
+    From the GDELT homepage:<br/>
+    <i>&quot;The GDELT Project is an initiative to construct a catalog of human societal-scale behavior and beliefs across all countries of the world,
+      connecting every person, organization, location, count, theme, news source, and event across the planet into a single massive network that
+      captures what's happening around the world, what its context is and who's involved, and how the world is feeling about it, every single day&quot;</i>
+  </p>
+
+  <div class="row">
+    <div class="col-md-6">
+      <a href="http://blog.gdeltproject.org/mapping-global-protests-redux/" class="thumbnail">
+        <img src="{{ asset('bundles/afproject/img/index/2015-global-poaching-map-feb-may-2015.png') }}"
+             alt="Mapping Global Protests Redux">
+        <span class="small caption">Mapping Global Protests through GDELT (source: www.gdelt.org)</span>
+      </a>
+    </div>
+    <div class="col-md-6">
+      <p>
+        For researchers and engineers, this is translated into a <strong>massive</strong> database consisting of more than 250 billion rows of
+        information spanning more than 30 years into the past, with dozens of categories for each event, in various queriable formats such as Google's
+        <a href="https://bigquery.cloud.google.com/" target="_blank">BigQuery</a>, downloadable CSV files, and web forms for selecting specific sets
+        of events
+      </p>
+
+      <p>
+        It's also an open database, allowing anyone to use this data for data analysis in ways that had never been possible before, as
+        shown by the amount of studies that are made available constantly through the official
+        <a href="http://blog.gdeltproject.org/"
+           target="_blank">GDELT blog</a>
+      </p>
+    </div>
+  </div>
   {{ widgets.sectionEnd() }}
 
   {{ widgets.sectionStart(
@@ -56,7 +88,7 @@
       memory usage, documentation, maturity, ...
     </li>
     <li>
-      Get hands-on experience with Spark as an <i>state-of-the-art</i> technology for distributed Big Data processing thanks to,
+      Get hands-on experience with Spark as a <i>state-of-the-art</i> technology for distributed Big Data processing thanks to,
       among other reasons, the speed of its in-memory processing model and the huge amount of libraries that are
       made available every day.
     </li>
@@ -69,7 +101,7 @@
       As a Big Data project, just playing around in a laptop was obviously not going to allow me to take advantage of
       the tools I had chosen, so I had the ambition to run my application on a <i>real</i> cluster: There are many options
       available if you don't have a datacenter at your disposal but you've got some serious horsepower at home,
-      so I added the tools needed to create my own virtualized <a href="#" target="_blank">Apache Ambari</a> cluster.
+      so I added the tools needed to create my own virtualized <a href="https://ambari.apache.org/" target="_blank">Apache Ambari</a> cluster.
     </li>
     <li>
       No research project is done without a graphical visualization of the results, and this one is no exception.
@@ -82,11 +114,22 @@
       in Computer Science.
     </li>
   </ul>
-  <p class="todo">
-    Poner gráfica de contribuciones a Spark, y comparitiva de velocidades
-    <br/>
-    URL de Ambari
-  </p>
+  <div class="row">
+    <div class="col-md-6">
+      <a href="http://blog.webkid.io/visualize-datasets-with-elk/" class="thumbnail">
+        <img src="{{ asset('bundles/afproject/img/index/kibana.png') }}"
+             alt="Visualizing data with Elasticsearch, Logstash and Kibana">
+        <span class="small caption">Kibana data visualization (source: blog.webkid.io)</span>
+      </a>
+    </div>
+    <div class="col-md-6">
+      <a href="http://radar.oreilly.com/2014/06/a-growing-number-of-applications-are-being-built-with-spark.html" class="thumbnail">
+        <img src="{{ asset('bundles/afproject/img/index/spark-activity.jpg') }}"
+             alt="Spark activity in the last 30 days">
+        <span class="small caption">Spark popularity comparison (source: radar.oreilly.com)</span>
+      </a>
+    </div>
+  </div>
 
   {{ widgets.sectionEnd() }}
 
