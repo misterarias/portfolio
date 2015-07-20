@@ -4,23 +4,6 @@
  * Created by juanito on 14/06/15.
  */
 
-var lastTimestamp = 0;
-var minInterval = 500; // miliseconds
-
-/**
- * Do not let an event happen if a minimum threshold has not passed since last one
- * @param ts
- * @returns {boolean}
- */
-function spamControl(ts) {
-    if (ts - lastTimestamp < minInterval) {
-        return false;
-    }
-    lastTimestamp = ts;
-    return true;
-}
-
-var csv_data = [];
 var current_month = "Jan";
 var months = [
     {key: "Jan", label: "January"},
