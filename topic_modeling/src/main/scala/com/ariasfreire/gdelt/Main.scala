@@ -27,7 +27,6 @@ object Main {
     val outputDir = args(2)
     ContextUtils.overwrite = "1".equals(args(3))
 
-
     // The topic data I need
     var topicTermsDataArray: Array[TopicTermsDataModel] = Array[TopicTermsDataModel]()
 
@@ -35,14 +34,12 @@ object Main {
     val parser = new DataProcessor with BigQueryParser with LargestContentExtractor with MalletExporter
     parser.matcher = SimpleMatcher.get
 
-
     val scrapeResults: ScrapeResults = parser.process(outputDir, csvFile)
     if (scrapeResults.totalRows == 0) {
-
       topicTermsDataArray = TopicTermsDataModel.fromQuery(scrapeResults.name)
     } else {
 
-      // Delete index data the first time
+      // Delete indexed data the first time
       TopicTermsDataModel.dropIndex
 
       // Run Distributed LDA
@@ -50,24 +47,22 @@ object Main {
         stopWordsFile = stopWordsFile
       ).run
 
-      // Show parsing metrics
+      // Show parsing metrics and store results
       scrapeResults.summary()
-
       topicTermsDataArray.foreach { topicModel =>
         topicModel.indexData
       }
     }
 
-    // Voilà! I have filled topic Data
     val topicProcessor = new TopicProcessor(outputDir, topicTermsDataArray)
-    val collectedData: Array[(String, Iterable[TopicInferenceModel])] = topicProcessor.run
 
+    val collectedData: Array[(String, Iterable[TopicInferenceModel])] = topicProcessor.run
     collectedData.foreach { (data: (String, Iterable[TopicInferenceModel])) =>
       val topicInferenceEntries: Array[TopicInferenceModel] = new Array[TopicInferenceModel](data._2.size)
       data._2.zipWithIndex.foreach { case (topicInference: TopicInferenceModel, zipIndex: Int) =>
         topicInferenceEntries(zipIndex) = topicInference
       }
-      val dateTopicInfo = new TopicInferenceInfoModel(data._1, topicInferenceEntries)
+      val dateTopicInfo = new TopicInferenceInfoModel(scrapeResults.name, data._1, topicInferenceEntries)
       dateTopicInfo.indexData
     }
   }

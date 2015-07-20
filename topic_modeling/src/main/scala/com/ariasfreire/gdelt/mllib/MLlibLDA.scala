@@ -86,17 +86,6 @@ class MLlibLDA(
         new TopicTermsDataModel(inputDir, s"Topic $index", topicData)
       }
 
-    // Print the topics, showing the top-weighted terms for each topic.
-    val topicNumber = topicModelArray.length
-    println(s"$topicNumber topics:")
-    topicModelArray.foreach { case topic =>
-      println(s"TOPIC ${topic.topicName}")
-      topic.termsData foreach { topic: TopicTermModel =>
-        println(s"$topic.term\t$topic.weight")
-      }
-      println()
-    }
-
     sc.stop()
     topicModelArray
   }

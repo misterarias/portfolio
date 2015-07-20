@@ -7,26 +7,39 @@ import com.sksamuel.elastic4s.source.Indexable
 /**
  * Created by juanito on 17/07/15.
  */
-class TopicInferenceInfoModel(val date: String, val topicInference: Array[TopicInferenceModel]) {
-  val topicInferredIndex = "results" / "inferred"
+class TopicInferenceInfoModel(val dataSetName: String,
+                              val date: String,
+                              val topicInference: Array[TopicInferenceModel]) {
 
   implicit object DateTopicInfoIndexable extends Indexable[TopicInferenceInfoModel] {
     override def json(t: TopicInferenceInfoModel): String = t.toJson.stripMargin
   }
 
   /**
-   * XXX This should be a storage-agnostice trait function
+   * XXX This should be a storage-agnostic trait function
    */
   def indexData = {
     ContextUtils.esClient.execute {
-      index into topicInferredIndex source this
+      index into TopicInferenceInfoModel.indexType source this
     }
   }
 
   def toJson: String =
-    s"""{"date": "${date}" , "topics_inferred" : [""" +
+    s"""{"dataSetName": "$dataSetName", "date": "${date}" , "topics_inferred" : [""" +
       topicInference.map(_.toJson).mkString(",") +
       "]}"
+}
+
+object TopicInferenceInfoModel {
+
+  val indexName: String = "results"
+  val indexType: (String, String) = indexName -> "inferred"
+
+  def dropIndex = {
+    ContextUtils.esClient.execute {
+      deleteIndex(indexName)
+    } await
+  }
 }
 
 

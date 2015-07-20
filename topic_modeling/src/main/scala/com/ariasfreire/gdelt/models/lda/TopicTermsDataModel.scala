@@ -28,7 +28,7 @@ class TopicTermsDataModel(
    */
   def indexData = {
     ContextUtils.esClient.execute {
-      index into TopicTermsDataModel.indexName source this
+      index into TopicTermsDataModel.indexType source this
     }
   }
 
@@ -60,9 +60,13 @@ object TopicTermsDataModel {
   val indexType: (String, String) = indexName -> "topics"
 
   def dropIndex = {
-    ContextUtils.esClient.execute {
-      deleteIndex(indexName)
-    } await
+    try {
+      ContextUtils.esClient.execute {
+        deleteIndex(indexName)
+      } await
+    } catch {
+      case undefined: Throwable => println("Index already deleted")
+    }
   }
 
   def fromQuery(dataSetName: String): Array[TopicTermsDataModel] = {

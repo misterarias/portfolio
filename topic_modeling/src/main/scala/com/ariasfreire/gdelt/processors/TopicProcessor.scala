@@ -1,5 +1,7 @@
 package com.ariasfreire.gdelt.processors
 
+import java.text.SimpleDateFormat
+
 import com.ariasfreire.gdelt.models.lda._
 import com.ariasfreire.gdelt.utils.ContextUtils
 import org.apache.spark.rdd.RDD
@@ -28,10 +30,15 @@ class TopicProcessor(
         (date, content)
       }.collect()
     val combinedData = new Array[(TopicTermsDataModel, String, String)](dateTopicToText.length * topicModelArray.length)
+
     var i = 0
+    val dateFormatter = new SimpleDateFormat("yyyyMMdd")
+    val dateOutputter = new SimpleDateFormat("dd-MM-yyyy")
     for (t <- topicModelArray) {
       for (dtt <- dateTopicToText) {
-        combinedData(i) = (t, dtt._1, dtt._2)
+        // This format is automagically indexed in Elastic Search as a date
+        val niceDate = dateOutputter.format(dateFormatter.parse(dtt._1))
+        combinedData(i) = (t, niceDate, dtt._2)
         i += 1
       }
     }
