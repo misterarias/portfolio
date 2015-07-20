@@ -1,0 +1,19 @@
+{% extends 'AFProjectBundle:Default:project_base.html.twig' %}
+{% import '@AFProject/Default/widgets.html.twig' as widgets %}
+
+{% block content %}
+
+
+  {{ widgets.sectionStart(
+  "Lessons learned"
+  ) }}
+
+  {{ widgets.sectionEnd() }}
+
+  {{ widgets.sectionStart(
+  "Future steps"
+  ) }}
+
+  {{ widgets.sectionEnd() }}
+
+{% endblock %}

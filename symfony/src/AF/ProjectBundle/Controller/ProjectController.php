@@ -4,11 +4,11 @@ namespace AF\ProjectBundle\Controller;
 
 use AF\Controller\AFController;
 use AF\ProjectBundle\Actors\Actor;
+use AF\ProjectBundle\Modules\ConclusionsModule;
 use AF\ProjectBundle\Modules\DataModule;
 use AF\ProjectBundle\Modules\IndexModule;
 use AF\ProjectBundle\Modules\ProcessorModule;
 use AF\ProjectBundle\Modules\ProjectModule;
-use Symfony\Component\Process\Process;
 
 class ProjectController extends AFController {
 
@@ -58,6 +58,7 @@ class ProjectController extends AFController {
 	public function dataAction() {
 		$this->setCurrentModule(DataModule::NAME);
 		$this->setPreviousModule(ProcessorModule::NAME);
+		$this->setNextModule(ConclusionsModule::NAME);
 
 		return $this->render("@AFProject/Data/main.html.twig");
 	}
@@ -70,6 +71,14 @@ class ProjectController extends AFController {
 		return $this->render("@AFProject/Project/main.html.twig");
 	}
 
+
+	public function finalAction() {
+		$this->setCurrentModule(ConclusionsModule::NAME);
+		$this->setPreviousModule(DataModule::NAME);
+
+		return $this->render("@AFProject/Conclusions/main.html.twig");
+	}
+
 	/**
 	 * Array of currently enabled modules
 	 * @return array
@@ -80,6 +89,7 @@ class ProjectController extends AFController {
 			new ProjectModule(),
 			new ProcessorModule(),
 			new DataModule(),
+			new ConclusionsModule(),
 		);
 	}
 }

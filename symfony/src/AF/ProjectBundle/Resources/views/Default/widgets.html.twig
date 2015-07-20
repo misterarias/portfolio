@@ -49,10 +49,10 @@
 {%- macro subSectionStart(sub_section_title) -%}
 <div class="row">
   <div class="col-sm-12">
-      <h4>{{ sub_section_title }}</h4>
-      {%- endmacro -%}
+    <h4>{{ sub_section_title }}</h4>
+    {%- endmacro -%}
 
-      {%- macro subSectionEnd() -%}
+    {%- macro subSectionEnd() -%}
   </div>
 </div>
 {%- endmacro -%}
@@ -93,24 +93,26 @@
 {%- endmacro -%}
 
 {% macro navigationButtons(module) %}
-  <div class="row">
-    {% if module.getPreviousModule() is not null %}
-      <div class="col-sm-2 col-xs-4">
-        <p>
-          <a class="btn  btn-default" href="{{ path( module.getPreviousModule().path) }}" role="button">
-            &Lt;&nbsp;{{ module.getPreviousModule().label }}
-          </a>
-        </p>
-      </div>
-    {% endif %}
-    {% if module.getNextModule() is not null %}
-      <div class="col-sm-offset-10 col-xs-offset-8">
-        <p>
-          <a class="btn btn-primary btn-default" href="{{ path( module.getNextModule().path) }}" role="button">
-            {{ module.getNextModule().label }}&nbsp;&Gt;
-          </a>
-        </p>
-      </div>
-    {% endif %}
+  <div class="navigation-buttons">
+    <div class="row">
+      {% if module.getPreviousModule() is not null %}
+        <div class="col-sm-2 col-xs-4">
+          <p>
+            <a class="btn  btn-default" href="{{ path( module.getPreviousModule().path) }}" role="button">
+              &Lt;&nbsp;{{ module.getPreviousModule().label }}
+            </a>
+          </p>
+        </div>
+      {% endif %}
+      {% if module.getNextModule() is not null %}
+        <div class="col-sm-offset-10 col-xs-offset-8">
+          <p>
+            <a class="btn btn-primary btn-default" href="{{ path( module.getNextModule().path) }}" role="button">
+              {{ module.getNextModule().label }}&nbsp;&Gt;
+            </a>
+          </p>
+        </div>
+      {% endif %}
+    </div>
   </div>
 {% endmacro %}
