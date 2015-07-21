@@ -12,11 +12,9 @@
             /** Height of the graph */
             height: 250,
             /** Padding used to offset graph on the edges */
-            padding: 20,
-            /** Margin used to offset bar spacing */
-            margin: 20,
+            padding: 40,
             /** Used to scale bar width */
-            barScale: 1.0,
+            barScale: 0.87,
             /** Minimum ms between slider events */
             minInterval: 500
         };
@@ -86,18 +84,20 @@
                 hScale = d3.scale.linear()
                     .domain([(1 - adjust) * minimumValue, maximumValue * (1 + adjust)])
                     .range([lda.settings.height - lda.settings.padding, lda.settings.padding]),
-                cScale = d3.scale.linear()
+                cScale = d3.scale.pow()
                     .domain([(1 - adjust) * minimumValue, maximumValue * (1 + adjust)])
                     .range(['blue', 'red']),
-                barWidth = ((lda.settings.width - 2 * lda.settings.margin) / data.length) / lda.settings.barScale,
+                barWidth = ((lda.settings.width - lda.settings.padding) / data.length) * lda.settings.barScale,
                 yAxis = d3.svg.axis()
                     .orient("left")
                     .scale(hScale)
-                    .ticks(5),
+                    .ticks(7)
+                    .tickFormat(d3.format(".1%")),
+
                 xAxis = d3.svg.axis()
                     .orient("bottom")
                     .scale(xScale)
-                    .ticks(currentDataset.length)
+                    .tickFormat("")
                 ;
 
             var container = d3.select(element)
@@ -119,12 +119,28 @@
                 svg.append("g")
                     .attr("class", "yaxis")
                     .attr("transform", "translate(" + lda.settings.padding.toString() + ",0)")
-                    .call(yAxis);
+                    .call(yAxis)
+                ;
                 svg.append("g")
                     .attr("class", "xaxis")   // give it a class so it can be used to select only xaxis labels  below
                     .attr("transform",
                     "translate(0," + (lda.settings.height - lda.settings.padding).toString() + ")")
                     .call(xAxis);
+
+                svg.selectAll("line.horizontalGrid").data(hScale.ticks(7)).enter()
+                    .append("line")
+                    .attr(
+                    {
+                        "class": "horizontalGrid",
+                        "x1": lda.settings.padding,
+                        "x2": lda.settings.width - 2 * lda.settings.padding,
+                        "y1": function (d) {
+                            return hScale(d);
+                        },
+                        "y2": function (d) {
+                            return hScale(d);
+                        }
+                    });
 
             } else {
                 // It alrady exists!! Resize in case settings haave changed
