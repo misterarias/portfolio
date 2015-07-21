@@ -3,6 +3,7 @@ package com.ariasfreire.gdelt.models.lda
 import com.ariasfreire.gdelt.utils.ContextUtils
 import com.sksamuel.elastic4s.ElasticDsl.{index, _}
 import com.sksamuel.elastic4s.source.Indexable
+import org.elasticsearch.indices.IndexMissingException
 
 /**
  * Created by juanito on 17/07/15.
@@ -35,9 +36,16 @@ object TopicInferenceInfoModel {
   val indexType: (String, String) = ContextUtils.indexName -> "inferred"
 
   def dropIndex = {
-    ContextUtils.esClient.execute {
-      deleteIndex(ContextUtils.indexName)
-    } await
+    try {
+      ContextUtils.esClient.execute {
+        deleteIndex(ContextUtils.indexName)
+      } await()
+    } catch {
+      case x: IndexMissingException =>
+        println(s"Index ${ContextUtils.indexName} does not exist")
+      case undefined: Throwable =>
+        println(s"Undefined error dropping Index: ${undefined.getLocalizedMessage}")
+    }
   }
 }
 

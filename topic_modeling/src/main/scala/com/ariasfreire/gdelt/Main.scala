@@ -26,7 +26,9 @@ object Main {
                              maxIterations: Int = 10,
                              vocabSize: Int = 10000,
                              stopwordFile: String = "",
-                             algorithm: String = "em") extends AbstractParams[Params]
+                             algorithm: String = "em",
+                             checkpointDir: Option[String] = None,
+                             checkpointInterval: Int = 10) extends AbstractParams[Params]
 
   def main(args: Array[String]) {
     val defaultParams = Params()
@@ -43,6 +45,10 @@ object Main {
         .text(s"number of distinct word types to use, chosen by frequency. (-1=all)" +
         s"  default: ${defaultParams.vocabSize}")
         .action((x, c) => c.copy(vocabSize = x))
+      opt[Int]("checkpointInterval")
+        .text(s"If checkpointDir is set, set the number of intervals between checkpoints" +
+        s"  default: ${defaultParams.checkpointInterval}")
+        .action((x, c) => c.copy(checkpointInterval = x))
       opt[String]("algorithm")
         .text(s"inference algorithm to use. em and online are supported." +
         s" default: ${defaultParams.algorithm}")
@@ -55,6 +61,11 @@ object Main {
         .text(s"Name for the default index in Elastic Search to store data in" +
         s"  default: ${defaultParams.indexName}")
         .action((x, c) => c.copy(indexName = x))
+      opt[String]("checkpointDir")
+        .text("Path to directory where checkpointing will be stored" +
+        s"  Checkpointing helps with recovery and eliminates temporary shuffle files on disk." +
+        s"  default: ${defaultParams.checkpointDir}")
+        .action((x, c) => c.copy(checkpointDir = Some(x)))
       opt[Boolean]("overwrite")
         .text(s"Wether to overwrite output directory on new run" +
         s"  default: ${defaultParams.overwrite}")
@@ -63,7 +74,7 @@ object Main {
         .text("input path to file containting GDELT data")
         .required()
         .action((x, c) => c.copy(inputDir = x))
-      opt[String]("<outputDir>")
+      opt[String]("outputDir")
         .text("Path to directory where resulting files will be left")
         .action((x, c) => c.copy(outputDir = x))
     }
@@ -77,31 +88,36 @@ object Main {
 
     def run(params: Params): Unit = {
 
-      val objectName: String = Array(params.indexName, params.algorithm, params.k).mkString("_")
+      val dataSetName: String = Array(params.indexName, params.algorithm, params.k).mkString("_")
       if (params.outputDir == null) {
-        params.outputDir = objectName
+        params.outputDir = dataSetName
       }
       ContextUtils.overwrite = params.overwrite
       ContextUtils.indexName = params.indexName
-
-      // The topic data I need
-      var topicTermsDataArray: Array[TopicTermsDataModel] = Array[TopicTermsDataModel]()
-
-      // Configure a Processor for my needs
-      val dataProcessor = new DataProcessor with BigQueryParser with LargestContentExtractor with MalletExporter
-      dataProcessor.matcher = SimpleMatcher.get
-
-      val scrapeResults: ScrapeResults = dataProcessor.process(objectName, params.inputDir)
-      if (scrapeResults.totalRows == 0) {
-        topicTermsDataArray = TopicTermsDataModel.fromQuery(scrapeResults.name)
-      } else {
-
-        // Delete indexed data the first time
+      if (ContextUtils.overwrite) {
+        // Delete indexed data when overwriting
         TopicTermsDataModel.dropIndex
+      }
+
+      // The topic data I need might already be indexed
+      var scrapeResults: ScrapeResults = new ScrapeResults(dataSetName)
+      var topicTermsDataArray: Array[TopicTermsDataModel] = TopicTermsDataModel.fromQuery(dataSetName)
+      if (topicTermsDataArray.length == 0) {
+
+        // Configure a Processor for my needs
+        val dataProcessor = new DataProcessor with BigQueryParser with LargestContentExtractor with MalletExporter
+        dataProcessor.matcher = SimpleMatcher.get
+
+        scrapeResults = dataProcessor.process(params.outputDir , params.inputDir)
+        if (scrapeResults.totalRows == 0) {
+          println("No results found, try with a different name of file.")
+          return
+        }
 
         // Run Distributed LDA
         topicTermsDataArray = new MLlibLDA(
-          params.outputDir,
+          inputDir = params.outputDir,
+          dataSetName = dataSetName,
           stopWordsFile = params.stopwordFile,
           k = params.k,
           maxIterations = params.maxIterations,
@@ -123,10 +139,11 @@ object Main {
         data._2.zipWithIndex.foreach { case (topicInference: TopicInferenceModel, zipIndex: Int) =>
           topicInferenceEntries(zipIndex) = topicInference
         }
-        val dateTopicInfo = new TopicInferenceInfoModel(scrapeResults.name, data._1, topicInferenceEntries)
+        val dateTopicInfo = new TopicInferenceInfoModel(dataSetName, data._1, topicInferenceEntries)
         dateTopicInfo.indexData
       }
+
+      println(s"Finished!! Created data for index ${params.indexName} in dataset ${dataSetName}")
     }
   }
-
 }

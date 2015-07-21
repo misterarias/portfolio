@@ -1,16 +1,11 @@
 package com.ariasfreire.gdelt.processors
 
-import java.io.IOException
-
 import com.ariasfreire.gdelt.models.es.ScrapeResults
 import com.ariasfreire.gdelt.models.{Actor, Geography, Row}
 import com.ariasfreire.gdelt.processors.matchers.{NaiveMatcher, SimpleMatcher}
 import com.ariasfreire.gdelt.utils.ContextUtils
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileSystem, Path}
-import org.apache.hadoop.mapred.lib.MultipleOutputFormat
-import org.apache.hadoop.mapred.{JobConf, RecordWriter, TextOutputFormat}
-import org.apache.hadoop.util.Progressable
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{Logging, SparkContext}
 
@@ -68,7 +63,7 @@ abstract class DataProcessor extends Serializable with Logging {
     // Check if output dir exists, return 0 in that case
     val fs = FileSystem.get(new Configuration())
     val hdfsDir = new Path(outputDir)
-    if (fs.exists(hdfsDir) && conf.getOption("spark.hadoop.validateOutputSpecs").isEmpty) {
+    if (fs.exists(hdfsDir) && !ContextUtils.overwrite) {
       logError("Output dir exists, not parsing anything...\n")
 
       sc.stop()

@@ -5,6 +5,7 @@ import java.util
 import com.ariasfreire.gdelt.utils.ContextUtils
 import com.sksamuel.elastic4s.ElasticDsl.{index, _}
 import com.sksamuel.elastic4s.source.Indexable
+import org.elasticsearch.indices.IndexMissingException
 import org.elasticsearch.search.SearchHitField
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -62,28 +63,38 @@ object TopicTermsDataModel {
     try {
       ContextUtils.esClient.execute {
         deleteIndex(ContextUtils.indexName)
-      } await
+      } await()
     } catch {
-      case undefined: Throwable => println("Index already deleted")
+      case x: IndexMissingException => println(s"Index ${ContextUtils.indexName} does not exist")
+      case undefined: Throwable => println(s"Undefined error dropping Index: ${undefined.getLocalizedMessage}")
     }
   }
 
   def fromQuery(dataSetName: String): Array[TopicTermsDataModel] = {
-    val topicModel = new TopicTermsDataModel(dataSetName)
 
-    ContextUtils.esClient.execute {
-      search in indexType query dataSetName.replace("/", "//") fields(
-        "topics.weight", "topics.term", "topicName")
-    } map { response =>
-      val queryTopicModels = new Array[TopicTermsDataModel](response.getHits.hits.length)
+    try {
+      ContextUtils.esClient.execute {
+        search in indexType query dataSetName.replace("/", "//") fields(
+          "topics.weight", "topics.term", "topicName")
+      } map { response =>
+        val topicModel = new TopicTermsDataModel(dataSetName)
+        val queryTopicModels = new Array[TopicTermsDataModel](response.getHits.hits.length)
 
-      var index = 0
-      for (x <- response.getHits.hits()) {
-        topicModel.fromElasticSearch(x.getFields)
-        queryTopicModels(index) = topicModel
-        index += 1
-      }
-      queryTopicModels
-    } await()
+        var index = 0
+        for (x <- response.getHits.hits()) {
+          topicModel.fromElasticSearch(x.getFields)
+          queryTopicModels(index) = topicModel
+          index += 1
+        }
+        queryTopicModels
+      } await()
+    } catch {
+      case x: IndexMissingException =>
+        println(s"Index ${ContextUtils.indexName} does not exist")
+        Array.empty
+      case undefined: Throwable =>
+        println(s"Undefined error querying Index: ${undefined.getLocalizedMessage}")
+        Array.empty
+    }
   }
 }

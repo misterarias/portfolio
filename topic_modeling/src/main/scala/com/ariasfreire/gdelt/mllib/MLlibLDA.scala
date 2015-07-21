@@ -17,6 +17,7 @@ import scala.collection.mutable
  */
 class MLlibLDA(
                 inputDir: String,
+                dataSetName: String,
                 k: Int = 30, // Number of topics to infer
                 maxIterations: Int = 20,
                 maxTermsPerTopic: Int = 15,
@@ -83,7 +84,7 @@ class MLlibLDA(
         val topicData: Array[TopicTermModel] = terms.zip(termWeights).map { case (term, weight) =>
           new TopicTermModel(vocabArray(term.toInt), weight)
         }
-        new TopicTermsDataModel(inputDir, s"Topic $index", topicData)
+        new TopicTermsDataModel(dataSetName, s"Topic $index", topicData)
       }
 
     sc.stop()
