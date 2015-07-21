@@ -17,7 +17,7 @@ import scala.collection.mutable
  */
 class MLlibLDA(
                 inputDir: String,
-                k: Int = 30,
+                k: Int = 30, // Number of topics to infer
                 maxIterations: Int = 20,
                 maxTermsPerTopic: Int = 15,
                 docConcentration: Double = -1,

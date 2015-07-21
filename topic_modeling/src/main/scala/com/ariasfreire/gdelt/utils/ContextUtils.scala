@@ -54,4 +54,9 @@ object ContextUtils {
    */
   val esClient: ElasticClient = ElasticClient.remote("127.0.0.1", 9300)
 
+  /**
+   * Overridable index name
+   */
+  var indexName: String = "results"
+
 }

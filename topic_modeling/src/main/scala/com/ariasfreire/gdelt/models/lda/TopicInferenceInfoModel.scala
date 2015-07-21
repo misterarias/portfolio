@@ -32,12 +32,11 @@ class TopicInferenceInfoModel(val dataSetName: String,
 
 object TopicInferenceInfoModel {
 
-  val indexName: String = "results"
-  val indexType: (String, String) = indexName -> "inferred"
+  val indexType: (String, String) = ContextUtils.indexName -> "inferred"
 
   def dropIndex = {
     ContextUtils.esClient.execute {
-      deleteIndex(indexName)
+      deleteIndex(ContextUtils.indexName)
     } await
   }
 }

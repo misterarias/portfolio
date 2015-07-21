@@ -56,13 +56,12 @@ class TopicTermsDataModel(
 }
 
 object TopicTermsDataModel {
-  val indexName: String = "results"
-  val indexType: (String, String) = indexName -> "topics"
+  val indexType: (String, String) = ContextUtils.indexName -> "topics"
 
   def dropIndex = {
     try {
       ContextUtils.esClient.execute {
-        deleteIndex(indexName)
+        deleteIndex(ContextUtils.indexName)
       } await
     } catch {
       case undefined: Throwable => println("Index already deleted")

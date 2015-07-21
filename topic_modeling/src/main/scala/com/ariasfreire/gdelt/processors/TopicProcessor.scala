@@ -45,7 +45,7 @@ class TopicProcessor(
 
     // Returns the chance that texts found for date D speak about topic X
     val topicPerDateRDD: RDD[(String, TopicInferenceModel)] =
-      sc.parallelize(wrapRefArray(combinedData), Math.min(combinedData.length, 60))
+      sc.parallelize(wrapRefArray(combinedData))
         .map(data => {
         val topicData = data._1
         val date = data._2

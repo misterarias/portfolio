@@ -11,13 +11,10 @@
             width: 700,
             /** Height of the graph */
             height: 250,
-            /** Margin used to offset bar height and grapg dimensions */
+            /** Margin used to offset bar height and graph dimensions */
             margin: 20,
             /** Used to scale bar width */
-            barScale: 2.0,
-            /** scale options */
-            clamp: true,
-            nice: true,
+            barScale: 1.0,
             /** Minimum ms between slider events */
             minInterval : 500
     };
@@ -25,10 +22,24 @@
             element = element;    // reference to the actual DOM element
         var lda = this; // me
         var currentDataset = null;
-        var lastTimestamp = 0;
+        var maximumValue;
+        var minimumValue;
 
-        viz.setCurrentDataset = function (dataset) {
+        lda.setCurrentDataset = function (dataset) {
             currentDataset = dataset;
+            // Cannot use d3.max since this is an object
+
+            maximumValue = -999.99;
+            minimumValue = 999.99;
+            currentDataset.forEach(function (d) {
+                var fVal = parseFloat(d.weight);
+                if (maximumValue < fVal) {
+                    maximumValue = fVal;
+                }
+                if (minimumValue > fVal) {
+                    minimumValue = fVal;
+                }
+            });
             redraw();
         };
 
@@ -37,6 +48,30 @@
         };
 
         var redraw = function () {
+
+
+            // this, with inverted hscale, makes bars fall from the top
+            function barHeigth(value) {
+                return lda.settings.height - hScale(value);
+            }
+
+            function barYPos(value) {
+                return hScale(value);
+            }
+
+            // Mouse events
+            var tooltip = d3.select("body")
+                .append("div")
+                .attr("id", "tooltip")
+                .html("")
+                .attr("class", "graph_tooltip")
+                .style("opacity", 0);
+
+            function mousemove() {
+                tooltip
+                    .style("left", (d3.event.pageX + 20) + "px")
+                    .style("top", (d3.event.pageY - 12) + "px");
+            }
 
             // Setup our canvas, if not there yet
             lda.settings.width = $(element).width();
@@ -59,26 +94,22 @@
                     .attr("height", lda.settings.height)
                 ;
             }
+            svg.on("mousemove", mousemove); // important!!!
 
             // Apply settings
-            var data = currentDataset.slice(
-                    Math.floor(currentDataset.length * lda.settings.minSize / 100),
-                    Math.floor(currentDataset.length * lda.settings.maxSize / 100)),
+            var data = currentDataset,
+                adjust = 0.05, // % to adjust domains
                 iTransitionDuration = 1800,
                 xScale = d3.scale.linear()
                     .domain([0, data.length])
                     .range([0, lda.settings.width]),
+                hScale = d3.scale.linear()
+                    .domain([(1-adjust) * minimumValue, maximumValue * (1+adjust)])
+                    .range([ lda.settings.height - lda.settings.margin,  -  lda.settings.margin]),
                 cScale = d3.scale.linear()
-                    .domain([0, 1.0]) // +- 20%
+                    .domain([(1-adjust) * minimumValue, maximumValue * (1+adjust)])
                     .range(['blue', 'red']),
                 barWidth = ((lda.settings.width - 2 * lda.settings.margin) / data.length) / lda.settings.barScale;
-
-            xScale.clamp(lda.settings.clamp);
-            cScale.clamp(lda.settings.clamp);
-            if (lda.settings.nice == true) {
-                xScale.nice();
-                cScale.nice();
-            }
 
             var myBars = svg.selectAll("rect")
                 .data(data);
@@ -94,50 +125,48 @@
                     return xScale(i);
                 })
                 .attr("y", function (d) {
-                    return barYPos(d.temp);
+                    return barYPos(d.weight);
                 })
                 .attr("width", barWidth)
                 .attr("height", function (d) {
-                    return barHeigth(d.temp);
+                    return barHeigth(d.weight);
                 })
-                .style('fill', function (d, i) {
-                    return cScale(d.temp);
+                .style('fill', function (d) {
+                    return cScale(d.weight);
+                })
+                .on("mouseover", function (d, i) {
+                    var tText = "<span>Term: <strong>" + d.term + "</strong></span><br/>";
+                    tText += "<span>Weight <strong>" + (100*d.weight).toString().substring(0,8) + "</strong> %</span>";
+
+                    tooltip
+                        .style("opacity", 1.0)
+                        .html(tText);
+                })
+                .on("mouseout", function (d) {
+                    tooltip.
+                        .style("opacity", 0.0);
                 })
             ;
 
             myBars.transition().duration(iTransitionDuration)
                 .attr("opacity", 1)
                 .style('fill', function (d) {
-                    return cScale(d.temp);
+                    return cScale(d.weight);
                 })
                 .attr("x", function (d, i) {
                     return xScale(i);
                 })
                 .attr("width", barWidth)
                 .attr("height", function (d) {
-                    return barHeigth(d.temp);
+                    return barHeigth(d.weight);
                 })
                 .attr("y", function (d) {
-                    return barYPos(d.temp);
+                    return barYPos(d.weight);
                 })
             ;
         };
 
         this.init();
-    };
-
-
-    /**
-     * Do not let an event happen if a minimum threshold has not passed since last one
-     * @param ts
-     * @returns {boolean}
-     */
-    var spamControl = function (ts) {
-        if (ts - lastTimestamp < lda.settings.minInterval) {
-            return false;
-        }
-        lastTimestamp = ts;
-        return true;
     };
 
     $.fn.lda = function (options) {

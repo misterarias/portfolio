@@ -5,16 +5,19 @@
  */
 
 var datasetName = "small";
-var topicInfo = [];
-var inferedInfo = [];
+
 $(document).ready(function () {
-    "use strict";
+  //  "use strict";
+
 
     d3.json("http://master.devarias.com:9200/results/_search?q=dataSetName:" + datasetName, function (data) {
-        console.log(data);
         if (data.hits == undefined || data.hits.hits === undefined) {
             console.error("No data retrieved from ES");
         }
+
+        var ds = $('#dataset');
+        var topicInfo = [];
+        var inferedInfo = [];
 
         for (var k in data.hits.hits) {
             var hit = data.hits.hits[k];
@@ -27,7 +30,29 @@ $(document).ready(function () {
                 }
             }
         }
+
+        console.log(topicInfo);
+        console.log(inferedInfo);
+
+        // Now that we've got data, populate controls
+        for (var topic in topicInfo) {
+            var option = new Option();
+            option.id = topic;
+            option.innerHTML = topic;
+            ds.append(option);
+        }
+        var topic_graph = $("#topic_graph");
+        topic_graph.lda({
+            width: topic_graph.width(),
+            height: 300,
+            margin: 0
+        });
+        ds.on("change", function (ev) {
+            var id =  $("#dataset")[0].options[this.selectedIndex].id;
+            topic_graph.data('lda').setCurrentDataset(topicInfo[id]);
+        }).trigger("change");
     });
 
 
-});
+})
+;
