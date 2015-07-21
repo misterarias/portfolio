@@ -143,7 +143,7 @@
                         .html(tText);
                 })
                 .on("mouseout", function (d) {
-                    tooltip.
+                    tooltip
                         .style("opacity", 0.0);
                 })
             ;
