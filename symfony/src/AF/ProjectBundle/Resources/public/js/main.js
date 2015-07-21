@@ -5,11 +5,12 @@
  */
 
 var datasetName = "project_em_20";
-
+var elasticUrl = "http://192.168.2.109:9200/";
+var indexName = "project";
 $(document).ready(function () {
-    //  "use strict";
+    "use strict";
 
-    d3.json("http://master.devarias.com:9200/project/inferred/_search?q=dataSetName:" + datasetName,
+    d3.json(elasticUrl + indexName + "/inferred/_search?q=dataSetName:" + datasetName,
         function (data) {
             if (data.hits == undefined || data.hits.hits === undefined) {
                 console.error("No data retrieved from ES");
@@ -27,7 +28,7 @@ $(document).ready(function () {
             console.log(inferedInfo);
         });
 
-    d3.json("http://master.devarias.com:9200/project/topics/_search?q=dataSetName:" + datasetName,
+    d3.json(elasticUrl + indexName + "/topics/_search?q=dataSetName:" + datasetName,
         function (data) {
             if (data.hits == undefined || data.hits.hits === undefined) {
                 console.error("No data retrieved from ES");
@@ -56,8 +57,7 @@ $(document).ready(function () {
             var topic_graph = $("#topic_graph");
             topic_graph.lda({
                 width: topic_graph.width(),
-                height: 300,
-                margin: 0
+                height: 300
             });
             ds.on("change", function (ev) {
                 var id = $("#dataset")[0].options[this.selectedIndex].id;

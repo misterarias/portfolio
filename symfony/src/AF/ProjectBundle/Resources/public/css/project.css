@@ -44,7 +44,7 @@
 */
 .navbar.navbar-shrink {
     background-attachment: scroll;
-    background-image: url(../img/header-bg.jpg);
+    background-image: url(../img/header-bg.png);
     background-position: bottom;
     background-repeat: none;
 
@@ -58,7 +58,7 @@
     text-align: center;
     color: #fff;
     background-attachment: scroll;
-    background-image: url(../img/header-bg.jpg);
+    background-image: url(../img/header-bg.png);
     background-position: bottom;
     background-repeat: none;
 
@@ -184,4 +184,18 @@ ul.bullets li {
     left: 0;
     right: 0;
     height: 70px;
+}
+
+/** LDA VIZ */
+.xaxis path, .yaxis path,
+.xaxis line, .yaxis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+.tick text {
+    font-family: sans-serif;
+    color:#0088CC;
+    font-size: 11px;
 }

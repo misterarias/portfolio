@@ -1,0 +1,42 @@
+
+.graph {
+    border: 1px black;
+}
+
+.main {
+    background-color: #a2feaa;
+}
+
+span.title {
+    font-weight: bold;
+}
+
+.graph_tooltip text {
+    cursor: default;
+    fill: #FFF;
+    pointer-events: none;
+}
+
+.graph_tooltip {
+    display: block;
+    position: absolute;
+    width: 200px;
+    height: 50px;
+    padding: 8px;
+    font: 14px Helvetica Neue;
+    background: #FFF;
+    border: solid 1px #aaa;
+    border-radius: 8px;
+    pointer-events: none;
+    z-index: 1500;
+    text-align: center;
+}
+
+.slider .slider-selection {
+    background: #BABABA;
+}
+
+.slider .tooltip {
+    /* Keep it smaller than navbar's */
+    z-index: 100 !important;
+}

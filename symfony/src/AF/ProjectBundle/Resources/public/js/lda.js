@@ -11,13 +11,15 @@
             width: 700,
             /** Height of the graph */
             height: 250,
-            /** Margin used to offset bar height and graph dimensions */
+            /** Padding used to offset graph on the edges */
+            padding: 20,
+            /** Margin used to offset bar spacing */
             margin: 20,
             /** Used to scale bar width */
             barScale: 1.0,
             /** Minimum ms between slider events */
-            minInterval : 500
-    };
+            minInterval: 500
+        };
         var $element = $(element), // reference to the jQuery version of DOM element
             element = element;    // reference to the actual DOM element
         var lda = this; // me
@@ -52,7 +54,7 @@
 
             // this, with inverted hscale, makes bars fall from the top
             function barHeigth(value) {
-                return lda.settings.height - hScale(value);
+                return lda.settings.height - lda.settings.padding - hScale(value);
             }
 
             function barYPos(value) {
@@ -75,6 +77,28 @@
 
             // Setup our canvas, if not there yet
             lda.settings.width = $(element).width();
+            var data = currentDataset,
+                adjust = 0.08, // % to adjust domains
+                iTransitionDuration = 1800,
+                xScale = d3.scale.linear()
+                    .domain([0, data.length])
+                    .range([lda.settings.padding, lda.settings.width - 2 * lda.settings.padding]),
+                hScale = d3.scale.linear()
+                    .domain([(1 - adjust) * minimumValue, maximumValue * (1 + adjust)])
+                    .range([lda.settings.height - lda.settings.padding, lda.settings.padding]),
+                cScale = d3.scale.linear()
+                    .domain([(1 - adjust) * minimumValue, maximumValue * (1 + adjust)])
+                    .range(['blue', 'red']),
+                barWidth = ((lda.settings.width - 2 * lda.settings.margin) / data.length) / lda.settings.barScale,
+                yAxis = d3.svg.axis()
+                    .orient("left")
+                    .scale(hScale)
+                    .ticks(5),
+                xAxis = d3.svg.axis()
+                    .orient("bottom")
+                    .scale(xScale)
+                    .ticks(currentDataset.length)
+                ;
 
             var container = d3.select(element)
                     .attr("width", lda.settings.width)
@@ -83,36 +107,37 @@
 
             var svg;
             if ($("svg").length == 0) {
+                // Create and configure the canvas
                 svg = container.append("svg")
                     .classed("canvas", true)
                     .attr("width", lda.settings.width)
                     .attr("height", lda.settings.height)
                 ;
+
+                // Append axis and events
+                svg.on("mousemove", mousemove);
+                svg.append("g")
+                    .attr("class", "yaxis")
+                    .attr("transform", "translate(" + lda.settings.padding.toString() + ",0)")
+                    .call(yAxis);
+                svg.append("g")
+                    .attr("class", "xaxis")   // give it a class so it can be used to select only xaxis labels  below
+                    .attr("transform",
+                    "translate(0," + (lda.settings.height - lda.settings.padding).toString() + ")")
+                    .call(xAxis);
+
             } else {
+                // It alrady exists!! Resize in case settings haave changed
                 svg = container.select("svg")
                     .attr("width", lda.settings.width)
                     .attr("height", lda.settings.height)
                 ;
             }
-            svg.on("mousemove", mousemove); // important!!!
-
-            // Apply settings
-            var data = currentDataset,
-                adjust = 0.05, // % to adjust domains
-                iTransitionDuration = 1800,
-                xScale = d3.scale.linear()
-                    .domain([0, data.length])
-                    .range([0, lda.settings.width]),
-                hScale = d3.scale.linear()
-                    .domain([(1-adjust) * minimumValue, maximumValue * (1+adjust)])
-                    .range([ lda.settings.height - lda.settings.margin,  -  lda.settings.margin]),
-                cScale = d3.scale.linear()
-                    .domain([(1-adjust) * minimumValue, maximumValue * (1+adjust)])
-                    .range(['blue', 'red']),
-                barWidth = ((lda.settings.width - 2 * lda.settings.margin) / data.length) / lda.settings.barScale;
 
             var myBars = svg.selectAll("rect")
-                .data(data);
+                .data(data, function (item) {
+                    return item.term;
+                });
 
             myBars.exit().transition().duration(iTransitionDuration)
                 .attr("opacity", 0)
@@ -136,15 +161,14 @@
                 })
                 .on("mouseover", function (d, i) {
                     var tText = "<span>Term: <strong>" + d.term + "</strong></span><br/>";
-                    tText += "<span>Weight <strong>" + (100*d.weight).toString().substring(0,8) + "</strong> %</span>";
+                    tText += "<span>Weight <strong>" + (100 * d.weight).toString().substring(0, 8) + "</strong> %</span>";
 
                     tooltip
                         .style("opacity", 1.0)
                         .html(tText);
                 })
                 .on("mouseout", function (d) {
-                    tooltip
-                        .style("opacity", 0.0);
+                    tooltip.style("opacity", 0.0);
                 })
             ;
 
