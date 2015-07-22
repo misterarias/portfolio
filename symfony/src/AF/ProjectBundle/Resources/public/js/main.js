@@ -4,9 +4,10 @@
  * Created by juanito on 14/06/15.
  */
 
-var datasetName = "project_em_20";
+var indexName = "test";
+var datasetName = indexName + "_em_15";
 var elasticUrl = "http://192.168.2.109:9200/";
-var indexName = "project";
+
 $(document).ready(function () {
     "use strict";
 
@@ -26,7 +27,17 @@ $(document).ready(function () {
             }
 
             console.log(inferedInfo);
+            var inferred_graph = $("#infered_graph");
+            inferred_graph.inference({
+                width: inferred_graph.width(),
+                height: 300
+            });
+            inferred_graph.data('inference').setCurrentDataset(inferedInfo);
         });
+});
+
+$(document).ready(function () {
+    "use strict";
 
     d3.json(elasticUrl + indexName + "/topics/_search?q=dataSetName:" + datasetName,
         function (data) {
@@ -55,16 +66,16 @@ $(document).ready(function () {
                 ds.append(option);
             }
             var topic_graph = $("#topic_graph");
-            topic_graph.lda({
+            topic_graph.topics({
                 width: topic_graph.width(),
-                height: 300
+                height: 300,
+                barScale: 0.87,
+                padding: 40
             });
             ds.on("change", function (ev) {
                 var id = $("#dataset")[0].options[this.selectedIndex].id;
-                topic_graph.data('lda').setCurrentDataset(topicInfo[id]);
+                topic_graph.data('topics').setCurrentDataset(topicInfo[id]);
             }).trigger("change");
         });
-
-
 })
 ;

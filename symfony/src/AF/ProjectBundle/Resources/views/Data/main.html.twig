@@ -21,23 +21,17 @@
     <div class="well col-md-4">
       <div class="form-group ">
         <div class="row">
-
           <div class="col-sm-12">
             <select id="dataset" class="form-control" name="Choose topic">
             </select>
           </div>
         </div>
       </div>
+    </div>
   </div>
 
-
   <div class="row">
-
     <div id="infered_graph" class="col-md-12"></div>
-
-      <div class="form-group ">
-        <div class="row">
-        </div>
   </div>
 
 {% endblock %}
@@ -49,8 +43,9 @@
   {% javascripts
   '@AFProjectBundle/Resources/public/js/d3.js'
   '@AFProjectBundle/Resources/public/js/bootstrap-slider.js'
-  '@AFProjectBundle/Resources/public/js/lda.js'
-    '@AFProjectBundle/Resources/public/js/main.js'%}
+  '@AFProjectBundle/Resources/public/js/topics.js'
+  '@AFProjectBundle/Resources/public/js/inference.js'
+  '@AFProjectBundle/Resources/public/js/main.js' %}
   <script src="{{ asset_url }}"></script>
   {% endjavascripts %}
 

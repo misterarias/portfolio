@@ -1,11 +1,11 @@
 /**
- * Setup and describe the visualization
+ * Setup and describe a Terms per topic visualization
  * Created by juanito on 5/06/15.
  */
 (function ($) {
     "use strict";
 
-    $.lda = function (element, options) {
+    $.topics = function (element, options) {
         var defaults = {
             /** Reset to parent element width on every redraw */
             width: 700,
@@ -20,12 +20,12 @@
         };
         var $element = $(element), // reference to the jQuery version of DOM element
             element = element;    // reference to the actual DOM element
-        var lda = this; // me
+        var topics = this; // me
         var currentDataset = null;
         var maximumValue;
         var minimumValue;
 
-        lda.setCurrentDataset = function (dataset) {
+        topics.setCurrentDataset = function (dataset) {
             currentDataset = dataset;
             // Cannot use d3.max since this is an object
 
@@ -43,16 +43,14 @@
             redraw();
         };
 
-        lda.init = function () {
-            lda.settings = $.extend({}, defaults, options);
+        topics.init = function () {
+            topics.settings = $.extend({}, defaults, options);
         };
-
         var redraw = function () {
-
 
             // this, with inverted hscale, makes bars fall from the top
             function barHeigth(value) {
-                return lda.settings.height - lda.settings.padding - hScale(value);
+                return topics.settings.height - topics.settings.padding - hScale(value);
             }
 
             function barYPos(value) {
@@ -74,20 +72,20 @@
             }
 
             // Setup our canvas, if not there yet
-            lda.settings.width = $(element).width();
+            topics.settings.width = $(element).width();
             var data = currentDataset,
                 adjust = 0.08, // % to adjust domains
-                iTransitionDuration = 1800,
+                iTransitionDuration = 1000,
                 xScale = d3.scale.linear()
                     .domain([0, data.length])
-                    .range([lda.settings.padding, lda.settings.width - 2 * lda.settings.padding]),
+                    .range([topics.settings.padding, topics.settings.width - 2 * topics.settings.padding]),
                 hScale = d3.scale.linear()
                     .domain([(1 - adjust) * minimumValue, maximumValue * (1 + adjust)])
-                    .range([lda.settings.height - lda.settings.padding, lda.settings.padding]),
+                    .range([topics.settings.height - topics.settings.padding, topics.settings.padding]),
                 cScale = d3.scale.pow()
                     .domain([(1 - adjust) * minimumValue, maximumValue * (1 + adjust)])
                     .range(['blue', 'red']),
-                barWidth = ((lda.settings.width - lda.settings.padding) / data.length) * lda.settings.barScale,
+                barWidth = ((topics.settings.width - topics.settings.padding) / data.length) * topics.settings.barScale,
                 yAxis = d3.svg.axis()
                     .orient("left")
                     .scale(hScale)
@@ -96,59 +94,79 @@
 
                 xAxis = d3.svg.axis()
                     .orient("bottom")
+                    .ticks(currentDataset.length)
                     .scale(xScale)
                     .tickFormat("")
                 ;
 
             var container = d3.select(element)
-                    .attr("width", lda.settings.width)
-                    .attr("height", lda.settings.height)
+                    .attr("width", topics.settings.width)
+                    .attr("height", topics.settings.height)
                 ;
 
             var svg;
-            if ($("svg").length == 0) {
+            if ($("svg.topics").length == 0) {
                 // Create and configure the canvas
                 svg = container.append("svg")
                     .classed("canvas", true)
-                    .attr("width", lda.settings.width)
-                    .attr("height", lda.settings.height)
+                    .classed("topics", true)
+                    .attr("width", topics.settings.width)
+                    .attr("height", topics.settings.height)
                 ;
 
-                // Append axis and events
-                svg.on("mousemove", mousemove);
-                svg.append("g")
-                    .attr("class", "yaxis")
-                    .attr("transform", "translate(" + lda.settings.padding.toString() + ",0)")
-                    .call(yAxis)
-                ;
                 svg.append("g")
                     .attr("class", "xaxis")   // give it a class so it can be used to select only xaxis labels  below
                     .attr("transform",
-                    "translate(0," + (lda.settings.height - lda.settings.padding).toString() + ")")
-                    .call(xAxis);
+                    "translate(0," + (topics.settings.height - topics.settings.padding).toString() + ")")
+                    .call(xAxis)
+                ;
 
-                svg.selectAll("line.horizontalGrid").data(hScale.ticks(7)).enter()
-                    .append("line")
-                    .attr(
-                    {
-                        "class": "horizontalGrid",
-                        "x1": lda.settings.padding,
-                        "x2": lda.settings.width - 2 * lda.settings.padding,
-                        "y1": function (d) {
-                            return hScale(d);
-                        },
-                        "y2": function (d) {
-                            return hScale(d);
-                        }
-                    });
+
+                svg.append("g")
+                    .attr("class", "yaxis")
+                    .attr("transform", "translate(" + topics.settings.padding.toString() + ",0)")
+                    .call(yAxis)
+                ;
 
             } else {
-                // It alrady exists!! Resize in case settings haave changed
-                svg = container.select("svg")
-                    .attr("width", lda.settings.width)
-                    .attr("height", lda.settings.height)
+                // It already exists!! Resize in case settings haave changed
+                svg = container.select("svg.topics")
+                    .attr("width", topics.settings.width)
+                    .attr("height", topics.settings.height)
                 ;
             }
+
+            // Append axis and events
+            svg.on("mousemove", mousemove);
+
+            var lines = svg.selectAll("line.horizontalGrid").data(hScale.ticks(7));
+            lines.exit()
+                .transition().duration(iTransitionDuration)
+                .attr("opacity", 0)
+                .transition().duration(iTransitionDuration)
+                .remove();
+            lines.enter()
+                .append("line")
+                .attr(
+                {
+                    "class": "horizontalGrid",
+                    "x1": topics.settings.padding,
+                    "x2": topics.settings.width - 2 * topics.settings.padding,
+                    "y1": function (d) {
+                        return hScale(d);
+                    },
+                    "y2": function (d) {
+                        return hScale(d);
+                    }
+                });
+
+            lines.exit().remove()
+                .transition().duration(iTransitionDuration)
+                .call(yAxis);
+
+            svg.select(".yaxis")
+                .transition().duration(iTransitionDuration).ease("sin-in-out")  // https://github.com/mbostock/d3/wiki/Transitions#wiki-d3_ease
+                .call(yAxis);
 
             var myBars = svg.selectAll("rect")
                 .data(data, function (item) {
@@ -157,7 +175,7 @@
 
             myBars.exit().transition().duration(iTransitionDuration)
                 .attr("opacity", 0)
-                .attr("y", lda.settings.height)
+                .attr("y", topics.settings.height)
             ;
 
             myBars.enter().append("rect")
@@ -206,15 +224,16 @@
             ;
         };
 
+
         this.init();
     };
 
-    $.fn.lda = function (options) {
+    $.fn.topics = function (options) {
         return this.each(function () {
             // if plugin has not already been attached to the element
-            if (undefined == $(this).data('lda')) {
-                var lda = new $.lda(this, options);
-                $(this).data('lda', lda);
+            if (undefined == $(this).data('topics')) {
+                var topics = new $.topics(this, options);
+                $(this).data('topics', topics);
             }
         });
     };
