@@ -29,7 +29,7 @@ object ElasticIndex {
 
     val topicModels = new Array[TopicTermsDataModel](topicData.length)
     topicData.zipWithIndex.foreach { case (topics: Array[TopicTermModel], id) =>
-      topicModels(id) = new TopicTermsDataModel("test_dataset", s"Topic $id", topics)
+      topicModels(id) = new TopicTermsDataModel(s"Topic $id", topics)
     }
 
     // Store corpus-inferred topics into ES

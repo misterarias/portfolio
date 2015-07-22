@@ -41,7 +41,7 @@ span.title {
     z-index: 100 !important;
 }
 
-.horizontalGrid {
+.yGrid, .xGrid {
     shape-rendering: "crispEdges";
     stroke-dasharray: (3,3);
     stroke: lightgrey;

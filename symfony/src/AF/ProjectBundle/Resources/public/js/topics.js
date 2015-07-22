@@ -139,7 +139,7 @@
             // Append axis and events
             svg.on("mousemove", mousemove);
 
-            var lines = svg.selectAll("line.horizontalGrid").data(hScale.ticks(7));
+            var lines = svg.selectAll("line.yGrid").data(hScale.ticks(7));
             lines.exit()
                 .transition().duration(iTransitionDuration)
                 .attr("opacity", 0)
@@ -149,7 +149,7 @@
                 .append("line")
                 .attr(
                 {
-                    "class": "horizontalGrid",
+                    "class": "yGrid",
                     "x1": topics.settings.padding,
                     "x2": topics.settings.width - 2 * topics.settings.padding,
                     "y1": function (d) {

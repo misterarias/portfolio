@@ -102,12 +102,11 @@ object Main {
 
       // The topic data I need might already be indexed
       var scrapeResults: ScrapeResults = new ScrapeResults(dataSetName)
-      var topicTermsDataArray: Array[TopicTermsDataModel] = TopicTermsDataModel.fromQuery(dataSetName)
+      var topicTermsDataArray: Array[TopicTermsDataModel] = Array.empty
       var processingEnd = 0.0
       var trainingEnd = 0.0
 
-      // No data in index AND no data already downloaded -> get more!
-      if (topicTermsDataArray.length == 0 && !ContextUtils.hasFiles(params.outputDir)) {
+      if (!ContextUtils.hasFiles(params.outputDir)) {
 
         // Configure a Processor to retrieve files
         val processingStart = System.nanoTime()
@@ -120,11 +119,13 @@ object Main {
           println("No results found, try with a different name of file.")
           return
         }
+
+        // Show parsing metrics and store results
+        scrapeResults.summary()
       }
 
-      val trainingStart = System.nanoTime()
-
       // Run Distributed LDA
+      val trainingStart = System.nanoTime()
       topicTermsDataArray = new MLlibLDA(
         inputDir = params.outputDir,
         dataSetName = dataSetName,
@@ -133,45 +134,52 @@ object Main {
         maxIterations = params.maxIterations,
         algorithm = params.algorithm
       ).run
-
       trainingEnd = (System.nanoTime() - trainingStart) / 1e9
 
-      // Show parsing metrics and store results
-      scrapeResults.summary()
-
-      // IF I didn't delete index before, delete before indexing
-      if (!ContextUtils.overwrite) {
-        ContextUtils.dropIndex
-      }
-      ContextUtils.createIndex
-      topicTermsDataArray.foreach { topicModel =>
-        topicModel.indexData
-      }
 
       // We've got all the data from the LDA algorithm in this model
       val topicProcessor = new TopicProcessor(params.outputDir, topicTermsDataArray)
-      val inferringStart = System.nanoTime()
 
       // Do a topic inference run over the documents, to analyze which topics where talked about for each date
+      val inferringStart = System.nanoTime()
       val collectedData: Array[(String, Iterable[TopicChanceForDateModel])] = topicProcessor.run
 
       /** @todo Refactor this data-marshaling-for-indexing step */
       collectedData.foreach { (data: (String, Iterable[TopicChanceForDateModel])) =>
+
+        // Gather all entries for the same date
         val topicInferenceEntries: Array[TopicChanceForDateModel] =
           new Array[TopicChanceForDateModel](data._2.size)
 
         data._2.zipWithIndex.foreach { case (topicInference: TopicChanceForDateModel, zipIndex: Int) =>
           topicInferenceEntries(zipIndex) = topicInference
         }
-        val dateTopicInfo = new TopicInferenceInfoModel(dataSetName, data._1, topicInferenceEntries)
-        dateTopicInfo.indexData
-      }
 
-      val inferringEnd = (System.nanoTime() - inferringStart) / 1e9
+        // Add this info to the proper node
+        val topicName: String = data._1
+        for (topicTermsData <- topicTermsDataArray) {
+          if (topicTermsData.topicName.equals(topicName)) {
+            topicTermsData.chancesForDate = topicInferenceEntries
+          }
+        }
+      }
+      val indexingStart= System.nanoTime()
+      val inferringEnd = (indexingStart - inferringStart) / 1e9
+
+      // Delete old index if needed, and index
+      if (!ContextUtils.overwrite) {
+        ContextUtils.dropIndex
+      }
+      ContextUtils.createIndex
+      topicTermsDataArray.foreach(_.indexData)
+      val indexingEnd = (System.nanoTime() - indexingStart) / 1e9
+
       println(s"Finished!! Created data for index ${params.indexName} in dataset $dataSetName")
       println(s"Processing took: $processingEnd")
       println(s"Training took: $trainingEnd")
       println(s"Inferring took: $inferringEnd")
+      println(s"Indexing took: $indexingEnd")
+
     }
   }
 

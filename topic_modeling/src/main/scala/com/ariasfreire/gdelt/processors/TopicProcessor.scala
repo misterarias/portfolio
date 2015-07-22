@@ -33,7 +33,7 @@ class TopicProcessor(
 
     var i = 0
     val dateFormatter = new SimpleDateFormat("yyyyMMdd")
-    val dateOutputter = new SimpleDateFormat("dd-MM-yyyy")
+    val dateOutputter = new SimpleDateFormat("yyyy-MM-dd")
     for (t <- topicModelArray) {
       for (dtt <- dateTopicToText) {
         // This format is automagically indexed in Elastic Search as a date

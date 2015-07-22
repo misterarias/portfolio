@@ -15,11 +15,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
  * as discovered by LDA
  * Created by juanito on 16/07/15.
  */
-class TopicTermsDataModel(
-                           val dataSetName: String,
-                           var topicName: String = "",
-                           var termsData: Array[TopicTermModel] = Array.empty) extends Serializable {
-
+class TopicTermsDataModel(val topicName: String,
+                          var termsData: Array[TopicTermModel] = Array.empty,
+                          var chancesForDate: Array[TopicChanceForDateModel] = Array.empty
+                           ) extends Serializable {
 
   implicit object TopicModelIndexable extends Indexable[TopicTermsDataModel] {
     override def json(t: TopicTermsDataModel): String =
@@ -36,13 +35,16 @@ class TopicTermsDataModel(
   }
 
   def toJson: String = {
-    s"""{"dataSetName": "$dataSetName", "topicName": "$topicName", "topics": [""" +
+    s"""{"topicName": "$topicName", "terms": [""" +
       termsData.map {
         _.toJson
-      }.mkString(",") + "]}"
+      }.mkString(",") +
+      "], \"dates\" : [" +
+      chancesForDate.map(_.toJson).mkString(",") +
+      "]}"
   }
 
-  /**
+/*  /**
    * Populate this object from an Elastic Search client result
    * @param fields  Fields coming from the ES Client
    */
@@ -59,7 +61,7 @@ class TopicTermsDataModel(
       val term = terms.get(i).asInstanceOf[String]
       termsData(i) = new TopicTermModel(term = term, weight = weight)
     }
-  }
+  }*/
 }
 
 object TopicTermsDataModel {
@@ -67,7 +69,7 @@ object TopicTermsDataModel {
   val indexType = "topics"
   val fullIndexName: (String, String) = ContextUtils.indexName -> indexType
 
-  def fromQuery(dataSetName: String): Array[TopicTermsDataModel] = {
+  /*def fromQuery(dataSetName: String): Array[TopicTermsDataModel] = {
 
     try {
       ContextUtils.esClient.execute {
@@ -93,5 +95,5 @@ object TopicTermsDataModel {
         println(s"Undefined error querying Index: ${undefined.getLocalizedMessage}")
         Array.empty
     }
-  }
+  }*/
 }

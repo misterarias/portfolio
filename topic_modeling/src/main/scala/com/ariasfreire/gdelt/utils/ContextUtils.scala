@@ -1,11 +1,11 @@
 package com.ariasfreire.gdelt.utils
 
-import com.ariasfreire.gdelt.models.lda.TopicInferenceInfoModel
+import com.ariasfreire.gdelt.models.lda.TopicTermsDataModel
 import com.ariasfreire.gdelt.processors.extractors.LargestContentExtractor
 import com.ariasfreire.gdelt.processors.parsers.GdeltRowParser
-import com.sksamuel.elastic4s.{SimpleAnalyzer, KeywordAnalyzer, ElasticClient}
 import com.sksamuel.elastic4s.ElasticDsl._
-import com.sksamuel.elastic4s.mappings.FieldType.{StringType, DateType}
+import com.sksamuel.elastic4s.mappings.FieldType.StringType
+import com.sksamuel.elastic4s.{ElasticClient, KeywordAnalyzer}
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.SparkConf
@@ -44,10 +44,6 @@ object ContextUtils {
     if (overwrite)
       conf.set("spark.hadoop.validateOutputSpecs", "false")
 
-    // So that output directory gets overwritten
-    if (overwrite)
-      conf.set("spark.hadoop.validateOutputSpecs", "false")
-
     conf.registerKryoClasses(Array(classOf[GdeltRowParser], classOf[LargestContentExtractor]))
 
     conf
@@ -73,10 +69,9 @@ object ContextUtils {
   def createIndex = {
     esClient.execute {
       create index indexName mappings {
-        TopicInferenceInfoModel.indexType as (
-          "dataSetName" typed StringType analyzer KeywordAnalyzer,
+        TopicTermsDataModel.indexType as (
           "topicName" typed StringType analyzer KeywordAnalyzer
-          ) dateDetection true dynamicDateFormats("yyyyMMdd", "dd-MM-yyyy")
+          ) dateDetection true dynamicDateFormats "yyyy-MM-dd"
       }
     }
   }

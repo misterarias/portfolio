@@ -85,7 +85,7 @@ class MLlibLDA(
           new TopicTermModel(vocabArray(term.toInt), weight)
         }
         val name = s"Topic $index"
-        new TopicTermsDataModel(dataSetName, name, topicData)
+        new TopicTermsDataModel(name, topicData)
       }
 
     sc.stop()
