@@ -20,7 +20,7 @@ class MLlibLDA(
                 dataSetName: String,
                 k: Int = 30, // Number of topics to infer
                 maxIterations: Int = 20,
-                maxTermsPerTopic: Int = 15,
+                maxTermsPerTopic: Int = 20,
                 docConcentration: Double = -1,
                 topicConcentration: Double = -1,
                 vocabSize: Int = -1,
@@ -84,7 +84,8 @@ class MLlibLDA(
         val topicData: Array[TopicTermModel] = terms.zip(termWeights).map { case (term, weight) =>
           new TopicTermModel(vocabArray(term.toInt), weight)
         }
-        new TopicTermsDataModel(dataSetName, s"Topic $index", topicData)
+        val name = s"Topic $index"
+        new TopicTermsDataModel(dataSetName, name, topicData)
       }
 
     sc.stop()
@@ -98,13 +99,13 @@ class MLlibLDA(
   def preProcess: (RDD[(Long, Vector)], Array[String], Long) = {
     val preprocessStart = System.nanoTime()
 
-    val textRDD: RDD[String] = sc.textFile(inputDir)
+    val textRDD: RDD[(String, String)] = sc.wholeTextFiles(inputDir)
 
     // Split text into words
     val tokenizer = new SimpleTokenizer(sc, stopWordsFile)
     val tokenized: RDD[(Long, IndexedSeq[String])] = textRDD.zipWithIndex().map {
-      case (text, id) =>
-        id -> tokenizer.getWords(text)
+      case (key_text_pairs, id) =>
+        id -> tokenizer.getWords(key_text_pairs._2)
     }
     tokenized.cache()
 

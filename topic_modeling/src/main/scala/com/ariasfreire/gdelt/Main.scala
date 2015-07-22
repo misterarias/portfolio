@@ -23,7 +23,7 @@ object Main {
                              indexName: String = "results",
                              overwrite: Boolean = false,
                              k: Int = 20,
-                             maxIterations: Int = 10,
+                             maxIterations: Int = 100,
                              vocabSize: Int = 10000,
                              stopwordFile: String = "",
                              algorithm: String = "em",
@@ -102,9 +102,12 @@ object Main {
       // The topic data I need might already be indexed
       var scrapeResults: ScrapeResults = new ScrapeResults(dataSetName)
       var topicTermsDataArray: Array[TopicTermsDataModel] = TopicTermsDataModel.fromQuery(dataSetName)
+      var processingEnd = 0.0
+      var trainingEnd = 0.0
       if (topicTermsDataArray.length == 0) {
 
         // Configure a Processor for my needs
+        val processingStart = System.nanoTime()
         val dataProcessor = new DataProcessor with BigQueryParser with LargestContentExtractor with MalletExporter
         dataProcessor.matcher = SimpleMatcher.get
 
@@ -113,6 +116,8 @@ object Main {
           println("No results found, try with a different name of file.")
           return
         }
+        val trainingStart = System.nanoTime()
+        processingEnd = (trainingStart - processingStart) / 1e9
 
         // Run Distributed LDA
         topicTermsDataArray = new MLlibLDA(
@@ -124,12 +129,16 @@ object Main {
           algorithm = params.algorithm
         ).run
 
+        trainingEnd = (System.nanoTime()- trainingEnd) / 1e9
+
         // Show parsing metrics and store results
         scrapeResults.summary()
         topicTermsDataArray.foreach { topicModel =>
           topicModel.indexData
         }
       }
+
+      val inferingStart= System.nanoTime()
 
       val topicProcessor = new TopicProcessor(params.outputDir, topicTermsDataArray)
 
@@ -142,8 +151,13 @@ object Main {
         val dateTopicInfo = new TopicInferenceInfoModel(dataSetName, data._1, topicInferenceEntries)
         dateTopicInfo.indexData
       }
+      val inferingEnd = (System.nanoTime()- inferingStart) / 1e9
 
-      println(s"Finished!! Created data for index ${params.indexName} in dataset ${dataSetName}")
+      println(s"Finished!! Created data for index ${params.indexName} in dataset $dataSetName")
+      println(s"Processing took: $processingEnd")
+      println(s"Training took: $trainingEnd")
+      println(s"Inferring took: $inferingEnd")
     }
   }
 }
+
