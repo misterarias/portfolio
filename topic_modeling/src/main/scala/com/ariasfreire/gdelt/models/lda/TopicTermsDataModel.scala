@@ -25,11 +25,11 @@ class TopicTermsDataModel(
   }
 
   /**
-   * XXX This should be a storage-agnostic trait function
+   * @todo This should be a storage-agnostic trait function
    */
   def indexData = {
     ContextUtils.esClient.execute {
-      index into TopicTermsDataModel.indexType source this
+      index into TopicTermsDataModel.fullIndexName source this
     }
   }
 
@@ -40,6 +40,10 @@ class TopicTermsDataModel(
       }.mkString(",") + "]}"
   }
 
+  /**
+   * Populate this object from an Elastic Search client result
+   * @param fields  Fields coming from the ES Client
+   */
   def fromElasticSearch(fields: util.Map[String, SearchHitField]): Unit = {
     topicName = fields.get("topicName").getValues.get(0).asInstanceOf[String]
 
@@ -57,24 +61,15 @@ class TopicTermsDataModel(
 }
 
 object TopicTermsDataModel {
-  val indexType: (String, String) = ContextUtils.indexName -> "topics"
 
-  def dropIndex = {
-    try {
-      ContextUtils.esClient.execute {
-        deleteIndex(ContextUtils.indexName)
-      } await()
-    } catch {
-      case x: IndexMissingException => println(s"Index ${ContextUtils.indexName} does not exist")
-      case undefined: Throwable => println(s"Undefined error dropping Index: ${undefined.getLocalizedMessage}")
-    }
-  }
+  val indexType = "topics"
+  val fullIndexName: (String, String) = ContextUtils.indexName -> indexType
 
   def fromQuery(dataSetName: String): Array[TopicTermsDataModel] = {
 
     try {
       ContextUtils.esClient.execute {
-        search in indexType query dataSetName.replace("/", "//") fields(
+        search in fullIndexName query dataSetName.replace("/", "//") fields(
           "topics.weight", "topics.term", "topicName")
       } map { response =>
         val topicModel = new TopicTermsDataModel(dataSetName)

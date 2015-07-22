@@ -1,9 +1,15 @@
 package com.ariasfreire.gdelt.utils
 
+import com.ariasfreire.gdelt.models.lda.TopicInferenceInfoModel
 import com.ariasfreire.gdelt.processors.extractors.LargestContentExtractor
 import com.ariasfreire.gdelt.processors.parsers.GdeltRowParser
 import com.sksamuel.elastic4s.ElasticClient
+import com.sksamuel.elastic4s.ElasticDsl._
+import com.sksamuel.elastic4s.mappings.FieldType.{StringType, DateType}
+import org.apache.hadoop.conf.Configuration
+import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.SparkConf
+import org.elasticsearch.indices.IndexMissingException
 
 /**
  * Created by juanito on 11/07/15.
@@ -49,6 +55,7 @@ object ContextUtils {
 
   /**
    * Read from configuration the URL and port of the Elastic Search master
+   * @todo actually read from configuration
    *
    * @return a valid elastic search client
    */
@@ -59,4 +66,56 @@ object ContextUtils {
    */
   var indexName: String = "results"
 
+  /**
+   * Create indexes for this session
+   * @return
+   */
+  def createIndex = {
+    esClient.execute {
+      create index indexName mappings {
+        TopicInferenceInfoModel.indexType as (
+          "dataSetName" typed StringType
+          ) dateDetection true dynamicDateFormats("yyyyMMdd", "dd-MM-yyyy")
+      }
+    }
+  }
+
+  /**
+   * Drop indexes created for this session
+   * @return
+   */
+  def dropIndex = {
+    try {
+      esClient.execute {
+        deleteIndex(indexName)
+      } await()
+    } catch {
+      case x: IndexMissingException =>
+        println(s"Index $indexName does not exist")
+      case undefined: Throwable =>
+        println(s"Undefined error dropping Index: ${undefined.getLocalizedMessage}")
+    }
+  }
+
+  /**
+   * Returns true if given path exists
+   * @param pathName path to query
+   * @return
+   */
+  def dirExists(pathName: String): Boolean = {
+    val fs = FileSystem.get(new Configuration())
+    val hdfsDir = new Path(pathName)
+    fs.exists(hdfsDir)
+  }
+
+  /**
+   * Returns true if given directory is not empty
+   * @param pathName path to check
+   * @return
+   */
+  def hasFiles(pathName: String): Boolean = {
+    val fs = FileSystem.get(new Configuration())
+    val hdfsDir = new Path(pathName)
+    fs.exists(hdfsDir) && fs.listStatus(hdfsDir).nonEmpty
+  }
 }

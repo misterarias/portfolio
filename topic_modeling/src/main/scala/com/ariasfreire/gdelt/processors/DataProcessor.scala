@@ -4,8 +4,7 @@ import com.ariasfreire.gdelt.models.es.ScrapeResults
 import com.ariasfreire.gdelt.models.{Actor, Geography, Row}
 import com.ariasfreire.gdelt.processors.matchers.{NaiveMatcher, SimpleMatcher}
 import com.ariasfreire.gdelt.utils.ContextUtils
-import org.apache.hadoop.conf.Configuration
-import org.apache.hadoop.fs.{FileSystem, Path}
+import org.apache.hadoop.fs.Path
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{Logging, SparkContext}
 
@@ -38,13 +37,19 @@ abstract class DataProcessor extends Serializable with Logging {
    */
   def export(texts: RDD[(String, String)], path: String): Unit
 
-
   /**
    * Swappable row matcher
    */
   var matcher = new NaiveMatcher()
 
   def process(outputDir: String, scrapedFileName: String): ScrapeResults = {
+
+    // If output dir exists and we cannot overwrite, return !
+    val outputModel = new ScrapeResults(outputDir)
+    if (ContextUtils.hasFiles(outputDir) && !ContextUtils.overwrite) {
+      logError("Output dir has files AND overwrite disabled\n")
+      return outputModel
+    }
 
     val conf = ContextUtils.conf
     conf.registerKryoClasses(
@@ -53,22 +58,11 @@ abstract class DataProcessor extends Serializable with Logging {
     val sc = new SparkContext(conf)
 
     // Prepare some flags to update output model
-    val outputModel = new ScrapeResults(outputDir)
     val okRowCount = sc.accumulator(0)
     val failedRowCount = sc.accumulator(0)
     val duplicatedRowCount = sc.accumulator(0)
     val invalidUrlCount = sc.accumulator(0)
     val tooFewContent = sc.accumulator(0)
-
-    // Check if output dir exists, return 0 in that case
-    val fs = FileSystem.get(new Configuration())
-    val hdfsDir = new Path(outputDir)
-    if (fs.exists(hdfsDir) && !ContextUtils.overwrite) {
-      logError("Output dir exists, not parsing anything...\n")
-
-      sc.stop()
-      return outputModel
-    }
 
     // Parse input files with mixed in parser, according to a set of conditions
     val gdeltDataFile: RDD[String] = sc.textFile(scrapedFileName)

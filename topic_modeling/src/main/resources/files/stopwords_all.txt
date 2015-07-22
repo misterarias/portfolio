@@ -922,3 +922,5 @@ vez
 y
 ya
 yo
+spain
+spanish

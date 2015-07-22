@@ -94,9 +94,10 @@ object Main {
       }
       ContextUtils.overwrite = params.overwrite
       ContextUtils.indexName = params.indexName
+
+      // Delete indexed data when overwriting
       if (ContextUtils.overwrite) {
-        // Delete indexed data when overwriting
-        TopicTermsDataModel.dropIndex
+        ContextUtils.dropIndex
       }
 
       // The topic data I need might already be indexed
@@ -104,45 +105,57 @@ object Main {
       var topicTermsDataArray: Array[TopicTermsDataModel] = TopicTermsDataModel.fromQuery(dataSetName)
       var processingEnd = 0.0
       var trainingEnd = 0.0
-      if (topicTermsDataArray.length == 0) {
 
-        // Configure a Processor for my needs
+      // No data in index AND no data already downloaded -> get more!
+      if (topicTermsDataArray.length == 0 && !ContextUtils.hasFiles(params.outputDir)) {
+
+        // Configure a Processor to retrieve files
         val processingStart = System.nanoTime()
         val dataProcessor = new DataProcessor with BigQueryParser with LargestContentExtractor with MalletExporter
         dataProcessor.matcher = SimpleMatcher.get
 
-        scrapeResults = dataProcessor.process(params.outputDir , params.inputDir)
+        scrapeResults = dataProcessor.process(params.outputDir, params.inputDir)
+        processingEnd = (System.nanoTime() - processingStart) / 1e9
         if (scrapeResults.totalRows == 0) {
           println("No results found, try with a different name of file.")
           return
         }
-        val trainingStart = System.nanoTime()
-        processingEnd = (trainingStart - processingStart) / 1e9
-
-        // Run Distributed LDA
-        topicTermsDataArray = new MLlibLDA(
-          inputDir = params.outputDir,
-          dataSetName = dataSetName,
-          stopWordsFile = params.stopwordFile,
-          k = params.k,
-          maxIterations = params.maxIterations,
-          algorithm = params.algorithm
-        ).run
-
-        trainingEnd = (System.nanoTime()- trainingEnd) / 1e9
-
-        // Show parsing metrics and store results
-        scrapeResults.summary()
-        topicTermsDataArray.foreach { topicModel =>
-          topicModel.indexData
-        }
       }
 
-      val inferingStart= System.nanoTime()
+      val trainingStart = System.nanoTime()
 
+      // Run Distributed LDA
+      topicTermsDataArray = new MLlibLDA(
+        inputDir = params.outputDir,
+        dataSetName = dataSetName,
+        stopWordsFile = params.stopwordFile,
+        k = params.k,
+        maxIterations = params.maxIterations,
+        algorithm = params.algorithm
+      ).run
+
+      trainingEnd = (System.nanoTime() - trainingStart) / 1e9
+
+      // Show parsing metrics and store results
+      scrapeResults.summary()
+
+      // IF I didn't delete index before, delete before indexing
+      if (!ContextUtils.overwrite) {
+        ContextUtils.dropIndex
+      }
+      ContextUtils.createIndex
+      topicTermsDataArray.foreach { topicModel =>
+        topicModel.indexData
+      }
+
+      // We've got all the data from the LDA algorithm in this model
       val topicProcessor = new TopicProcessor(params.outputDir, topicTermsDataArray)
+      val inferringStart = System.nanoTime()
 
+      // Do a topic inference run over the documents, to analyze which topics where talked about for each date
       val collectedData: Array[(String, Iterable[TopicInferenceModel])] = topicProcessor.run
+
+      /** @todo Refactor this data-marshaling-for-indexing step */
       collectedData.foreach { (data: (String, Iterable[TopicInferenceModel])) =>
         val topicInferenceEntries: Array[TopicInferenceModel] = new Array[TopicInferenceModel](data._2.size)
         data._2.zipWithIndex.foreach { case (topicInference: TopicInferenceModel, zipIndex: Int) =>
@@ -151,13 +164,14 @@ object Main {
         val dateTopicInfo = new TopicInferenceInfoModel(dataSetName, data._1, topicInferenceEntries)
         dateTopicInfo.indexData
       }
-      val inferingEnd = (System.nanoTime()- inferingStart) / 1e9
 
+      val inferringEnd = (System.nanoTime() - inferringStart) / 1e9
       println(s"Finished!! Created data for index ${params.indexName} in dataset $dataSetName")
       println(s"Processing took: $processingEnd")
       println(s"Training took: $trainingEnd")
-      println(s"Inferring took: $inferingEnd")
+      println(s"Inferring took: $inferringEnd")
     }
   }
+
 }
 

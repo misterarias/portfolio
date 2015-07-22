@@ -21,32 +21,20 @@ class TopicInferenceInfoModel(val dataSetName: String,
    */
   def indexData = {
     ContextUtils.esClient.execute {
-      index into TopicInferenceInfoModel.indexType source this
+      index into TopicInferenceInfoModel.fullIndexName source this
     }
   }
 
   def toJson: String =
-    s"""{"dataSetName": "$dataSetName", "date": "${date}" , "topics_inferred" : [""" +
+    s"""{"dataSetName": "$dataSetName", "date": "$date" , "topics_inferred" : [""" +
       topicInference.map(_.toJson).mkString(",") +
       "]}"
 }
 
 object TopicInferenceInfoModel {
 
-  val indexType: (String, String) = ContextUtils.indexName -> "inferred"
-
-  def dropIndex = {
-    try {
-      ContextUtils.esClient.execute {
-        deleteIndex(ContextUtils.indexName)
-      } await()
-    } catch {
-      case x: IndexMissingException =>
-        println(s"Index ${ContextUtils.indexName} does not exist")
-      case undefined: Throwable =>
-        println(s"Undefined error dropping Index: ${undefined.getLocalizedMessage}")
-    }
-  }
+  val indexType = "inferred"
+  val fullIndexName: (String, String) = ContextUtils.indexName -> indexType
 }
 
 
