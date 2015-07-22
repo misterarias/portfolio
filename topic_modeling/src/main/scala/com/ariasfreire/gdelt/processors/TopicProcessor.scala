@@ -15,7 +15,7 @@ class TopicProcessor(
                       val topicModelArray: Array[TopicTermsDataModel]
                       ) extends Serializable with Logging {
 
-  def run: Array[(String, Iterable[TopicInferenceModel])] = {
+  def run: Array[(String, Iterable[TopicChanceForDateModel])] = {
     val conf = ContextUtils.conf
     conf.registerKryoClasses(Array(classOf[TopicTermModel], classOf[TopicTermsDataModel]))
     val sc = new SparkContext(conf)
@@ -44,7 +44,7 @@ class TopicProcessor(
     }
 
     // Returns the chance that texts found for date D speak about topic X
-    val topicPerDateRDD: RDD[(String, TopicInferenceModel)] =
+    val topicPerDateRDD: RDD[(String, TopicChanceForDateModel)] =
       sc.parallelize(wrapRefArray(combinedData))
         .map(data => {
         val topicData = data._1
@@ -54,7 +54,7 @@ class TopicProcessor(
         // TODO: Logic to infer topics from text
         val chance: Double = Math.random()
 
-        (date, new TopicInferenceModel(topicData.topicName, chance))
+        (topicData.topicName, new TopicChanceForDateModel(date, chance))
       })
 
     topicPerDateRDD.groupByKey().collect()

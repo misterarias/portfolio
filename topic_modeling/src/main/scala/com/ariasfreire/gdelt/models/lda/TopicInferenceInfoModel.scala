@@ -9,8 +9,8 @@ import org.elasticsearch.indices.IndexMissingException
  * Created by juanito on 17/07/15.
  */
 class TopicInferenceInfoModel(val dataSetName: String,
-                              val date: String,
-                              val topicInference: Array[TopicInferenceModel]) {
+                              val topicName: String,
+                              val chancesForDate: Array[TopicChanceForDateModel]) {
 
   implicit object DateTopicInfoIndexable extends Indexable[TopicInferenceInfoModel] {
     override def json(t: TopicInferenceInfoModel): String = t.toJson.stripMargin
@@ -26,14 +26,14 @@ class TopicInferenceInfoModel(val dataSetName: String,
   }
 
   def toJson: String =
-    s"""{"dataSetName": "$dataSetName", "date": "$date" , "topics_inferred" : [""" +
-      topicInference.map(_.toJson).mkString(",") +
+    s"""{"dataSetName": "$dataSetName", "topicName": "$topicName" , "topics_inferred" : [""" +
+      chancesForDate.map(_.toJson).mkString(",") +
       "]}"
 }
 
 object TopicInferenceInfoModel {
 
-  val indexType = "inferred"
+  val indexType = "topics"
   val fullIndexName: (String, String) = ContextUtils.indexName -> indexType
 }
 

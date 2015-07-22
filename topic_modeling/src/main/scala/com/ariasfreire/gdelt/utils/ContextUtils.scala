@@ -3,7 +3,7 @@ package com.ariasfreire.gdelt.utils
 import com.ariasfreire.gdelt.models.lda.TopicInferenceInfoModel
 import com.ariasfreire.gdelt.processors.extractors.LargestContentExtractor
 import com.ariasfreire.gdelt.processors.parsers.GdeltRowParser
-import com.sksamuel.elastic4s.ElasticClient
+import com.sksamuel.elastic4s.{SimpleAnalyzer, KeywordAnalyzer, ElasticClient}
 import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.mappings.FieldType.{StringType, DateType}
 import org.apache.hadoop.conf.Configuration
@@ -74,7 +74,8 @@ object ContextUtils {
     esClient.execute {
       create index indexName mappings {
         TopicInferenceInfoModel.indexType as (
-          "dataSetName" typed StringType
+          "dataSetName" typed StringType analyzer KeywordAnalyzer,
+          "topicName" typed StringType analyzer KeywordAnalyzer
           ) dateDetection true dynamicDateFormats("yyyyMMdd", "dd-MM-yyyy")
       }
     }

@@ -153,12 +153,14 @@ object Main {
       val inferringStart = System.nanoTime()
 
       // Do a topic inference run over the documents, to analyze which topics where talked about for each date
-      val collectedData: Array[(String, Iterable[TopicInferenceModel])] = topicProcessor.run
+      val collectedData: Array[(String, Iterable[TopicChanceForDateModel])] = topicProcessor.run
 
       /** @todo Refactor this data-marshaling-for-indexing step */
-      collectedData.foreach { (data: (String, Iterable[TopicInferenceModel])) =>
-        val topicInferenceEntries: Array[TopicInferenceModel] = new Array[TopicInferenceModel](data._2.size)
-        data._2.zipWithIndex.foreach { case (topicInference: TopicInferenceModel, zipIndex: Int) =>
+      collectedData.foreach { (data: (String, Iterable[TopicChanceForDateModel])) =>
+        val topicInferenceEntries: Array[TopicChanceForDateModel] =
+          new Array[TopicChanceForDateModel](data._2.size)
+
+        data._2.zipWithIndex.foreach { case (topicInference: TopicChanceForDateModel, zipIndex: Int) =>
           topicInferenceEntries(zipIndex) = topicInference
         }
         val dateTopicInfo = new TopicInferenceInfoModel(dataSetName, data._1, topicInferenceEntries)

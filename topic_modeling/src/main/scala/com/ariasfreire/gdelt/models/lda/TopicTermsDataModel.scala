@@ -11,6 +11,8 @@ import org.elasticsearch.search.SearchHitField
 import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
+ * For a given topic, represents the terms associated to it, with a given weight,
+ * as discovered by LDA
  * Created by juanito on 16/07/15.
  */
 class TopicTermsDataModel(
