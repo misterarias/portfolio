@@ -36,9 +36,9 @@
 
   {{ widgets.sectionEnd() }}
 
-    <input type="hidden" id="data_locator" value="{{ asset('bundles/afproject/static/project_elastic_dump.json') }}">
+    <input type="hidden" id="json-data_locator" value="{{ asset('bundles/afproject/static/project_elastic_dump.json') }}">
 
-    {% for i in range(0, 2) %}
+    {% for i in range(0, 5) %}
     <div class="row hide" id="topic_{{ i }}">
       <div id="table" class="col-md-4">
         <p id="topicName"></p>

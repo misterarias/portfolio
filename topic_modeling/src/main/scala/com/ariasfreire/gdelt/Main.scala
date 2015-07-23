@@ -24,7 +24,7 @@ object Main {
                              overwrite: Boolean = false,
                              topicNumber: Int = 3,
                              maxIterations: Int = 100,
-                             vocabSize: Int = 10000,
+                             vocabSize: Int = 30000,
                              stopwordFile: String = "",
                              algorithm: String = "em",
                              checkpointDir: Option[String] = None,
@@ -35,7 +35,7 @@ object Main {
 
     val parser = new OptionParser[Params]("Topic Modeling") {
       head("Application of Spark's LDA to research topics on GDELT data.")
-      opt[Int]("k")
+      opt[Int]("topicNumber")
         .text(s"number of topics. default: ${defaultParams.topicNumber}")
         .action((x, c) => c.copy(topicNumber = x))
       opt[Int]("maxIterations")
@@ -136,9 +136,8 @@ object Main {
       ).run
       trainingEnd = (System.nanoTime() - trainingStart) / 1e9
 
-
       // We've got all the data from the LDA algorithm in this model
-      val topicProcessor = new TopicProcessor(params.outputDir, topicTermsDataArray)
+      val topicProcessor = new TopicProcessor(params.outputDir, params.stopwordFile, topicTermsDataArray)
 
       // Do a topic inference run over the documents, to analyze which topics where talked about for each date
       val inferringStart = System.nanoTime()

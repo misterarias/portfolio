@@ -19,8 +19,6 @@
         var $element = $(element), // reference to the jQuery version of DOM element
             element = element;    // reference to the actual DOM element
         var inference = this; // me
-        var maximumDate;
-        var minimumDate;
         var uniqueLabels = [],
             uniqueColors = [],
             uniqueValues = [];
@@ -32,10 +30,9 @@
                 if ($.inArray(item.topicName, uniqueLabels) == -1) {
                     uniqueValues[item.topicName] = [];
                     uniqueLabels.push(item.topicName);
-                    // I like blue :P
                     uniqueColors.push("rgb(" +
-                        Math.floor(Math.random() * 128) + "," +
-                        Math.floor(Math.random() * 128) + "," +
+                        Math.floor(Math.random() * 255) + "," +
+                        Math.floor(Math.random() * 255) + "," +
                         Math.floor(Math.random() * 255) + ")");
                 }
                 // This way I'll have a list of lists, for path drawing
@@ -97,7 +94,7 @@
                         return d.chance;
                     }))
                     .range([0.2, 1]),
-                radius = 2, lineOpacity = 0.5, lineWidth = 1,
+                radius = 1, lineOpacity = 0.5, lineWidth = 1,
                 xAxis = d3.svg.axis()
                     .orient("bottom")
                     .scale(xScale)
@@ -233,9 +230,9 @@
             // add legend
             var legend = svg.append("g")
                 .attr("class", "legend")
-                .attr("height", 100)
+                .attr("height", 120)
                 .attr("width", 100)
-                .attr('transform', 'translate(0,50)');
+                .attr('transform', 'translate(-20,50)');
 
             legend.selectAll('rect')
                 .data(uniqueLabels)
@@ -265,12 +262,13 @@
                 .on("mouseover", function (d, i) {
                     for (var k in uniqueLabels) {
                         var class_name = uniqueLabels[k].toLowerCase().replace(" ", "");
-                        var elem = d3.select("." + class_name).transition().duration(iTransitionDuration);
                         if (k == i) {
-                            elem.attr("opacity", 1)
-                                .attr("r", 1.3*radius)
+                            d3.selectAll("." + class_name).transition().duration(iTransitionDuration)
+                                .attr("opacity", 1)
+                                .attr("r", 2 * radius)
                         } else {
-                            elem.attr("opacity", 0)
+                            d3.selectAll("." + class_name)
+                                .attr("opacity", 0)
                                 .attr("r", 0)
                         }
                     }
@@ -278,10 +276,9 @@
                 .on("mouseout", function (d, i) {
                     for (var k in uniqueLabels) {
                         var class_name = uniqueLabels[k].toLowerCase().replace(" ", "");
-                        d3.select("." + class_name).transition().duration(iTransitionDuration)
+                        d3.selectAll("." + class_name).transition().duration(iTransitionDuration)
                             .attr("opacity", lineOpacity)
                             .attr("r", radius)
-
                         ;
                     }
                 })

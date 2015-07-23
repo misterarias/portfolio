@@ -4,18 +4,21 @@
  * Created by juanito on 14/06/15.
  */
 
-//var indexName = "project";
-//var elasticUrl = "http://localhost:9200/" + indexName + "/topics/_search";
+var indexName = "project";
+var elasticUrl = "http://localhost:9200/" + indexName + "/topics/_search";
 var fixedUrl = $("#data_locator").val();
 $(document).ready(function () {
     "use strict";
 
 
-    d3.json(fixedUrl, function (data) {
+    d3.json(elasticUrl, function (data) {
             var termsInfo = [], datesInfo = [], topics = [];
 
             if (data == undefined || data.hits == undefined || data.hits.hits === undefined) {
                 console.error("No data retrieved from ES");
+
+
+                // Debug code
                 topics = ["Topicaso", "Topiquito", "Topotamadre"];
                 for (var topic in topics) {
 
@@ -56,6 +59,7 @@ $(document).ready(function () {
 
             var ds = $("#topicSelector");
             var showOne = false;
+
             for (var topic in topics) {
                 var info = termsInfo[topics[topic]];
 
@@ -64,7 +68,8 @@ $(document).ready(function () {
                 option.innerHTML = topics[topic];
                 ds.append(option);
 
-                var tbody = $("#topic_" + topic + " #table tbody");
+                var topic_container = $("#topic_" + topic);
+                var tbody = topic_container.find("#table tbody");
                 for (var k = 0; k < Math.min(10, info.length); k++) {
 
                     tbody.append('<tr><th scope="row">' + (1 + k).toString() +
@@ -73,21 +78,33 @@ $(document).ready(function () {
                         '</td></tr>'
                     );
                 }
+            }
+            var graph_height = 0, graph_width = 0;
+            for (var topic in topics) {
+                var topic_container = $("#topic_" + topic);
 
-                var topic_graph = $("#topic_" + topic + " #graph");
+                if (!showOne) {
+                    topic_container.removeClass("hide").show();
+                    showOne = true;
 
+                    // Once it's visible, it has dimensions!
+                    graph_height = topic_container.find("#table").height();
+                    // Get the width of the fluid container
+                    graph_width= topic_container.find("#graph").width();
+
+                } else {
+                    topic_container.removeClass("hide").hide();
+                }
+
+                var topic_graph = topic_container.find("#graph");
                 topic_graph.topics({
+                    height: graph_height,
+                    width: graph_width,
                     barScale: 0.87,
-                    padding: 40,
+                    padding: 50,
                     svgClassName: "topic_graph_" + topic
                 });
 
-                if (!showOne) {
-                    $("#topic_" + topic).removeClass("hide").show();
-                    showOne = true;
-                } else {
-                    $("#topic_" + topic).removeClass("hide").hide();
-                }
                 topic_graph.data('topics').setCurrentDataset(info);
             }
             inferred_graph.data('inference').addDataSet(datesInfo);

@@ -70,10 +70,12 @@ span.title {
 }
 
 .legend {
-    padding: 5px;
+    padding: 6px;
     font: 10px sans-serif;
-    background: yellow;
-    box-shadow: 2px 2px 1px #888;
+    border: solid 1px #aaa;
+    border-radius: 8px;
+    text-align: center;
+    background: whiteSmoke;
 }
 
 .title {
