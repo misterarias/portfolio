@@ -119,85 +119,92 @@
                     .attr("height", inference.settings.height)
                 ;
 
-            var svg;
-            if ($("svg.inference").length == 0) {
-                // Create and configure the canvas
-                svg = container.append("svg")
+            var svg = container.append("svg")
                     .classed("canvas", true)
                     .classed("inference", true)
                     .attr("width", inference.settings.width)
                     .attr("height", inference.settings.height)
                 ;
 
-                // Append axis and events
-                svg.append("g")
-                    .attr("class", "yaxis")
-                    .attr("transform", "translate(" + inference.settings.padding.toString() + ",0)")
-                    .call(yAxis)
-                ;
-                svg.append("g")
-                    .attr("class", "xaxis")   // give it a class so it can be used to select only xaxis labels  below
-                    .attr("transform",
-                    "translate(0," + (inference.settings.height - inference.settings.padding).toString() + ")")
-                    .call(xAxis);
+            // Append axis and events
+            svg.append("g")
+                .attr("class", "yaxis")
+                .attr("transform", "translate(" + inference.settings.padding.toString() + ",0)")
+                .call(yAxis)
+            ;
+            svg.append("g")
+                .attr("class", "xaxis")   // give it a class so it can be used to select only xaxis labels  below
+                .attr("transform",
+                "translate(0," + (inference.settings.height - inference.settings.padding).toString() + ")")
+                .call(xAxis);
 
-                svg.selectAll("line.yGrid").data(hScale.ticks(7)).enter()
-                    .append("line")
-                    .attr(
-                    {
-                        "class": "yGrid",
-                        "x1": inference.settings.padding,
-                        "x2": inference.settings.width - 2 * inference.settings.padding,
-                        "y1": function (d) {
-                            return hScale(d);
-                        },
-                        "y2": function (d) {
-                            return hScale(d);
-                        }
-                    });
-                svg.selectAll("line.xGrid").data(xScale.ticks(d3.time.weeks, 1)).enter()
-                    .append("line")
-                    .attr(
-                    {
-                        "class": "xGrid",
-                        "x1": function (d) {
-                            return xScale(d);
-                        },
-                        "x2": function (d) {
-                            return xScale(d);
-                        },
-                        "y1": inference.settings.height - inference.settings.padding,
-                        "y2": inference.settings.padding
+            svg.selectAll("line.yGrid").data(hScale.ticks(7)).enter()
+                .append("line")
+                .attr(
+                {
+                    "class": "yGrid",
+                    "x1": inference.settings.padding,
+                    "x2": inference.settings.width - 2 * inference.settings.padding,
+                    "y1": function (d) {
+                        return hScale(d);
+                    },
+                    "y2": function (d) {
+                        return hScale(d);
+                    }
+                });
+            svg.selectAll("line.xGrid").data(xScale.ticks(d3.time.weeks, 1)).enter()
+                .append("line")
+                .attr(
+                {
+                    "class": "xGrid",
+                    "x1": function (d) {
+                        return xScale(d);
+                    },
+                    "x2": function (d) {
+                        return xScale(d);
+                    },
+                    "y1": inference.settings.height - inference.settings.padding,
+                    "y2": inference.settings.padding
 
-                    });
+                });
 
-                svg.selectAll(".xaxis text")  // select all the text elements for the xaxis
-                    .attr("transform", function (d) {
-                        return "translate(" + this.getBBox().height * -2 + ","
-                            + this.getBBox().height + ")rotate(-45)";
-                    });
+            svg.selectAll(".xaxis text")  // select all the text elements for the xaxis
+                .attr("transform", function (d) {
+                    return "translate(" + this.getBBox().height * -2 + ","
+                        + this.getBBox().height + ")rotate(-45)";
+                });
 
-            } else {
-                // It already exists!! Resize in case settings haave changed
-                svg = container.select("svg.inference")
-                    .attr("width", inference.settings.width)
-                    .attr("height", inference.settings.height)
-                ;
-            }
+
+            svg.selectAll('g.line').data(data).enter()
+                .append('g')
+                .attr('class', 'line')
+                .attr("style", function (d) {
+                    return "stroke: pink";
+                });
+
+            svg.selectAll('path.line').data(data).enter()
+                .append('path')
+                .attr("class", "line")
+                .attr("d", d3.svg.line()
+                    .x(function (d) {
+                        return xScale(d.date);
+                    })
+                    .y(function (d) {
+                        return barYPos(d.chance);
+                    }))
+                .attr("stroke", "blue")
+                .attr("stroke-width", 2)
+                .attr("fill", "red");
+            ;
+
             // Append axis and events
             svg.on("mousemove", mousemove);
 
+
             var myCircles = svg.selectAll("circle")
-                .data(data, function (item) {
-                    return item.date + item.chance + item.topicName;
-                });
+                .data(data).enter();
 
-            myCircles.exit().transition().duration(iTransitionDuration)
-                .attr("r", 0)
-                .attr("y", inference.settings.height)
-            ;
-
-            myCircles.enter().append("circle")
+            myCircles.append("circle")
                 .attr("r", radius)
                 .attr("cx", function (d) {
                     return xScale(d.date);
@@ -232,21 +239,6 @@
                 })
             ;
 
-            myCircles.transition().duration(iTransitionDuration)
-                .attr("r", radius)
-                .style('fill', function (d) {
-                    return cScale(d.chance);
-                })
-                .attr("cx", function (d) {
-                    return xScale(d.date);
-                })
-                .attr("opacity", function (d) {
-                    return rScale(d.chance)
-                })
-                .attr("cy", function (d) {
-                    return barYPos(d.chance);
-                })
-            ;
 
             // add legend
             var legend = svg.append("g")

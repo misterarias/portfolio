@@ -76,22 +76,25 @@
             // Setup our canvas, if not there yet
             topics.settings.width = $(element).width();
             var data = currentDataset,
-                adjust = 0.08, // % to adjust domains
-                iTransitionDuration = 1000,
+                yTicks = 8,
                 xScale = d3.scale.linear()
                     .domain([0, data.length])
                     .range([topics.settings.padding, topics.settings.width - 2 * topics.settings.padding]),
                 hScale = d3.scale.linear()
-                    .domain([(1 - adjust) * minimumValue, maximumValue * (1 + adjust)])
+                    .domain(d3.extent(data, function (d) {
+                        return d.weight;
+                    }))
                     .range([topics.settings.height - topics.settings.padding, topics.settings.padding]),
                 cScale = d3.scale.pow()
-                    .domain([(1 - adjust) * minimumValue, maximumValue * (1 + adjust)])
+                    .domain(d3.extent(data, function (d) {
+                        return d.weight;
+                    }))
                     .range(['blue', 'red']),
                 barWidth = ((topics.settings.width - topics.settings.padding) / data.length) * topics.settings.barScale,
                 yAxis = d3.svg.axis()
                     .orient("left")
                     .scale(hScale)
-                    .ticks(7)
+                    .ticks(yTicks)
                     .tickFormat(d3.format(".1%")),
 
                 xAxis = d3.svg.axis()
@@ -120,7 +123,6 @@
                 .call(xAxis)
             ;
 
-
             svg.append("g")
                 .attr("class", "yaxis")
                 .attr("transform", "translate(" + topics.settings.padding.toString() + ",0)")
@@ -130,16 +132,10 @@
             // Append axis and events
             svg.on("mousemove", mousemove);
 
-            var lines = svg.selectAll("line.yGrid").data(hScale.ticks(7));
-            lines.exit()
-                .transition().duration(iTransitionDuration)
-                .attr("opacity", 0)
-                .transition().duration(iTransitionDuration)
-                .remove();
+            var lines = svg.selectAll("line.yGrid").data(hScale.ticks(2*yTicks));
             lines.enter()
                 .append("line")
-                .attr(
-                {
+                .attr({
                     "class": "yGrid",
                     "x1": topics.settings.padding,
                     "x2": topics.settings.width - 2 * topics.settings.padding,
@@ -151,23 +147,10 @@
                     }
                 });
 
-            lines.exit().remove()
-                .transition().duration(iTransitionDuration)
-                .call(yAxis);
-
-            svg.select(".yaxis")
-                .transition().duration(iTransitionDuration).ease("sin-in-out")  // https://github.com/mbostock/d3/wiki/Transitions#wiki-d3_ease
-                .call(yAxis);
-
             var myBars = svg.selectAll("rect")
                 .data(data, function (item) {
                     return item.term;
                 });
-
-            myBars.exit().transition().duration(iTransitionDuration)
-                .attr("opacity", 0)
-                .attr("y", topics.settings.height)
-            ;
 
             myBars.enter().append("rect")
                 .attr("opacity", 1)
@@ -194,23 +177,6 @@
                 })
                 .on("mouseout", function (d) {
                     tooltip.style("opacity", 0.0);
-                })
-            ;
-
-            myBars.transition().duration(iTransitionDuration)
-                .attr("opacity", 1)
-                .style('fill', function (d) {
-                    return cScale(d.weight);
-                })
-                .attr("x", function (d, i) {
-                    return xScale(i);
-                })
-                .attr("width", barWidth)
-                .attr("height", function (d) {
-                    return barHeigth(d.weight);
-                })
-                .attr("y", function (d) {
-                    return barYPos(d.weight);
                 })
             ;
         };

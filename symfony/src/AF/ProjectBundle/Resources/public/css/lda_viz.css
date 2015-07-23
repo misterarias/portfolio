@@ -79,3 +79,26 @@ span.title {
 .title {
     font: 13px sans-serif;
 }
+
+.y1 {
+    fill: white;
+    stroke: orange;
+    stroke-width: 1.5px;
+}
+
+.y2 {
+    fill: white;
+    stroke: red;
+    stroke-width: 1.5px;
+}
+
+.y3 {
+    fill: white;
+    stroke: steelblue;
+    stroke-width: 1.5px;
+}
+
+.line {
+    fill: none;
+    stroke-width: 1.5px;
+}

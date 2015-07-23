@@ -42,6 +42,7 @@ $(document).ready(function () {
             });
 
             for (var topic in topics) {
+                var info = termsInfo[topics[topic]];
 
                 var topic_graph = $("#topic_graph_" + topic);
                 topic_graph.topics({
@@ -51,7 +52,19 @@ $(document).ready(function () {
                     padding: 40,
                     svgClassName: "topic_graph_" + topic
                 });
-                topic_graph.data('topics').setCurrentDataset(termsInfo[topics[topic]]);
+                topic_graph.data('topics').setCurrentDataset(info);
+
+                $("#topic_table_" + topic + " #topicName")[0].innerHTML = "Top 5 terms for '" + topics[topic] + "'";
+                var tbody = $("#topic_table_" + topic + " tbody");
+                for (var k = 0; k < 5; k++) {
+
+                    tbody.append('<tr><th scope="row">' + (1 + k).toString() +
+                        '</th><td>' + info[k].term +
+                        '</td><td>' + info[k].weight +
+                        '</td></tr>'
+                    );
+                }
+
 
                 //break; // DEBUG
             }

@@ -3,41 +3,54 @@
 
 {% block stylesheets %}
 
-  {{ parent() }}
-  {% stylesheets
-  '@AFProjectBundle/Resources/public/css/lda_viz.css'
-  '@AFProjectBundle/Resources/public/css/bootstrap-slider.css'
-  filter='cssrewrite' %}
-  <link rel="stylesheet" href="{{ asset_url }}">
-  {% endstylesheets %}
+    {{ parent() }}
+    {% stylesheets
+    '@AFProjectBundle/Resources/public/css/lda_viz.css'
+    '@AFProjectBundle/Resources/public/css/bootstrap-slider.css'
+    filter='cssrewrite' %}
+    <link rel="stylesheet" href="{{ asset_url }}">
+    {% endstylesheets %}
 
 {% endblock %}
 
 {% block content %}
 
-  <div class="row">
-    <div id="topic_graph_0" class="col-md-6 col-sm-8"></div>
-    <div id="topic_graph_1" class="col-md-6 col-sm-8"></div>
-    <div id="topic_graph_2" class="col-md-6 col-sm-8"></div>
-  </div>
+    {% for i in range(0, 2) %}
+        <div class="row">
+            <div id="topic_graph_{{ i }}" class="col-md-8"></div>
+            <div id="topic_table_{{ i }}" class="col-md-4 well">
+                <p id="topicName"></p>
+                <table id="topicData" class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>term</th>
+                        <th>weight (%)</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    {% endfor %}
 
-  <div class="row">
-    <div id="infered_graph" class="col-md-12"></div>
-  </div>
+    <div class="row">
+        <div id="infered_graph" class="col-md-12"></div>
+    </div>
 
 {% endblock %}
 
 {% block javascripts %}
 
-  {{ parent() }}
+    {{ parent() }}
 
-  {% javascripts
-  '@AFProjectBundle/Resources/public/js/d3.js'
-  '@AFProjectBundle/Resources/public/js/bootstrap-slider.js'
-  '@AFProjectBundle/Resources/public/js/topics.js'
-  '@AFProjectBundle/Resources/public/js/inference.js'
-  '@AFProjectBundle/Resources/public/js/main.js' %}
-  <script src="{{ asset_url }}"></script>
-  {% endjavascripts %}
+    {% javascripts
+    '@AFProjectBundle/Resources/public/js/d3.js'
+    '@AFProjectBundle/Resources/public/js/bootstrap-slider.js'
+    '@AFProjectBundle/Resources/public/js/topics.js'
+    '@AFProjectBundle/Resources/public/js/inference.js'
+    '@AFProjectBundle/Resources/public/js/main.js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
 
 {% endblock %}
