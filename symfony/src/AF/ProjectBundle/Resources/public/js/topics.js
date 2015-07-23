@@ -10,7 +10,7 @@
             /** Reset to parent element width on every redraw */
             width: 700,
             /** Height of the graph */
-            height: 250,
+            height: 350,
             /** Padding used to offset graph on the edges */
             padding: 40,
             /** Used to scale bar width */
@@ -24,24 +24,9 @@
             element = element;    // reference to the actual DOM element
         var topics = this; // me
         var currentDataset = null;
-        var maximumValue;
-        var minimumValue;
 
         topics.setCurrentDataset = function (dataset) {
             currentDataset = dataset;
-            // Cannot use d3.max since this is an object
-
-            maximumValue = -999.99;
-            minimumValue = 999.99;
-            currentDataset.forEach(function (d) {
-                var fVal = parseFloat(d.weight);
-                if (maximumValue < fVal) {
-                    maximumValue = fVal;
-                }
-                if (minimumValue > fVal) {
-                    minimumValue = fVal;
-                }
-            });
             redraw();
         };
 
@@ -73,8 +58,6 @@
                     .style("top", (d3.event.pageY - 12) + "px");
             }
 
-            // Setup our canvas, if not there yet
-            topics.settings.width = $(element).width();
             var data = currentDataset,
                 yTicks = 8,
                 xScale = d3.scale.linear()
@@ -132,7 +115,7 @@
             // Append axis and events
             svg.on("mousemove", mousemove);
 
-            var lines = svg.selectAll("line.yGrid").data(hScale.ticks(2*yTicks));
+            var lines = svg.selectAll("line.yGrid").data(hScale.ticks(2 * yTicks));
             lines.enter()
                 .append("line")
                 .attr({

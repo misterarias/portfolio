@@ -22,7 +22,8 @@
         var maximumDate;
         var minimumDate;
         var uniqueLabels = [],
-            uniqueColors = [];
+            uniqueColors = [],
+            uniqueValues = [];
 
         inference.addDataSet = function (dataset) {
 
@@ -31,11 +32,15 @@
             for (var k in dataset) {
                 var item = dataset[k];
                 if ($.inArray(item.topicName, uniqueLabels) == -1) {
+                    uniqueValues[item.topicName] = [];
                     uniqueLabels.push(item.topicName);
                     uniqueColors.push("rgb(" + Math.floor(Math.random() * 255) + "," +
                         Math.floor(Math.random() * 255) + "," +
                         Math.floor(Math.random() * 255) + ")");
                 }
+                // This way I'll have a list of lists, for path drawing
+                uniqueValues[item.topicName].push(item);
+
                 var date = item.date;
                 if (maximumDate < date) {
                     maximumDate = date;
@@ -51,16 +56,8 @@
         inference.init = function () {
             inference.settings = $.extend({}, defaults, options);
         };
+
         var redraw = function (data) {
-
-            // this, with inverted hscale, makes bars fall from the top
-            function barHeigth(value) {
-                return inference.settings.height - inference.settings.padding - hScale(value);
-            }
-
-            function barYPos(value) {
-                return hScale(value);
-            }
 
             // Mouse events
             var tooltip = d3.select("body")
@@ -103,10 +100,7 @@
                         return d.chance;
                     }))
                     .range([0.2, 1]),
-                radius = 7, // px
-                cScale = d3.scale.ordinal()
-                    .domain(uniqueLabels)
-                    .range(uniqueColors),
+                radius = 3, // px
                 xAxis = d3.svg.axis()
                     .orient("bottom")
                     .scale(xScale)
@@ -126,7 +120,18 @@
                     .attr("height", inference.settings.height)
                 ;
 
+            //This is the accessor function we talked about above
+            var lineFunction = d3.svg.line()
+                .x(function (d) {
+                    return xScale(d.date);
+                })
+                .y(function (d) {
+                    return hScale(d.chance);
+                })
+                .interpolate("linear");
+
             // Append axis and events
+            svg.on("mousemove", mousemove);
             svg.append("g")
                 .attr("class", "yaxis")
                 .attr("transform", "translate(" + inference.settings.padding.toString() + ",0)")
@@ -152,6 +157,7 @@
                         return hScale(d);
                     }
                 });
+
             svg.selectAll("line.xGrid").data(xScale.ticks(d3.time.weeks, 1)).enter()
                 .append("line")
                 .attr(
@@ -174,81 +180,108 @@
                         + this.getBBox().height + ")rotate(-45)";
                 });
 
+            // Create a path for each topic
+            for (var t in uniqueValues) {
+                var class_name = t.toLowerCase().replace(" ", "");
+                svg.append("path")
+                    .classed(class_name, true)
+                    .attr("d", lineFunction(uniqueValues[t]))
+                    .attr("stroke", function (d, i) {
+                        return uniqueColors[uniqueLabels.indexOf(t)];
+                    })
+                    .attr("stroke-width", 2)
+                    .attr("fill", "none")
+                    .attr("opacity", 0.5)
+                ;
+                var myCircles = svg.selectAll("circle." + class_name)
+                    .data(uniqueValues[t]).enter();
 
-            svg.selectAll('g.line').data(data).enter()
-                .append('g')
-                .attr('class', 'line')
-                .attr("style", function (d) {
-                    return "stroke: pink";
-                });
-
-            svg.selectAll('path.line').data(data).enter()
-                .append('path')
-                .attr("class", "line")
-                .attr("d", d3.svg.line()
-                    .x(function (d) {
+                myCircles.append("circle")
+                    .attr("r", radius)
+                    .classed(class_name, true)
+                    .attr("cx", function (d) {
                         return xScale(d.date);
                     })
-                    .y(function (d) {
-                        return barYPos(d.chance);
-                    }))
-                .attr("stroke", "blue")
-                .attr("stroke-width", 2)
-                .attr("fill", "red");
-            ;
+                    .attr("cy", function (d) {
+                        return hScale(d.chance);
+                    })
+                    .attr("opacity", function (d) {
+                        return rScale(d.chance)
+                    })
+                    .style('fill', function (d) {
+                        return uniqueColors[uniqueLabels.indexOf(t)];
+                    })
+                    .on("mouseover", function (d, i) {
+                        var tText = "<span><strong>" + d.topicName + "</strong> (" +
+                            (100 * d.chance).toString().substring(0, 5) + "%)<br/><small>" +
+                            (1 + d.date.getDay()) + "/" + (1 + d.date.getMonth()) + "/" + (1900 + d.date.getYear()) +
+                            "</small></span>";
 
-            // Append axis and events
-            svg.on("mousemove", mousemove);
+                        d3.select(this).transition().duration(iTransitionDuration)
+                            .attr("r", 1.3 * radius)
+                        ;
+                        tooltip
+                            .style("opacity", 1.0)
+                            .html(tText);
+                    })
+                    .on("mouseout", function (d) {
+                        d3.select(this).transition().duration(iTransitionDuration)
+                            .attr("r", radius)
+                        ;
+                        tooltip.style("opacity", 0.0);
+                    })
+            }
 
 
-            var myCircles = svg.selectAll("circle")
-                .data(data).enter();
+            /*
 
-            myCircles.append("circle")
-                .attr("r", radius)
-                .attr("cx", function (d) {
-                    return xScale(d.date);
-                })
-                .attr("cy", function (d) {
-                    return barYPos(d.chance);
-                })
-                .attr("opacity", function (d) {
-                    return rScale(d.chance)
-                })
-                .style('fill', function (d) {
-                    return cScale(d.chance);
-                })
-                .on("mouseover", function (d, i) {
-                    var tText = "<span><strong>" + d.topicName + "</strong> (" +
-                        (100 * d.chance).toString().substring(0, 5) + "%)<br/><small>" +
-                        (1 + d.date.getDay()) + "/" + (1 + d.date.getMonth()) + "/" + (1900 + d.date.getYear()) +
-                        "</small></span>";
+             // Append axis and events
+             svg.on("mousemove", mousemove);
 
-                    d3.select(this).transition().duration(iTransitionDuration)
-                        .attr("r", 1.3 * radius)
-                    ;
-                    tooltip
-                        .style("opacity", 1.0)
-                        .html(tText);
-                })
-                .on("mouseout", function (d) {
-                    d3.select(this).transition().duration(iTransitionDuration)
-                        .attr("r", radius)
-                    ;
-                    tooltip.style("opacity", 0.0);
-                })
-            ;
+             var myCircles = svg.selectAll("circle")
+             .data(data).enter();
 
+             myCircles.append("circle")
+             .attr("r", radius)
+             .attr("cx", function (d) {
+             return xScale(d.date);
+             })
+             .attr("cy", function (d) {
+             return hScale(d.chance);
+             })
+             .attr("opacity", function (d) {
+             return rScale(d.chance)
+             })
+             .style('fill', function (d) {
+             return cScale(d.chance);
+             })
+             .on("mouseover", function (d, i) {
+             var tText = "<span><strong>" + d.topicName + "</strong> (" +
+             (100 * d.chance).toString().substring(0, 5) + "%)<br/><small>" +
+             (1 + d.date.getDay()) + "/" + (1 + d.date.getMonth()) + "/" + (1900 + d.date.getYear()) +
+             "</small></span>";
+
+             d3.select(this).transition().duration(iTransitionDuration)
+             .attr("r", 1.3 * radius)
+             ;
+             tooltip
+             .style("opacity", 1.0)
+             .html(tText);
+             })
+             .on("mouseout", function (d) {
+             d3.select(this).transition().duration(iTransitionDuration)
+             .attr("r", radius)
+             ;
+             tooltip.style("opacity", 0.0);
+             })
+             ;*/
 
             // add legend
             var legend = svg.append("g")
                 .attr("class", "legend")
-                //.attr("x", w - 65)
-                //.attr("y", 50)
                 .attr("height", 100)
                 .attr("width", 100)
-                .attr('transform', 'translate(0,50)')
-
+                .attr('transform', 'translate(0,50)');
 
             legend.selectAll('rect')
                 .data(uniqueLabels)
@@ -261,8 +294,7 @@
                 .attr("width", 10)
                 .attr("height", 10)
                 .style("fill", function (d, i) {
-                    var color = uniqueColors[i];
-                    return color;
+                    return uniqueColors[i];
                 });
 
             legend.selectAll('text')
@@ -274,10 +306,31 @@
                     return i * 20 + 9;
                 })
                 .text(function (d, i) {
-                    //var text = uniqueColors[data.indexOf(d)][0];
-                    var text = uniqueLabels[i];
-                    return text;
-                });
+                    return uniqueLabels[i];
+                })
+                .on("mouseover", function (d, i) {
+                    for (var k in uniqueLabels) {
+                        var class_name = uniqueLabels[k].toLowerCase().replace(" ", "");
+                        var elem = d3.select("." + class_name).transition().duration(iTransitionDuration);
+                        if (k == i) {
+                            elem.attr("opacity", 1)
+                                .attr("stroke-width", 3)
+                        } else {
+                            elem.attr("opacity", 0.25)
+                                .attr("stroke-width", 1)
+                        }
+                    }
+                })
+                .on("mouseout", function (d, i) {
+                    for (var k in uniqueLabels) {
+                        var class_name = uniqueLabels[k].toLowerCase().replace(" ", "");
+                        d3.select("." + class_name).transition().duration(iTransitionDuration)
+                            .attr("opacity", 0.5)
+                            .attr("stroke-width", 2)
+                    }
+                })
+            ;
+
         };
 
 

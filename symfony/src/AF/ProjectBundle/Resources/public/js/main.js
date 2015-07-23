@@ -10,6 +10,7 @@ var elasticUrl = "http://localhost:9200/";
 $(document).ready(function () {
     "use strict";
 
+
     d3.json(elasticUrl + indexName + "/topics/_search",
         function (data) {
             var termsInfo = [], datesInfo = [], topics = ["Topicaso", "Topiquito", "Topotamadre"];
@@ -19,11 +20,13 @@ $(document).ready(function () {
                 for (var topic in topics) {
 
                     termsInfo[topics[topic]] = [];
-                    termsInfo[topics[topic]].push({term: 'term1', weight: Math.random()});
-                    termsInfo[topics[topic]].push({term: 'term2', weight: Math.random()});
-                    termsInfo[topics[topic]].push({term: 'term3', weight: Math.random()});
+                    for (var i = 0; i < 30; i++) {
+                        termsInfo[topics[topic]].push({topicName: topics[topic], term: 'term' + i, weight: Math.random()});
+                        datesInfo.push({topicName: topics[topic], date: new Date(2013, 2, i), chance: Math.random()});
+                    }
                 }
-            } else {
+            }
+            else {
                 for (var i in data.hits.hits) {
                     var hit = data.hits.hits[i];
                     if (hit != undefined && hit._source != undefined) {
@@ -59,19 +62,18 @@ $(document).ready(function () {
                 ds.append(option);
 
                 var tbody = $("#topic_" + topic + " #table tbody");
-                for (var k = 0; k < Math.min(5, info.length) ; k++) {
+                for (var k = 0; k < Math.min(5, info.length); k++) {
 
                     tbody.append('<tr><th scope="row">' + (1 + k).toString() +
                         '</th><td>' + info[k].term +
-                        '</td><td>' + (info[k].weight).toString().substring(0,6) +
+                        '</td><td>' + (info[k].weight).toString().substring(0, 6) +
                         '</td></tr>'
                     );
                 }
 
                 var topic_graph = $("#topic_" + topic + " #graph");
+
                 topic_graph.topics({
-                    width: topic_graph.width(),
-                    height: $("#topic_table_" + topic).height() + 2 * 40,
                     barScale: 0.87,
                     padding: 40,
                     svgClassName: "topic_graph_" + topic
@@ -83,17 +85,21 @@ $(document).ready(function () {
                 } else {
                     $("#topic_" + topic).removeClass("hide").hide();
                 }
-                //topic_graph.data('topics').setCurrentDataset(info);
+                topic_graph.data('topics').setCurrentDataset(info);
             }
-            ds.on("change", function(ev){
+            inferred_graph.data('inference').addDataSet(datesInfo);
+
+            ds.on("change", function (ev) {
                 for (topic in topics) {
                     var item = $("#topic_" + topic);
                     item.hide()
                 }
                 $("#topic_" + ds[0].selectedIndex).fadeIn("slow");
             });
-          //  inferred_graph.data('inference').addDataSet(datesInfo);
 
-        });
+
+        }
+    )
+    ;
 })
 ;
