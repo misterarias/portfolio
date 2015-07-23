@@ -5,32 +5,39 @@
  */
 
 var indexName = "test";
-var elasticUrl = "http://192.168.2.109:9200/";
+var elasticUrl = "http://localhost:9200/";
 
 $(document).ready(function () {
     "use strict";
 
     d3.json(elasticUrl + indexName + "/topics/_search",
         function (data) {
-            if (data.hits == undefined || data.hits.hits === undefined) {
+            var termsInfo = [], datesInfo = [], topics = ["Topicaso", "Topiquito", "Topotamadre"];
+
+            if (data == undefined || data.hits == undefined || data.hits.hits === undefined) {
                 console.error("No data retrieved from ES");
-            }
+                for (var topic in topics) {
 
-            var termsInfo = [], datesInfo = [], topics = [];
+                    termsInfo[topics[topic]] = [];
+                    termsInfo[topics[topic]].push({term: 'term1', weight: Math.random()});
+                    termsInfo[topics[topic]].push({term: 'term2', weight: Math.random()});
+                    termsInfo[topics[topic]].push({term: 'term3', weight: Math.random()});
+                }
+            } else {
+                for (var i in data.hits.hits) {
+                    var hit = data.hits.hits[i];
+                    if (hit != undefined && hit._source != undefined) {
+                        var source = hit._source;
 
-            for (var i in data.hits.hits) {
-                var hit = data.hits.hits[i];
-                if (hit != undefined && hit._source != undefined) {
-                    var source = hit._source;
+                        topics.push(source.topicName);
+                        termsInfo[source.topicName] = source.terms;
 
-                    topics.push(source.topicName);
-                    termsInfo[source.topicName] = source.terms;
-
-                    for (var item in source.dates) {
-                        var dateInfo = source.dates[item];
-                        dateInfo.topicName = source.topicName;
-                        dateInfo.date = new Date(dateInfo.date);
-                        datesInfo.push(dateInfo)
+                        for (var item in source.dates) {
+                            var dateInfo = source.dates[item];
+                            dateInfo.topicName = source.topicName;
+                            dateInfo.date = new Date(dateInfo.date);
+                            datesInfo.push(dateInfo)
+                        }
                     }
                 }
             }
@@ -41,31 +48,51 @@ $(document).ready(function () {
                 height: 500
             });
 
+            var ds = $("#topicSelector");
+            var showOne = false;
             for (var topic in topics) {
                 var info = termsInfo[topics[topic]];
 
-                $("#topic_table_" + topic + " #topicName")[0].innerHTML = "Top 5 terms for '" + topics[topic] + "'";
-                var tbody = $("#topic_table_" + topic + " tbody");
-                for (var k = 0; k < 5; k++) {
+                var option = new Option();
+                option.id = topics[topic];
+                option.innerHTML = topics[topic];
+                ds.append(option);
+
+                var tbody = $("#topic_" + topic + " #table tbody");
+                for (var k = 0; k < Math.min(5, info.length) ; k++) {
 
                     tbody.append('<tr><th scope="row">' + (1 + k).toString() +
                         '</th><td>' + info[k].term +
-                        '</td><td>' + info[k].weight +
+                        '</td><td>' + (info[k].weight).toString().substring(0,6) +
                         '</td></tr>'
                     );
                 }
 
-                var topic_graph = $("#topic_graph_" + topic);
+                var topic_graph = $("#topic_" + topic + " #graph");
                 topic_graph.topics({
                     width: topic_graph.width(),
-                    height: $("#topic_table_" + topic).height() + 2*40,
+                    height: $("#topic_table_" + topic).height() + 2 * 40,
                     barScale: 0.87,
                     padding: 40,
                     svgClassName: "topic_graph_" + topic
                 });
-                topic_graph.data('topics').setCurrentDataset(info);
+
+                if (!showOne) {
+                    $("#topic_" + topic).removeClass("hide").show();
+                    showOne = true;
+                } else {
+                    $("#topic_" + topic).removeClass("hide").hide();
+                }
+                //topic_graph.data('topics').setCurrentDataset(info);
             }
-            inferred_graph.data('inference').addDataSet(datesInfo);
+            ds.on("change", function(ev){
+                for (topic in topics) {
+                    var item = $("#topic_" + topic);
+                    item.hide()
+                }
+                $("#topic_" + ds[0].selectedIndex).fadeIn("slow");
+            });
+          //  inferred_graph.data('inference').addDataSet(datesInfo);
 
         });
 })

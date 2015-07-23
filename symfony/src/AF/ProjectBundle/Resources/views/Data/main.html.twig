@@ -3,54 +3,77 @@
 
 {% block stylesheets %}
 
-    {{ parent() }}
-    {% stylesheets
-    '@AFProjectBundle/Resources/public/css/lda_viz.css'
-    '@AFProjectBundle/Resources/public/css/bootstrap-slider.css'
-    filter='cssrewrite' %}
-    <link rel="stylesheet" href="{{ asset_url }}">
-    {% endstylesheets %}
+  {{ parent() }}
+  {% stylesheets
+  '@AFProjectBundle/Resources/public/css/lda_viz.css'
+  '@AFProjectBundle/Resources/public/css/bootstrap-slider.css'
+  filter='cssrewrite' %}
+  <link rel="stylesheet" href="{{ asset_url }}">
+  {% endstylesheets %}
 
 {% endblock %}
 
 {% block content %}
 
-    {% for i in range(0, 2) %}
-        <div class="row">
-            <div id="topic_graph_{{ i }}" class="col-md-8"></div>
-            <div id="topic_table_{{ i }}" class="col-md-4 well">
-                <p id="topicName"></p>
-                <table id="topicData" class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>term</th>
-                        <th>weight (%)</th>
-                    </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-    {% endfor %}
+  {{ widgets.sectionStart(
+  "Visualizing results"
+  ) }}
 
-    <div class="row">
-        <div id="infered_graph" class="col-md-12"></div>
+  <p>
+    Aqui muestro los results y esas coas, con un formulario asín como todos
+
+  </p>
+
+<p>
+  <div class="form-horizontal">
+    <div class="form-group">
+      <label for="topicSelector" class="col-sm-2 control-label">Get top terms for</label>
+
+      <div class="col-sm-4">
+        <select id="topicSelector" class="form-control" name="Choose topic"></select>
+      </div>
     </div>
+  </div>
+  </p>
+
+  {{ widgets.sectionEnd() }}
+
+  {% for i in range(0, 2) %}
+    <div class="row hide" id="topic_{{ i }}">
+      <div id="table" class="col-md-4">
+        <p id="topicName"></p>
+        <table id="topicData" class="table table-striped">
+          <thead>
+          <tr>
+            <th>#</th>
+            <th>term</th>
+            <th>weight (%)</th>
+          </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div id="graph" class="col-md-8"></div>
+    </div>
+  {% endfor %}
+
+  <div class="row">
+    <div id="infered_graph" class="col-md-12"></div>
+  </div>
 
 {% endblock %}
 
 {% block javascripts %}
 
-    {{ parent() }}
+  {{ parent() }}
 
-    {% javascripts
-    '@AFProjectBundle/Resources/public/js/d3.js'
-    '@AFProjectBundle/Resources/public/js/bootstrap-slider.js'
-    '@AFProjectBundle/Resources/public/js/topics.js'
-    '@AFProjectBundle/Resources/public/js/inference.js'
-    '@AFProjectBundle/Resources/public/js/main.js' %}
-    <script src="{{ asset_url }}"></script>
-    {% endjavascripts %}
+  {% javascripts
+  '@AFProjectBundle/Resources/public/js/d3.js'
+  '@AFProjectBundle/Resources/public/js/bootstrap-slider.js'
+  '@AFProjectBundle/Resources/public/js/topics.js'
+  '@AFProjectBundle/Resources/public/js/inference.js'
+  '@AFProjectBundle/Resources/public/js/main.js' %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
 
 {% endblock %}
