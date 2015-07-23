@@ -19,19 +19,24 @@
         var $element = $(element), // reference to the jQuery version of DOM element
             element = element;    // reference to the actual DOM element
         var inference = this; // me
-        var currentDataset = null;
         var maximumDate;
         var minimumDate;
+        var uniqueLabels = [],
+            uniqueColors = [];
 
-        inference.setCurrentDataset = function (dataset) {
-            currentDataset = dataset;
+        inference.addDataSet = function (dataset) {
 
             minimumDate = new Date(2100, 12, 31);
             maximumDate = new Date(1970, 1, 1);
-            var dateLen = currentDataset.length;
-            for (var i = 0; i < dateLen; i++) {
-                var date = new Date(currentDataset[i].date);
-                currentDataset[i].date = date;
+            for (var k in dataset) {
+                var item = dataset[k];
+                if ($.inArray(item.topicName, uniqueLabels) == -1) {
+                    uniqueLabels.push(item.topicName);
+                    uniqueColors.push("rgb(" + Math.floor(Math.random() * 255) + "," +
+                        Math.floor(Math.random() * 255) + "," +
+                        Math.floor(Math.random() * 255) + ")");
+                }
+                var date = item.date;
                 if (maximumDate < date) {
                     maximumDate = date;
                 }
@@ -40,13 +45,13 @@
                 }
             }
 
-            redraw();
+            redraw(dataset);
         };
 
         inference.init = function () {
             inference.settings = $.extend({}, defaults, options);
         };
-        var redraw = function () {
+        var redraw = function (data) {
 
             // this, with inverted hscale, makes bars fall from the top
             function barHeigth(value) {
@@ -76,29 +81,36 @@
 
             // Setup our canvas, if not there yet
             inference.settings.width = $(element).width();
-            var data = currentDataset,
-                iTransitionDuration = 400,
+            var iTransitionDuration = 400,
                 xScale = d3.time.scale()
-                    .domain([minimumDate, maximumDate])
-                    .rangeRound([inference.settings.padding,
+                    .domain(d3.extent(data, function (d) {
+                        return d.date;
+                    }))
+                    .range([inference.settings.padding,
                         inference.settings.width - 2 * inference.settings.padding]),
                 hScale = d3.scale.linear()
-                    .domain([0, 1])
-                    .range(
-                    [inference.settings.height - inference.settings.padding,
-                        inference.settings.padding]
-                ),
+                    .domain(d3.extent(data, function (d) {
+                        return d.chance;
+                    }))
+                    .range([inference.settings.height - inference.settings.padding,
+                        inference.settings.padding]),
                 yAxis = d3.svg.axis()
                     .orient("left")
                     .scale(hScale)
                     .ticks(7),
-                rScale = d3.scale.pow().domain([0, 1]).range([0.4, 0.9]),
-                radius = 10, // px
-                cScale = d3.scale.linear().domain([0, 1]).range(['blue', 'red']),
+                rScale = d3.scale.pow()
+                    .domain(d3.extent(data, function (d) {
+                        return d.chance;
+                    }))
+                    .range([0.2, 1]),
+                radius = 7, // px
+                cScale = d3.scale.ordinal()
+                    .domain(uniqueLabels)
+                    .range(uniqueColors),
                 xAxis = d3.svg.axis()
                     .orient("bottom")
                     .scale(xScale)
-                    .ticks(d3.time.months, 1)
+                    .ticks(d3.time.weeks, 1)
                     .tickFormat(date_format)
                 ;
 
@@ -143,7 +155,7 @@
                             return hScale(d);
                         }
                     });
-                svg.selectAll("line.xGrid").data(xScale.ticks(d3.time.months, 1)).enter()
+                svg.selectAll("line.xGrid").data(xScale.ticks(d3.time.weeks, 1)).enter()
                     .append("line")
                     .attr(
                     {
@@ -175,17 +187,17 @@
             // Append axis and events
             svg.on("mousemove", mousemove);
 
-            var myBars = svg.selectAll("circle")
+            var myCircles = svg.selectAll("circle")
                 .data(data, function (item) {
-                    return item.date + item.chance;
+                    return item.date + item.chance + item.topicName;
                 });
 
-            myBars.exit().transition().duration(iTransitionDuration)
+            myCircles.exit().transition().duration(iTransitionDuration)
                 .attr("r", 0)
                 .attr("y", inference.settings.height)
             ;
 
-            myBars.enter().append("circle")
+            myCircles.enter().append("circle")
                 .attr("r", radius)
                 .attr("cx", function (d) {
                     return xScale(d.date);
@@ -200,29 +212,27 @@
                     return cScale(d.chance);
                 })
                 .on("mouseover", function (d, i) {
-                    var tText = "<span>" + (100 * d.chance).toString().substring(0, 8) +
-                        " % of docs on <strong>" +
-                        (1 + d.date.getDay()) + "/" + (1+d.date.getMonth()) + "/" + (1900 + d.date.getYear())
-                    "</strong> </span>";
+                    var tText = "<span><strong>" + d.topicName + "</strong> (" +
+                        (100 * d.chance).toString().substring(0, 5) + "%)<br/><small>" +
+                        (1 + d.date.getDay()) + "/" + (1 + d.date.getMonth()) + "/" + (1900 + d.date.getYear()) +
+                        "</small></span>";
 
-                    d3.select(this)
-                        .attr("opacity", function (d) {
-                            return rScale(d.chance) * 2
-                        });
+                    d3.select(this).transition().duration(iTransitionDuration)
+                        .attr("r", 1.3 * radius)
+                    ;
                     tooltip
                         .style("opacity", 1.0)
                         .html(tText);
                 })
                 .on("mouseout", function (d) {
-                    d3.select(this)
-                        .attr("opacity", function (d) {
-                            return rScale(d.chance)
-                        });
+                    d3.select(this).transition().duration(iTransitionDuration)
+                        .attr("r", radius)
+                    ;
                     tooltip.style("opacity", 0.0);
                 })
             ;
 
-            myBars.transition().duration(iTransitionDuration)
+            myCircles.transition().duration(iTransitionDuration)
                 .attr("r", radius)
                 .style('fill', function (d) {
                     return cScale(d.chance);
@@ -237,6 +247,45 @@
                     return barYPos(d.chance);
                 })
             ;
+
+            // add legend
+            var legend = svg.append("g")
+                .attr("class", "legend")
+                //.attr("x", w - 65)
+                //.attr("y", 50)
+                .attr("height", 100)
+                .attr("width", 100)
+                .attr('transform', 'translate(0,50)')
+
+
+            legend.selectAll('rect')
+                .data(uniqueLabels)
+                .enter()
+                .append("rect")
+                .attr("x", inference.settings.width - 65)
+                .attr("y", function (d, i) {
+                    return i * 20;
+                })
+                .attr("width", 10)
+                .attr("height", 10)
+                .style("fill", function (d, i) {
+                    var color = uniqueColors[i];
+                    return color;
+                });
+
+            legend.selectAll('text')
+                .data(uniqueLabels)
+                .enter()
+                .append("text")
+                .attr("x", inference.settings.width - 52)
+                .attr("y", function (d, i) {
+                    return i * 20 + 9;
+                })
+                .text(function (d, i) {
+                    //var text = uniqueColors[data.indexOf(d)][0];
+                    var text = uniqueLabels[i];
+                    return text;
+                });
         };
 
 

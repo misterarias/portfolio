@@ -16,7 +16,6 @@ $(document).ready(function () {
                 console.error("No data retrieved from ES");
             }
 
-            var ds = $('#dataset');
             var termsInfo = [], datesInfo = [], topics = [];
 
             for (var k in data.hits.hits) {
@@ -26,42 +25,38 @@ $(document).ready(function () {
 
                     topics.push(source.topicName);
                     termsInfo[source.topicName] = source.terms;
-                    datesInfo[source.topicName] = source.dates;
+
+                    for (var item in source.dates) {
+                        var dateInfo = source.dates[item];
+                        dateInfo.topicName = source.topicName;
+                        dateInfo.date = new Date(dateInfo.date);
+                        datesInfo.push(dateInfo)
+                    }
                 }
-            }
-
-            console.log(termsInfo);
-            console.log(datesInfo);
-
-            // Now that we've got data, populate controls
-            for (var topic in topics) {
-                var option = new Option();
-                option.id = topics[topic];
-                option.innerHTML = topics[topic];
-                ds.append(option);
             }
 
             var inferred_graph = $("#infered_graph");
             inferred_graph.inference({
                 width: inferred_graph.width(),
-                height: 300,
-
+                height: 400
             });
 
-            var topic_graph = $("#topic_graph");
-            topic_graph.topics({
-                width: topic_graph.width(),
-                height: 300,
-                barScale: 0.87,
-                padding: 40
-            });
+            for (var topic in topics) {
 
-            ds.on("change", function (ev) {
-                var id = $("#dataset")[0].options[this.selectedIndex].id;
+                var topic_graph = $("#topic_graph_" + topic);
+                topic_graph.topics({
+                    width: topic_graph.width(),
+                    height: 300,
+                    barScale: 0.87,
+                    padding: 40,
+                    svgClassName: "topic_graph_" + topic
+                });
+                topic_graph.data('topics').setCurrentDataset(termsInfo[topics[topic]]);
 
-                //  topic_graph.data('topics').setCurrentDataset(termsInfo[id]);
-                inferred_graph.data('inference').setCurrentDataset(datesInfo[id]);
-            }).trigger("change");
+                //break; // DEBUG
+            }
+            inferred_graph.data('inference').addDataSet(datesInfo);
+
         });
 })
 ;

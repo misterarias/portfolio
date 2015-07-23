@@ -22,7 +22,7 @@ object Main {
                              var outputDir: String = null,
                              indexName: String = "results",
                              overwrite: Boolean = false,
-                             k: Int = 20,
+                             topicNumber: Int = 3,
                              maxIterations: Int = 100,
                              vocabSize: Int = 10000,
                              stopwordFile: String = "",
@@ -36,8 +36,8 @@ object Main {
     val parser = new OptionParser[Params]("Topic Modeling") {
       head("Application of Spark's LDA to research topics on GDELT data.")
       opt[Int]("k")
-        .text(s"number of topics. default: ${defaultParams.k}")
-        .action((x, c) => c.copy(k = x))
+        .text(s"number of topics. default: ${defaultParams.topicNumber}")
+        .action((x, c) => c.copy(topicNumber = x))
       opt[Int]("maxIterations")
         .text(s"number of iterations of learning. default: ${defaultParams.maxIterations}")
         .action((x, c) => c.copy(maxIterations = x))
@@ -88,7 +88,7 @@ object Main {
 
     def run(params: Params): Unit = {
 
-      val dataSetName: String = Array(params.indexName, params.algorithm, params.k).mkString("_")
+      val dataSetName: String = Array(params.indexName, params.algorithm, params.topicNumber).mkString("_")
       if (params.outputDir == null) {
         params.outputDir = dataSetName
       }
@@ -130,7 +130,7 @@ object Main {
         inputDir = params.outputDir,
         dataSetName = dataSetName,
         stopWordsFile = params.stopwordFile,
-        k = params.k,
+        k = params.topicNumber,
         maxIterations = params.maxIterations,
         algorithm = params.algorithm
       ).run

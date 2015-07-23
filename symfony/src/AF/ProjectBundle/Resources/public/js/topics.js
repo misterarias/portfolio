@@ -16,7 +16,9 @@
             /** Used to scale bar width */
             barScale: 0.87,
             /** Minimum ms between slider events */
-            minInterval: 500
+            minInterval: 500,
+            /** Class name for SVG Element */
+            svgClassName: "topics"
         };
         var $element = $(element), // reference to the jQuery version of DOM element
             element = element;    // reference to the actual DOM element
@@ -104,37 +106,26 @@
                     .attr("height", topics.settings.height)
                 ;
 
-            var svg;
-            if ($("svg.topics").length == 0) {
-                // Create and configure the canvas
-                svg = container.append("svg")
+            var svg = container.append("svg")
                     .classed("canvas", true)
-                    .classed("topics", true)
+                    .classed(topics.settings.svgClassName, true)
                     .attr("width", topics.settings.width)
                     .attr("height", topics.settings.height)
                 ;
 
-                svg.append("g")
-                    .attr("class", "xaxis")   // give it a class so it can be used to select only xaxis labels  below
-                    .attr("transform",
-                    "translate(0," + (topics.settings.height - topics.settings.padding).toString() + ")")
-                    .call(xAxis)
-                ;
+            svg.append("g")
+                .attr("class", "xaxis")   // give it a class so it can be used to select only xaxis labels  below
+                .attr("transform",
+                "translate(0," + (topics.settings.height - topics.settings.padding).toString() + ")")
+                .call(xAxis)
+            ;
 
 
-                svg.append("g")
-                    .attr("class", "yaxis")
-                    .attr("transform", "translate(" + topics.settings.padding.toString() + ",0)")
-                    .call(yAxis)
-                ;
-
-            } else {
-                // It already exists!! Resize in case settings haave changed
-                svg = container.select("svg.topics")
-                    .attr("width", topics.settings.width)
-                    .attr("height", topics.settings.height)
-                ;
-            }
+            svg.append("g")
+                .attr("class", "yaxis")
+                .attr("transform", "translate(" + topics.settings.padding.toString() + ",0)")
+                .call(yAxis)
+            ;
 
             // Append axis and events
             svg.on("mousemove", mousemove);
