@@ -184,3 +184,14 @@ ul.bullets li {
     right: 0;
     height: 70px;
 }
+
+.table-striped td,
+.table-striped tr {
+    height:20px;
+}
+
+.canvas {
+    display: inline-block;
+    vertical-align: middle;
+    float:none;
+}

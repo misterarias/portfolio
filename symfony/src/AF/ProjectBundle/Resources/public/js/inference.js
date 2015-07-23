@@ -27,27 +27,24 @@
 
         inference.addDataSet = function (dataset) {
 
-            minimumDate = new Date(2100, 12, 31);
-            maximumDate = new Date(1970, 1, 1);
             for (var k in dataset) {
                 var item = dataset[k];
                 if ($.inArray(item.topicName, uniqueLabels) == -1) {
                     uniqueValues[item.topicName] = [];
                     uniqueLabels.push(item.topicName);
-                    uniqueColors.push("rgb(" + Math.floor(Math.random() * 255) + "," +
-                        Math.floor(Math.random() * 255) + "," +
+                    // I like blue :P
+                    uniqueColors.push("rgb(" +
+                        Math.floor(Math.random() * 128) + "," +
+                        Math.floor(Math.random() * 128) + "," +
                         Math.floor(Math.random() * 255) + ")");
                 }
                 // This way I'll have a list of lists, for path drawing
                 uniqueValues[item.topicName].push(item);
-
-                var date = item.date;
-                if (maximumDate < date) {
-                    maximumDate = date;
-                }
-                if (minimumDate > date) {
-                    minimumDate = date;
-                }
+            }
+            for (var values in uniqueValues) {
+                uniqueValues[values].sort(function (a, b) {
+                    return d3.ascending(a.date.getTime(), b.date.getTime());
+                });
             }
 
             redraw(dataset);
@@ -100,11 +97,11 @@
                         return d.chance;
                     }))
                     .range([0.2, 1]),
-                radius = 3, // px
+                radius = 2, lineOpacity = 0.5, lineWidth = 1,
                 xAxis = d3.svg.axis()
                     .orient("bottom")
                     .scale(xScale)
-                    .ticks(d3.time.weeks, 1)
+                    .ticks(d3.time.months, 1)
                     .tickFormat(date_format)
                 ;
 
@@ -120,7 +117,6 @@
                     .attr("height", inference.settings.height)
                 ;
 
-            //This is the accessor function we talked about above
             var lineFunction = d3.svg.line()
                 .x(function (d) {
                     return xScale(d.date);
@@ -158,7 +154,7 @@
                     }
                 });
 
-            svg.selectAll("line.xGrid").data(xScale.ticks(d3.time.weeks, 1)).enter()
+            svg.selectAll("line.xGrid").data(xScale.ticks(d3.time.months, 1)).enter()
                 .append("line")
                 .attr(
                 {
@@ -189,12 +185,14 @@
                     .attr("stroke", function (d, i) {
                         return uniqueColors[uniqueLabels.indexOf(t)];
                     })
-                    .attr("stroke-width", 2)
+                    .attr("stroke-width", lineWidth)
                     .attr("fill", "none")
-                    .attr("opacity", 0.5)
+                    .attr("opacity", lineOpacity)
                 ;
                 var myCircles = svg.selectAll("circle." + class_name)
-                    .data(uniqueValues[t]).enter();
+                    .data(uniqueValues[t], function (d, i) {
+                        return d.chance + d.date;
+                    }).enter();
 
                 myCircles.append("circle")
                     .attr("r", radius)
@@ -231,50 +229,6 @@
                         tooltip.style("opacity", 0.0);
                     })
             }
-
-
-            /*
-
-             // Append axis and events
-             svg.on("mousemove", mousemove);
-
-             var myCircles = svg.selectAll("circle")
-             .data(data).enter();
-
-             myCircles.append("circle")
-             .attr("r", radius)
-             .attr("cx", function (d) {
-             return xScale(d.date);
-             })
-             .attr("cy", function (d) {
-             return hScale(d.chance);
-             })
-             .attr("opacity", function (d) {
-             return rScale(d.chance)
-             })
-             .style('fill', function (d) {
-             return cScale(d.chance);
-             })
-             .on("mouseover", function (d, i) {
-             var tText = "<span><strong>" + d.topicName + "</strong> (" +
-             (100 * d.chance).toString().substring(0, 5) + "%)<br/><small>" +
-             (1 + d.date.getDay()) + "/" + (1 + d.date.getMonth()) + "/" + (1900 + d.date.getYear()) +
-             "</small></span>";
-
-             d3.select(this).transition().duration(iTransitionDuration)
-             .attr("r", 1.3 * radius)
-             ;
-             tooltip
-             .style("opacity", 1.0)
-             .html(tText);
-             })
-             .on("mouseout", function (d) {
-             d3.select(this).transition().duration(iTransitionDuration)
-             .attr("r", radius)
-             ;
-             tooltip.style("opacity", 0.0);
-             })
-             ;*/
 
             // add legend
             var legend = svg.append("g")
@@ -314,10 +268,10 @@
                         var elem = d3.select("." + class_name).transition().duration(iTransitionDuration);
                         if (k == i) {
                             elem.attr("opacity", 1)
-                                .attr("stroke-width", 3)
+                                .attr("r", 1.3*radius)
                         } else {
-                            elem.attr("opacity", 0.25)
-                                .attr("stroke-width", 1)
+                            elem.attr("opacity", 0)
+                                .attr("r", 0)
                         }
                     }
                 })
@@ -325,8 +279,10 @@
                     for (var k in uniqueLabels) {
                         var class_name = uniqueLabels[k].toLowerCase().replace(" ", "");
                         d3.select("." + class_name).transition().duration(iTransitionDuration)
-                            .attr("opacity", 0.5)
-                            .attr("stroke-width", 2)
+                            .attr("opacity", lineOpacity)
+                            .attr("r", radius)
+
+                        ;
                     }
                 })
             ;

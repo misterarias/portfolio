@@ -4,7 +4,7 @@
  * Created by juanito on 14/06/15.
  */
 
-var indexName = "test";
+var indexName = "project";
 var elasticUrl = "http://localhost:9200/";
 
 $(document).ready(function () {
@@ -13,20 +13,24 @@ $(document).ready(function () {
 
     d3.json(elasticUrl + indexName + "/topics/_search",
         function (data) {
-            var termsInfo = [], datesInfo = [], topics = ["Topicaso", "Topiquito", "Topotamadre"];
+            var termsInfo = [], datesInfo = [], topics = [];
 
             if (data == undefined || data.hits == undefined || data.hits.hits === undefined) {
                 console.error("No data retrieved from ES");
+                topics = ["Topicaso", "Topiquito", "Topotamadre"];
                 for (var topic in topics) {
 
                     termsInfo[topics[topic]] = [];
                     for (var i = 0; i < 30; i++) {
-                        termsInfo[topics[topic]].push({topicName: topics[topic], term: 'term' + i, weight: Math.random()});
+                        termsInfo[topics[topic]].push({
+                            topicName: topics[topic],
+                            term: 'term' + i,
+                            weight: Math.random()
+                        });
                         datesInfo.push({topicName: topics[topic], date: new Date(2013, 2, i), chance: Math.random()});
                     }
                 }
-            }
-            else {
+            } else {
                 for (var i in data.hits.hits) {
                     var hit = data.hits.hits[i];
                     if (hit != undefined && hit._source != undefined) {
@@ -62,7 +66,7 @@ $(document).ready(function () {
                 ds.append(option);
 
                 var tbody = $("#topic_" + topic + " #table tbody");
-                for (var k = 0; k < Math.min(5, info.length); k++) {
+                for (var k = 0; k < Math.min(10, info.length); k++) {
 
                     tbody.append('<tr><th scope="row">' + (1 + k).toString() +
                         '</th><td>' + info[k].term +
