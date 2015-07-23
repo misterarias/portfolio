@@ -18,8 +18,8 @@ $(document).ready(function () {
 
             var termsInfo = [], datesInfo = [], topics = [];
 
-            for (var k in data.hits.hits) {
-                var hit = data.hits.hits[k];
+            for (var i in data.hits.hits) {
+                var hit = data.hits.hits[i];
                 if (hit != undefined && hit._source != undefined) {
                     var source = hit._source;
 
@@ -38,21 +38,11 @@ $(document).ready(function () {
             var inferred_graph = $("#infered_graph");
             inferred_graph.inference({
                 width: inferred_graph.width(),
-                height: 400
+                height: 500
             });
 
             for (var topic in topics) {
                 var info = termsInfo[topics[topic]];
-
-                var topic_graph = $("#topic_graph_" + topic);
-                topic_graph.topics({
-                    width: topic_graph.width(),
-                    height: 300,
-                    barScale: 0.87,
-                    padding: 40,
-                    svgClassName: "topic_graph_" + topic
-                });
-                topic_graph.data('topics').setCurrentDataset(info);
 
                 $("#topic_table_" + topic + " #topicName")[0].innerHTML = "Top 5 terms for '" + topics[topic] + "'";
                 var tbody = $("#topic_table_" + topic + " tbody");
@@ -65,8 +55,15 @@ $(document).ready(function () {
                     );
                 }
 
-
-                //break; // DEBUG
+                var topic_graph = $("#topic_graph_" + topic);
+                topic_graph.topics({
+                    width: topic_graph.width(),
+                    height: $("#topic_table_" + topic).height() + 2*40,
+                    barScale: 0.87,
+                    padding: 40,
+                    svgClassName: "topic_graph_" + topic
+                });
+                topic_graph.data('topics').setCurrentDataset(info);
             }
             inferred_graph.data('inference').addDataSet(datesInfo);
 
