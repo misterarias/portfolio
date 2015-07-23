@@ -4,15 +4,14 @@
  * Created by juanito on 14/06/15.
  */
 
-var indexName = "project";
-var elasticUrl = "http://localhost:9200/";
-
+//var indexName = "project";
+//var elasticUrl = "http://localhost:9200/" + indexName + "/topics/_search";
+var fixedUrl = $("#data_locator").val();
 $(document).ready(function () {
     "use strict";
 
 
-    d3.json(elasticUrl + indexName + "/topics/_search",
-        function (data) {
+    d3.json(fixedUrl, function (data) {
             var termsInfo = [], datesInfo = [], topics = [];
 
             if (data == undefined || data.hits == undefined || data.hits.hits === undefined) {
