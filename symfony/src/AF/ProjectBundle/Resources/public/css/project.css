@@ -163,17 +163,27 @@ body {
 
 }
 
-.todo {
+.box {
     width: 80%;
     padding: 20px;
-    background: #FF1010;
-    border: solid 1px #aaa;
+    background: #f1f1f1;
+    border: solid 1px darkslategray;
     border-radius: 8px;
 }
 
+.box .todo {
+    background: #FF1010;
+    border: solid 1px #aaa;
+}
+
+
 ul.bullets li {
     padding: 5px 0;
-    margin-left: -10px;
+    /*margin-left: -10px;*/
+}
+
+.bullets strong {
+    margin-right: 5px;
 }
 
 .navigation-buttons {
@@ -195,3 +205,4 @@ ul.bullets li {
     vertical-align: middle;
     float:none;
 }
+

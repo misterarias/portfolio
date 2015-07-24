@@ -20,7 +20,7 @@
             element = element;    // reference to the actual DOM element
         var inference = this; // me
         var uniqueLabels = [],
-            uniqueColors = [],
+            uniqueColors = ['red', 'green', 'blue'],
             uniqueValues = [];
 
         inference.addDataSet = function (dataset) {
@@ -30,10 +30,7 @@
                 if ($.inArray(item.topicName, uniqueLabels) == -1) {
                     uniqueValues[item.topicName] = [];
                     uniqueLabels.push(item.topicName);
-                    uniqueColors.push("rgb(" +
-                        Math.floor(Math.random() * 255) + "," +
-                        Math.floor(Math.random() * 255) + "," +
-                        Math.floor(Math.random() * 255) + ")");
+
                 }
                 // This way I'll have a list of lists, for path drawing
                 uniqueValues[item.topicName].push(item);
@@ -65,6 +62,10 @@
                 tooltip
                     .style("left", (d3.event.pageX + 20) + "px")
                     .style("top", (d3.event.pageY - 12) + "px");
+            }
+
+            function marshall(s) {
+                return s.toLowerCase().split(" ").join("_")
             }
 
             // display date format
@@ -103,8 +104,8 @@
                 ;
 
             var container = d3.select(element)
-                    .attr("width", inference.settings.width)
-                    .attr("height", inference.settings.height)
+            //        .attr("width", inference.settings.width)
+            //        .attr("height", inference.settings.height)
                 ;
 
             var svg = container.append("svg")
@@ -175,7 +176,7 @@
 
             // Create a path for each topic
             for (var t in uniqueValues) {
-                var class_name = t.toLowerCase().replace(" ", "");
+                var class_name = marshall(t);
                 svg.append("path")
                     .classed(class_name, true)
                     .attr("d", lineFunction(uniqueValues[t]))
@@ -186,7 +187,7 @@
                     .attr("fill", "none")
                     .attr("opacity", lineOpacity)
                 ;
-                var myCircles = svg.selectAll("circle." + class_name)
+             /*   var myCircles = svg.selectAll("circle." + class_name)
                     .data(uniqueValues[t], function (d, i) {
                         return d.chance + d.date;
                     }).enter();
@@ -224,26 +225,27 @@
                             .attr("r", radius)
                         ;
                         tooltip.style("opacity", 0.0);
-                    })
+                    })*/
             }
 
             // add legend
             var legend = svg.append("g")
                 .attr("class", "legend")
-                .attr("height", 120)
-                .attr("width", 100)
-                .attr('transform', 'translate(-20,50)');
+                .attr("height", 200)
+                .attr("width", 120)
+                .attr('transform', 'translate(0,50)');
 
             legend.selectAll('rect')
                 .data(uniqueLabels)
                 .enter()
                 .append("rect")
-                .attr("x", inference.settings.width - 65)
+                .attr("x", inference.settings.padding + 10)
                 .attr("y", function (d, i) {
-                    return i * 20;
+                    return i * 25;
                 })
                 .attr("width", 10)
                 .attr("height", 10)
+                .style("text-weight", "bold")
                 .style("fill", function (d, i) {
                     return uniqueColors[i];
                 });
@@ -252,37 +254,39 @@
                 .data(uniqueLabels)
                 .enter()
                 .append("text")
-                .attr("x", inference.settings.width - 52)
+                .attr("x", inference.settings.padding + 23)
                 .attr("y", function (d, i) {
-                    return i * 20 + 9;
+                    return i * 25 + 9;
                 })
                 .text(function (d, i) {
                     return uniqueLabels[i];
                 })
                 .on("mouseover", function (d, i) {
                     for (var k in uniqueLabels) {
-                        var class_name = uniqueLabels[k].toLowerCase().replace(" ", "");
+                        var class_name = marshall(uniqueLabels[k]);
                         if (k == i) {
                             d3.selectAll("." + class_name).transition().duration(iTransitionDuration)
                                 .attr("opacity", 1)
-                                .attr("r", 2 * radius)
+                                //.attr("r", 1.1 * radius)
                         } else {
                             d3.selectAll("." + class_name)
-                                .attr("opacity", 0)
-                                .attr("r", 0)
+                                .attr("opacity", 0.1)
+                                //.attr("r", 0)
                         }
                     }
                 })
                 .on("mouseout", function (d, i) {
                     for (var k in uniqueLabels) {
-                        var class_name = uniqueLabels[k].toLowerCase().replace(" ", "");
+                        var class_name = marshall(uniqueLabels[k]);
                         d3.selectAll("." + class_name).transition().duration(iTransitionDuration)
                             .attr("opacity", lineOpacity)
-                            .attr("r", radius)
+                            //.attr("r", radius)
                         ;
                     }
                 })
             ;
+
+
 
         };
 

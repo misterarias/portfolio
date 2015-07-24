@@ -60,25 +60,24 @@
 
             var data = currentDataset,
                 yTicks = 8,
+                yRange = d3.extent(data, function (d) {
+                    return d.weight;
+                }),
                 xScale = d3.scale.linear()
                     .domain([0, data.length])
                     .range([topics.settings.padding, topics.settings.width - 2 * topics.settings.padding]),
                 hScale = d3.scale.linear()
-                    .domain(d3.extent(data, function (d) {
-                        return d.weight;
-                    }))
+                    .domain([0.5 * yRange[0], yRange[1]])
                     .range([topics.settings.height - topics.settings.padding, topics.settings.padding]),
-                cScale = d3.scale.pow()
-                    .domain(d3.extent(data, function (d) {
-                        return d.weight;
-                    }))
+                cScale = d3.scale.log()
+                    .domain(yRange)
                     .range(['blue', 'red']),
                 barWidth = ((topics.settings.width - topics.settings.padding) / data.length) * topics.settings.barScale,
                 yAxis = d3.svg.axis()
                     .orient("left")
                     .scale(hScale)
                     .ticks(yTicks)
-                    .tickFormat(d3.format(".1%")),
+                    .tickFormat(d3.format(".2%")),
 
                 xAxis = d3.svg.axis()
                     .orient("bottom")

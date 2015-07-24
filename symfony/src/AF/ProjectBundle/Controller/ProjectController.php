@@ -22,8 +22,10 @@ class ProjectController extends AFController {
 		$me = new Actor(
 			"Juan Arias",
 			"SCM Tech",
-			"[TODO] Short description about who (or what) I am",
-			"juan-icon.png"
+			"I've been working with computer systems for the past eight years, and been learning new things every day. I consider myself a very
+			curious person, so getting expertise on Big Data systems was something I had been looking forward for a long time. Looking for the
+			 next challenge!",
+			"juan-icon.jpg"
 		);
 		$me->setRole("Senior Engineer")
 			->setCompanyUrl("http://www.schibstediberica.es")

@@ -34,23 +34,27 @@ class SimpleMatcherTest extends FunSuite {
     val row = new Row(Array(""))
     assert(!matcher.checkConditions(row))
 
+    // Both the action and the actor must be in the region
     row.actionGeography = fakeLocation
-    assert(matcher.checkConditions(row))
+    assert(!matcher.checkConditions(row))
 
     row.actionGeography = null
     row.actor1Geography = fakeLocation
-    assert(matcher.checkConditions(row))
+    assert(!matcher.checkConditions(row))
 
     row.actor1Geography = null
     row.actor2Geography = fakeLocation
-    assert(matcher.checkConditions(row))
+    assert(!matcher.checkConditions(row))
 
     row.actor2Geography = null
     row.actor1Data = fakeActor
-    assert(matcher.checkConditions(row))
+    assert(!matcher.checkConditions(row))
 
     row.actor1Data = null
     row.actor2Data = fakeActor
+    assert(!matcher.checkConditions(row))
+
+    row.actor2Geography = fakeLocation
     assert(matcher.checkConditions(row))
   }
 

@@ -16,7 +16,7 @@ class ProjectModule extends Module {
 	const NAME = "project";
 
 	public function __construct() {
-		parent::__construct(ProjectModule::NAME, "Project structure", "af_project_project");
+		parent::__construct(ProjectModule::NAME, "Overview", "af_project_project");
 
 		$this->setHeaderTitle("Project overview")
 			->setHeaderSubtitle("Eagle-eye over the main components of a Big Data problem");

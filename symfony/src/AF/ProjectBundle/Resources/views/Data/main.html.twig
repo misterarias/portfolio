@@ -3,42 +3,77 @@
 
 {% block stylesheets %}
 
-    {{ parent() }}
-    {% stylesheets
-    '@AFProjectBundle/Resources/public/css/lda_viz.css'
-    '@AFProjectBundle/Resources/public/css/bootstrap-slider.css'
-    filter='cssrewrite' %}
-    <link rel="stylesheet" href="{{ asset_url }}">
-    {% endstylesheets %}
+  {{ parent() }}
+  {% stylesheets
+  '@AFProjectBundle/Resources/public/css/lda_viz.css'
+  '@AFProjectBundle/Resources/public/css/bootstrap-slider.css'
+  filter='cssrewrite' %}
+  <link rel="stylesheet" href="{{ asset_url }}">
+  {% endstylesheets %}
 
 {% endblock %}
 
 {% block content %}
 
   {{ widgets.sectionStart(
-  "Visualizing results"
+  "Visualization of the results"
   ) }}
 
   <p>
-    Aqui muestro los results y esas coas, con un formulario asín como todos
-
+    What follows is the result of the topic research of events coming from GDELT actors there were in Spain (any of them) and whose actions
+    were involved with Spain in any way: The filtering I've done over the data doesn't have into consideration the body of the text, and it blindly
+    trusts the data coming from GDELT to be telling the truth.
   </p>
 
-  <div class="form-horizontal">
-    <div class="form-group">
-      <label for="topicSelector" class="col-sm-2 control-label">Get top terms for</label>
 
-      <div class="col-sm-4">
-        <select id="topicSelector" class="form-control" name="Choose topic"></select>
-      </div>
+  {{ widgets.subSectionStart(
+  "Evolution of topics over time"
+  ) }}
+
+  <p>
+    This graphs shows the evolution of the topics found over the period of the study. This date range is not random at all: GDELT only started
+    adding URLs to their events from March 2013, and it can be seen here how the event density starts to become higher right soon after.
+  </p>
+  <p>
+    The Y axis magnitude is a <i>score</i> that I've calculated for each topic and each date: it roughly represents how likely is that an event
+    registered in that day, in the conditions of the study, was talking about a certain topic: it's not a statistical probability though.
+    By hovering over the topic names in the legend you can better see individual time lines, and you can make an idea of which one was more
+    prominent for every day of the time range studied.
+  </p>
+
+  <div class="row">
+    <div id="infered_graph" class="col-md-12"></div>
+  </div>
+
+  <p>
+    I've limited the results to three topics to avoid cluttering, in the future I'll deploy some controls to be able to refine and filter
+    the visualization: zoom over a date range, swap topics, and a long list of <i>todo</i> items that seems to never stop growing...
+  </p>
+
+
+  {{ widgets.subSectionEnd() }}
+
+  {{ widgets.subSectionStart(
+  "Top Terms per topic found"
+  ) }}
+
+  <p>
+    Below lie the terms that LDA has associated with each topic found, along with the weight associated to them inside that topic: that number
+    gives an idea of the relevance of that term in that particular topic, and it has been used in the graph above to infer the topics for the
+    elements in a given day.
+  </p>
+
+  <div class="row">
+    <div class="col-md-8 col-sm-10">
+      <label for="topicSelector">Use this selector to change to a different topic: </label>
+      <select id="topicSelector" class="form-control" name="Choose topic"></select>
     </div>
   </div>
 
-  {{ widgets.sectionEnd() }}
 
-    <input type="hidden" id="json-data_locator" value="{{ asset('bundles/afproject/static/project_elastic_dump.json') }}">
+  <input type="hidden" id="json-data_locator" value="{{ asset('bundles/afproject/static/project_elastic_dump.json') }}">
 
-    {% for i in range(0, 5) %}
+  {% for i in range(0, 5) %}
     <div class="row hide" id="topic_{{ i }}">
       <div id="table" class="col-md-4">
         <p id="topicName"></p>
@@ -56,24 +91,22 @@
       <div id="graph" class="col-md-8"></div>
     </div>
   {% endfor %}
+  {{ widgets.subSectionEnd() }}
 
-  <div class="row">
-    <div id="infered_graph" class="col-md-12"></div>
-  </div>
-
+  {{ widgets.sectionEnd() }}
 {% endblock %}
 
 {% block javascripts %}
 
-    {{ parent() }}
+  {{ parent() }}
 
-    {% javascripts
-    '@AFProjectBundle/Resources/public/js/d3.js'
-    '@AFProjectBundle/Resources/public/js/bootstrap-slider.js'
-    '@AFProjectBundle/Resources/public/js/topics.js'
-    '@AFProjectBundle/Resources/public/js/inference.js'
-    '@AFProjectBundle/Resources/public/js/main.js' %}
-    <script src="{{ asset_url }}"></script>
-    {% endjavascripts %}
+  {% javascripts
+  '@AFProjectBundle/Resources/public/js/d3.js'
+  '@AFProjectBundle/Resources/public/js/bootstrap-slider.js'
+  '@AFProjectBundle/Resources/public/js/topics.js'
+  '@AFProjectBundle/Resources/public/js/inference.js'
+  '@AFProjectBundle/Resources/public/js/main.js' %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
 
 {% endblock %}

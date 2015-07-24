@@ -16,7 +16,7 @@
         "_id": "AU69HctQdCFQvELbI-Rs",
         "_score": 1,
         "_source": {
-          "topicName": "Topic 2",
+          "topicName": "Gibraltar-Madrid Relationship",
           "terms": [
             {
               "term": "people",
@@ -2941,7 +2941,7 @@
         "_id": "AU69Hcs8dCFQvELbI-Rr",
         "_score": 1,
         "_source": {
-          "topicName": "Topic 1",
+          "topicName": "Independence of Cataluña (Catalonia)",
           "terms": [
             {
               "term": "party",
@@ -5866,7 +5866,7 @@
         "_id": "AU69HcsbdCFQvELbI-Rq",
         "_score": 1,
         "_source": {
-          "topicName": "Topic 0",
+          "topicName": "Corruption in health related issues",
           "terms": [
             {
               "term": "people",
