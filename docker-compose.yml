@@ -48,7 +48,8 @@ elasticmaster:
     volumes:
       - elastic:/data
     command:
-      elasticsearch -Des.config=/data/elasticsearch.yml -Des.node.name=master -Des.node.master=true
+      elasticsearch  -Des.node.name=master -Des.node.master=true
+      # elasticsearch -Des.config=/data/elasticsearch.yml -Des.node.name=master -Des.node.master=true
 
 elasticslave1:
     image: elasticsearch
