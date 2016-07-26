@@ -27,3 +27,4 @@ target/
 docs/gdelt_data/
 vendor/
 web/css
+.DS_Store
