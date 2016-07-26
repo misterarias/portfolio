@@ -21,14 +21,14 @@ class ProjectController extends AFController {
 		// XXX In a perfect world this info would be in a YAML file
 		$me = new Actor(
 			"Juan Arias",
-			"SCM Tech",
-			"I've been working with computer systems for the past eight years, and been learning new things every day. I consider myself a very
+			"Bluetab Solutions",
+			"I've been working with computer systems for the past ten years, and been learning new things every day. I consider myself a very
 			curious person, so getting expertise on Big Data systems was something I had been looking forward for a long time. Looking for the
 			 next challenge!",
 			"juan-icon.jpg"
 		);
-		$me->setRole("Senior Engineer")
-			->setCompanyUrl("http://www.schibstediberica.es")
+		$me->setRole("Big Data Architect")
+			->setCompanyUrl("http://www.bluetab.net/")
 			->addSocial("fa-twitter", "https://twitter.com/ariasFreire")
 			->addSocial("fa-github", "https://github.com/misterarias/")
 			->addSocial("fa-linkedin", "https://www.linkedin.com/profile/view?id=96626628");
