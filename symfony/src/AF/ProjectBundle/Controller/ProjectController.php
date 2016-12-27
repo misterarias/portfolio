@@ -35,12 +35,12 @@ class ProjectController extends AFController {
 		$viewData["juan"] = $me;
 
 		$utad = new Actor(
-			"Big Data certificate",
+			"Big Data Expert",
 			"U-Tad Madrid",
 			"The U-tad's Certificate program in Big Data allows students to lead the design, management and exploitation of next generation infrastructures handling large volumes of data.",
 			"utad-icon.png"
 		);
-		$utad->setCompanyUrl("https://www.u-tad.com/en/estudios/certificate-program-in-big-data/")
+		$utad->setCompanyUrl("https://www.u-tad.com/en/studies/big-data-expert/")
 			->addSocial("fa-twitter", "https://twitter.com/U_tad")
 			->addSocial("fa-facebook", "https://es-es.facebook.com/utadcentrouniversitario")
 			->addSocial("fa-linkedin", "http://www.linkedin.com/company/u-tad");
