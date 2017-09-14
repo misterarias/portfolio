@@ -28,3 +28,4 @@ docs/gdelt_data/
 vendor/
 web/css
 .DS_Store
+symfony/app/bootstrap.php.cache
