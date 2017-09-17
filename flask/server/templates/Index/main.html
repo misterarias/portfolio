@@ -1,0 +1,134 @@
+{% extends 'Default/project_base.html' %}
+{% import 'Default/widgets.html' as widgets %}
+
+{% block content %}
+
+  {{ widgets.sectionStart(
+  "Project description") }}
+
+  <p class="quote">
+    &quot;... those who cannot remember the past are condemned to repeat it&quot;&nbsp;&nbsp;(George Santayana)
+  </p>
+
+  <p>
+    The process of digging into out past has historically been done by groups of scholars and researchers, recently joined by journalists.
+    But all of these professionals of information retrieval and research have always faced the same root problems: Way too many things have
+    happened, not all of them are recorded on the same way, and with no uniform way to access that information... ¿Could we
+    apply technologies such as Distributed Computing, Systems Engineering and Machine Learning to solve such problem?
+  </p>
+
+  <p>
+    Big Data technologies are known for solving problems related to the processing huge volumes of data, from a potentially huge
+    variety of sources and in a reasonable amount of time: ¿Could this help the journalists of the future find research topics that might have
+    been hidden like a needle in a haystack?
+  </p>
+
+  <p>
+    The automated handling and analysis of historical information, digitalized and stored in various Internet data stores,
+    is one of the many areas where technologies such as Hadoop, YARN, Spark, Elastic Search, and Kibana, along with the
+    knowledge and experience of Data Engineers, can unlock solutions to problems in ways that were never thought they would be be possible.
+  </p>
+
+  <p>
+    In this project I will describe the tools, techniques and technologies that I have used for automatically finding out what are the conversation
+    topics that can be found in web pages related to Spain. In other words, I'll describe how it's possible to use an algorithm to learn what
+    do these pages have been (broadly speaking) <i>talking about</i> for the past two years; for such a big endeavour, I will retrieve and analyze
+    data coming from the <a href="http://gdeltproject.org/" target="_blank">GDELT</a> project's event database.
+  </p>
+
+  {{ widgets.sectionEnd() }}
+
+  {{ widgets.sectionStart(
+  "What is the GDELT project?"
+  ) }}
+  <p>
+    From the GDELT homepage:<br/>
+    <i>&quot;The GDELT Project is an initiative to construct a catalog of human societal-scale behavior and beliefs across all countries of the world,
+      connecting every person, organization, location, count, theme, news source, and event across the planet into a single massive network that
+      captures what's happening around the world, what its context is and who's involved, and how the world is feeling about it, every single day&quot;</i>
+  </p>
+
+  <div class="row">
+    <div class="col-md-6">
+      <a href="http://blog.gdeltproject.org/mapping-global-protests-redux/" class="thumbnail">
+        <img src="{{ url_for('static', filename='img/index/2015-global-poaching-map-feb-may-2015.png') }}"
+             alt="Mapping Global Protests Redux">
+        <span class="small caption">Mapping Global Protests through GDELT (source: www.gdelt.org)</span>
+      </a>
+    </div>
+    <div class="col-md-6">
+      <p>
+        For researchers and engineers, this is translated into a <strong>massive</strong> database consisting of more than 250 billion rows of
+        information spanning more than 30 years into the past, with dozens of categories for each event, in various queriable formats such as Google's
+        <a href="https://bigquery.cloud.google.com/" target="_blank">BigQuery</a>, downloadable CSV files, and web forms for selecting specific sets
+        of events
+      </p>
+
+      <p>
+        It's also an open database, allowing anyone to use this data for data analysis in ways that had never been possible before, as
+        shown by the amount of studies that are made available constantly through the official
+        <a href="http://blog.gdeltproject.org/"
+           target="_blank">GDELT blog</a>
+      </p>
+    </div>
+  </div>
+  {{ widgets.sectionEnd() }}
+
+  {{ widgets.sectionStart(
+  "Goals"
+  ) }}
+
+  <p>
+    As this project had an estimated length of 60 hours, time was the major constraint: I needed a set of achievable goals,
+    so that I could focus on key areas to have some results that I could share and that could be played with:
+  </p>
+  <ul class="bullets">
+    <li>
+      Study different Topic Modeling tools, and choose one based on criteria such as horizontal scalability, speed,
+      memory usage, documentation, maturity, ...
+    </li>
+    <li>
+      Get hands-on experience with <a href="http://spark.apache.org/" target="_blank">Spark</a> as a
+      <i>state-of-the-art</i> technology for large-scale data processing.
+      Reasons for this include the speed of its in-memory processing model, the amount of libraries that it has
+      available, and the huge rise in popularity since top companies started shifting towards Spark.
+    </li>
+    <li>
+      As a Big Data project, just playing around in a laptop was obviously not going to allow me to take advantage of
+      the tools I had chosen, so I had the ambition to run my application on a <i>real</i> cluster: There are many options
+      available if you don't have a datacenter at your disposal but you've got some serious horsepower at home,
+      so I added the tools needed to create my own virtualized <a href="https://ambari.apache.org/" target="_blank">Apache Ambari</a> cluster.
+    </li>
+    <li>
+      A data store is needed for the results to live in, and HDFS is not fast enough for the queries over the data needed
+      to show visual results: I wanted to study different NoSQL databases, and to choose one that allows for very
+      fast read performance and the ability to take advantage of living inside a cluster.
+    </li>
+    <li>
+      No research project is done without a graphical visualization of the results, and this one is no exception.
+      There are many technologies such as <i>d3.js</i>, Tableau, Kibana or CartoDB that can be used to interact with
+      Big Data storage systems and give a meaning to all the algorithms, models, and numbers created in the process.
+    </li>
+    <li>
+      Finally, and probably the most important point: design a project around many technologies
+      that can grow well beyond the initial scope, by having a very strong code base based on my 8-years experience
+      in Computer Science.
+    </li>
+  </ul>
+
+  {{ widgets.sectionEnd() }}
+
+  {{ widgets.sectionStart(
+  "Participants"
+  ) }}
+
+  <div class="col-sm-4 col-sm-offset-1">
+    {{ widgets.teamMember(juan) }}
+  </div>
+  <div class="col-sm-4 col-sm-offset-1">
+    {{ widgets.teamMember(utad) }}
+  </div>
+
+  {{ widgets.sectionEnd() }}
+
+{% endblock %}

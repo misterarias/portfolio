@@ -1,0 +1,30 @@
+{# navbar.html #}
+{% import 'Default/widgets.html' as widgets %}
+
+<div class="jumbotron gdelt_header">
+
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">&Gt;</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <span class="navbar-brand hidden">{{ active_module.getHeaderTitle }}</span>
+      </div>
+      <div id="navbar" class="collapse navbar-collapse">
+        {{ widgets.navbar(availableModules, active_module) }}
+      </div>
+      <!--/.nav-collapse -->
+    </div>
+  </nav>
+
+  <div class="container">
+    <h2 id="header_title">{{ active_module.getHeaderTitle }}</h2>
+
+    <p id="header_subtitle">{{ active_module.getHeaderSubtitle }}</p>
+  </div>
+</div>

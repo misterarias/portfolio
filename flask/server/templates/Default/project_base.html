@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block extra_headers %}
+
+{% endblock %}
+
+    {% block title %}
+      Juan Arias Freire
+    {% endblock %}
+
+{% block stylesheets %}
+
+  <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/bootstrap.css') }}" >
+  <link rel=stylesheet type=text/css href="{{ url_for('static', filename='font-awesome/css/font-awesome.min.css') }}">
+  <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/project.css') }}">
+
+{% endblock %}
+
+{% block body %}
+
+  <header>
+    {% include("Default/navbar.html") %}
+  </header>
+
+  <div class="container">
+    {% block content %}{% endblock %}
+
+    {{ widgets.navigationButtons(active_module) }}
+  </div>
+
+  {% include("Default/footer.html") %}
+
+{% endblock %}
+
+{% block javascripts %}
+
+  <script src="{{ url_for('static', filename='js/jquery.js') }}" />
+  <script src="{{ url_for('static', filename='js/navbarShrink.js') }}" />
+  <script src="{{ url_for('static', filename='js/project.js') }}" />
+
+{% endblock %}
+

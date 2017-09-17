@@ -1,0 +1,519 @@
+{% extends 'Default/project_base.html' %}
+{% import 'Default/widgets.html' as widgets %}
+
+{% block content %}
+
+  {{ widgets.sectionStart(
+  "Building blocks"
+  ) }}
+
+  <p>
+    In every Big Data project, there are some key blocks that need to be present; they may come in many different shapes,
+    and they can be as different as the technologies underneath, but the core is usually:
+  </p>
+
+  <ul class="bullets">
+    <li>
+      <strong>Data acquisition</strong>Getting the data from external sources into the system, and adapting it to the formats
+      that our applications understand.
+    </li>
+    <li>
+      <strong>Distributed analysis</strong>Managing huge volumes of data, or data that requires more resources than a single machine can
+      provide.
+    </li>
+    <li>
+      <strong>Presentation of the results</strong>More often than not, conclusions will better be drawn from images rather than from raw
+      numbers.
+    </li>
+  </ul>
+
+  <p>
+    Let's go a little deeper into the details for each point, as we explore the different choices that have to be done along the way.
+  </p>
+  {{ widgets.sectionEnd() }}
+
+  {{ widgets.sectionStart(
+  "Data acquisition"
+  ) }}
+
+  <p>
+    As obvious as it may seem, the first and most important step of any project involving Big Data is actually getting the <b>right</b>
+    data into our systems: not a trivial step at all, because:
+  </p>
+
+  <ul class="bullets">
+    <li>The variety of sources means that a number of different tools are needed in order to get all the data we need</li>
+    <li>Such sources can (and will) have different formats, even across the same data domain, that we need to clean before processing</li>
+  </ul>
+
+  {{ widgets.subSectionStart(
+  "Getting data from the GDELT project"
+  ) }}
+
+  <p>
+    For this project there are at least three ways of getting the data needed for the analysis, as described
+    <a href="http://gdeltproject.org/data.html" target="_blank">here</a>:
+
+  </p>
+
+  <h5>1. Filling a web form, and getting the data by email</h5>
+
+  <p>
+    This is the easiest way for anyone that wants to play with the data. The data retrieved is limited to 10000 rows, which is good enough for
+    simple analysis and proofs of concept.
+  </p>
+  <h5>2. Scraping the GDELT archive, containing all data in <i>zipped</i> files</h5>
+  <p>
+    The nicest option for automatic data retrieval is by web-scraping the <a href="http://data.gdeltproject.org/events/index.html" target="_blank">raw
+      events</a>
+    web page, and choosing the days you want to download.
+  </p>
+  <p>
+    The core disadvantage of this approach is that you will swim in black water, as there hundreds of thousands of CSV rows that you need
+    to parse and process to find the data you need.
+  </p>
+
+  <h5>3. Using Google BigQuery to explore the data</h5>
+  <div class="row">
+    <div class="col-md-6">
+      <p>
+        This approach offers the most awesome and interactive use: It allows for near-real-time interaction with the <strong>whole</strong> dataset
+        of Gdelt using SQL over Google's <a href="https://bigquery.cloud.google.com/" target="_blank">Big Query</a> service.
+      </p>
+
+      <p>
+        It's advantage over the rest of methods is that is the fastest way (by orders of magnitude) to get a grip on the data you need, by
+        manipulating the query until you get whatever you want. Once you're satisfied with the results, you can download the data directly (if the
+        total amount of rows doesn't exceed a limit) or export it to custom datasets to be queried later.
+      </p>
+
+      <p>
+        In order to access this service, you need to setup an account in Google's Cloud service to be able to play around with data,
+        which is free up to a certain amount of queries per day. This exceptional service comes (literally) at a price, since you need to provide
+        credit card credentials in order to save exported data in Google's <a href="https://cloud.google.com/storage/">Cloud Storage</a> service.
+      </p>
+
+      <p>
+        Fear not though, as there is a nice trial that you can use to get up to 60 days of service or several hundred GB of I/O, which
+        is more than enough to run some big queries and save them later to your computer.
+      </p>
+
+    </div>
+
+    <div class="col-md-6">
+      <a target="_blank" href="https://bigquery.cloud.google.com/queries/" class="thumbnail">
+        <img src="{{ url_for('static', filename='img/project/bigquery.png') }}"
+             alt="An example of Google's Bigquery">
+        <span class="small caption">Google's Big Query interface</span>
+      </a>
+    </div>
+  </div>
+
+  {{ widgets.subSectionEnd() }}
+
+  {{ widgets.subSectionStart(
+  "Cleaning web text"
+  ) }}
+
+  <p>
+    This is the part most feared by Data Scientists around the globe, as common wisdom states that ~80% of their work is spent in this step.
+    The reason for such importance is that top quality data cleaning can unlock more efficient data structures to be used
+    in later stages, potentially increasing the speed or power of algorithms to apply.
+  </p>
+  <p>
+    It usually involves a lot of data munging, transforming, grepping, parsing, ... only to throw away the results and start again.
+    But in the particular case of the GDELT project, the events have already been cleaned up by them, and thoroughly categorized in their database,
+    using a
+    <a href="http://data.gdeltproject.org/documentation/GDELT-Data_Format_Codebook.pdf" target="_blank">well known format</a> that I could take
+    advantage of in order to model the rows retrieved.
+  </p>
+
+  {{ widgets.subSectionEnd() }}
+
+  {{ widgets.sectionEnd() }}
+
+  {{ widgets.sectionStart(
+  "Distributed analysis of data"
+  ) }}
+
+  <p>Once the dirty job has been done, it's time to start making decisions that affect how data will be processed</p>
+  <p>We're going to download the text from potentially thousands of web pages, mix everything up, and process it in iterative steps that need to
+    have all that data in context in order to be efficient.
+    Our biggest concerns should be:
+  </p>
+  <ul class="bullets">
+    <li>
+      <strong>Scalability</strong>It shouldn't matter if we're processing data from one news page, or from 50K of them.
+    </li>
+    <li>
+      <strong>Cost-efficiency</strong>It's easy to overshoot and just buy a couple of racks in a datacenter, but it might not be needed at all.
+    </li>
+    <li>
+      <strong>Ease of use</strong>My goal is to build a tool that can be used, whether as a whole or just by taking selected parts of it; it
+      needs to be well-documented, have defined interfaces, and make sense in general.
+    </li>
+  </ul>
+
+  {{ widgets.subSectionStart(
+  "Target execution environment"
+  ) }}
+
+  <p>
+    Before you even start to to design your code and algorithms, you need to think: Where am I going to execute this?
+  </p>
+  <p>
+    This question has no easy answer, as it totally depends on what are you going to do, the size of the data you will generate, the CPU/RAM that
+    you might need, the storage type ...
+  </p>
+  <p>
+    Generally speaking, for a Big Data project there are two options to consider, apart from the obvious <i>local testing</i> on one's machine:
+  </p>
+  <ul class="bullets">
+    <li>
+      <p>
+        <strong>Physical datacenter</strong>is an option if you have already access to one, since creating one from scratch is extremely expensive
+        and has to be planned carefully. It's still the best option if you are planning on using a lot of machines for a very long time, and you
+        have already the knowledge that your business will last long enough to amortize the cost.
+      </p>
+    </li>
+    <li>
+      <p>
+        <strong>Cloud solutions</strong>such as Amazon Web Services, DigitalOcean or Google Cloud Computing. They are all options that end up
+        requiring you to spend money, depending on the type and the number of machines that you need to use.
+      </p>
+
+      <p>
+        I'd consider this option once you've done enough tests in your local environment, want to do some heavy computing that exceeds your
+        home/office network, and want some short-term results, that if positive might make you think of jumping to a physical datacenter.
+      </p>
+    </li>
+  </ul>
+
+  <p>
+    For this project though, I went for a third option, which was setting up my own, virtualized, Ambari-powered Hadoop cluster, using
+    Vagrant and VirtualBox for setting up and provisioning automatically 3 CentOS machines with 4GB of RAM each. Nothing impressive in terms
+    of raw power, but that allows me to play with "real" HDFS and YARN configuration issues, even if Ambari makes that process much less painful
+    than managing that yourself.
+  </p>
+
+  {{ widgets.subSectionEnd() }}
+
+
+  {{ widgets.subSectionStart(
+  "Big Data technologies"
+  ) }}
+
+  <p>
+    Once the target execution environment was decided, I needed to choose the technologies that will handle all that data coming from GDELT, play
+    with it, store it and serve it back to the user for visualization.
+  </p>
+
+  <p>
+    As I explained in the Goals of the project, I wanted to test Spark, but that wasn't the only reason to choose it:
+  </p>
+  <div class="row">
+    <div class="col-md-6">
+      <ul class="bullets">
+        <li>
+          <strong>Popularity</strong>As shown on the graph, it's popularity has skyrocketed in the last months, and many applications and companies
+          are using it or switching to it from technologies such as Map/Reduce (for programming) or Storm (for streaming-data processing).
+        </li>
+        <li>
+          <strong>Syntax</strong>Spark has Java, Scala and Python libraries; I've been using the Scala one, and it's not only the example on their
+          Web page of the three-line word-count that makes it cool, everything looks neater than using plain old Map Reduce paradigm, and it gets
+          better and better once you become used to the functional programming paradigm that Spark and Scala benefit greatly for.
+        </li>
+        <li>
+          <strong>Speed</strong>Spark is FAST, as it tries hard to run everything in memory, avoiding unnecessary and expensive disk access. If the
+          nature of your problem makes working with chunks that will fit in the RAM of your workers possible, you'll take advantage of Spark the
+          most.
+        </li>
+        <li><strong>Full Stack</strong>Either if you need to backup your data with SQL structures, want to ingest data in real-time, or make
+          heavy use of Machine Learning algorithm, you can work within the same technology, as Spark provides tools for all of these problems, and
+          thus it covers almost all the Big Data problems that you can face nowadays.
+        </li>
+      </ul>
+    </div>
+    <div class="col-md-6">
+      <a href="http://radar.oreilly.com/2014/06/a-growing-number-of-applications-are-being-built-with-spark.html" class="thumbnail">
+        <img src="{{ url_for('static', filename='img/index/spark-activity.jpg') }}"
+             alt="Spark activity in the last 30 days">
+        <span class="small caption">Spark popularity comparison (source: radar.oreilly.com)</span>
+      </a>
+    </div>
+  </div>
+
+  <p>
+    Once this was set, next step is deciding where to store all the data that was going to be generated. You've got to
+    think on the particular case of your problem though:
+  </p>
+  <ul class="bullets">
+    <li>
+      If you will generate lots of data that you'll need to retrieve later, you should think of using a NoSQL database,
+      such as HBase or Cassandra (depending on the read/write requirements)
+    </li>
+    <li>
+      <p>
+        If you are already using HDFS, and need some relational structure over it, you can go for SQL-like technologies such as Hive and Impala,
+        (or even Shark if you are using Spark). This is not always as fast as the above, but not much worse, and getting better over time.
+      </p>
+
+      <p>
+        You'll also gain the benefit of being able to keep working with SQL language, which is a knowledge already present in many BI teams, or
+        analytics.
+      </p>
+    </li>
+  </ul>
+  <p>
+    In my application though, the data output is not very big. In fact, it's pretty small, as all the heavy job is done in the backend by Spark
+    and the topic modeling algorithms, and I only need to download and store files in HDFS to be later processed by LDA, so I was mostly free to
+    choose any technology that allows me fast and easy search over the results, without them having any special structure that makes them complex.
+  </p>
+  <p>
+    In this scenario, I chose <a href="http://www.elastic.co" target="_blank">Elastic Search</a> as I wanted to play around with it, provides
+    full-search capabilites from the start, it's fast enough for my visualization, and it was super easy to install using a
+    <a href="https://github.com/dockerfile/elasticsearch" target="_blank"> Docker container</a>. Also, as explained below, this unlocks the use
+    of Kibana for visualization.
+  </p>
+  {{ widgets.subSectionEnd() }}
+
+  {{ widgets.subSectionStart(
+  "The topic modeling algorithms"
+  ) }}
+
+  <p>
+    The final step was choosing the tool that will apply the Topic Modeling algorithm, called LDA: <i>&quot;Latent Dirichlet Allocation (Blei et
+      al, 2003) is a powerful learning algorithm for automatically and jointly clustering words into "topics" and documents into mixtures of topics.
+      It has been successfully applied to model change in scientific fields over time (Griffiths and Steyvers, 2004; Hall, et al. 2008)&quot;</i>
+  </p>
+  <p>
+    Topic Modeling provides an unsupervised way of analyzing large volumes of unlabeled text, looking for clusters of words that usually happen
+    together (<i>topics</i>). For a general introduction to topic modeling, see for example
+    <a href="http://psiexp.ss.uci.edu/research/papers/SteyversGriffithsLSABookFormatted.pdf" target="_blank">Probabilistic Topic Models</a> by
+    Steyvers and Griffiths (2007).
+  </p>
+  <p>
+    For this, I had three options:
+  </p>
+  <ul class="bullets">
+    <li>
+      <p>
+        <strong>Mallet</strong>is a Java-based command-line tool, downloadable from <a target="_blank" href="http://mallet.cs.umass.edu/topics.php">
+          its web page</a> and also available as a Maven library.
+        As far as I could research it's the <i>defacto</i> tool for topic modeling, as it does its job VERY fast and can be trained over a corpus of
+        documents and then use that model to infer topics over a new set of documents.
+      </p>
+
+      <p>This reason was almost enough for choosing it for my project, but it has a major <i>flaw</i>: It doesn't scale past one machine, and
+        topic modeling problems can get out of control very easily with their many iterations over a quite large vocabs array.
+      </p>
+    </li>
+    <li>
+      <p>
+        <strong>Mahout</strong>is part of an extremely interesting Apache project found <a href="https://mahout.apache
+      .org/users/clustering/latent-dirichlet-allocation.html" target="_blank">here</a>, that offers many tools to help developers start
+        creating applications that need to make heavy usage of Machine Learning algorithms and specialized Math libraries.
+      </p>
+
+      <p>
+        Unlike Mallet, this one can work supposedly in clusters, but I found no way to integrate it with Spark that was easier than the next
+        option, and since it still doesn't have topic inference integrated, it'll have to wait until next time.
+      </p>
+    </li>
+    <li>
+      <strong>Spark</strong>Since version 1.3, Spark's Machine Learning Library (MLLib) implements LDA as an algorithm, and this one has been
+      optimized to work with RDDs so it can be executed in your cluster, which was <b>exactly what I needed</b>. It still doesn't implement topic
+      inference, so I had to apply a <i>naive</i> algorithm to fill the gap
+    </li>
+  </ul>
+
+  {{ widgets.subSectionEnd() }}
+
+  {{ widgets.sectionEnd() }}
+
+  {{ widgets.sectionStart(
+  "Presentation of the results"
+  ) }}
+
+  <p>
+    The visualization of the results of a project is a step as mandatory as it is complex: the result set you've calculated can be so complex that
+    there is no single graph to fit it, or maybe communicating the proper message requires animations, dashboards and the like.
+  </p>
+  <p>
+    Luckily for us, there is a number of technologies that can help us immensely in this often cumbersome, but challenging and fun, final task.
+  </p>
+
+  {{ widgets.subSectionStart(
+  "Fast data retrieval"
+  ) }}
+
+  <p>
+    For any visualization to work properly, as in web projects, the user shouldn't have to wait idle for too long before all your majestic graphing
+    skills start to show the product of your work.
+  </p>
+  <p>
+    Unlike the former case though, most often the data to visualize has to be retrieved on-the-fly from a potentially huge database, such as those
+    managed by Hive, HBase or Cassandra, which have different latencies for reading but still are far from real time.
+  </p>
+  <p>
+    There are many reasons for this, which have been worked around in different ways for most Big Data NoSQL technologies:
+  </p>
+  <ul class="bullets">
+    <li>
+      For results to be returned fast, as in relational databases, the use of indexes over the data structure becomes almost mandatory
+    </li>
+    <li>The size of the data stored within, even if these technologies have been built around that fact and are great at
+      delivering results.
+    </li>
+    <li>
+      You have to design your data structures to match the visualization you'll going to need later: Not doing so will incur in generic <i>tables</i>
+      that won't be efficient enough for data queries.
+    </li>
+  </ul>
+
+  {{ widgets.subSectionEnd() }}
+
+  {{ widgets.subSectionStart(
+  "The visualization engine"
+  ) }}
+
+  <p>
+    For the reasons expressed above, it's clear that the choice of the underlying technology matters for the visualization shown, as it's the one
+    that will feed data to the user. But what about the engine that transforms that data into something that expresses something?
+    Let's explore the options available:
+  <div class="row">
+    <div class="col-md-6">
+      <h5>CartoDB</h5>
+
+      <p>
+        Currently CartoDB stands out as one of the strongest and newest players in the visualization market: This spanish-based startup has a very
+        easy to use interface that allows any user to upload their datasources and start graphing, specially
+        in the very specialized target of geo-located data.
+      </p>
+
+      <p>
+        It's service helps on the automatic geo-location of the data that you upload, and offers a big number of visualization options to show
+        them in maps, globally and locally. Be sure to check out their products gallery, as it is impressive.
+      </p>
+
+      <p>
+        However, the free service only comes 240 data points to be geo-converted, which is a little on the short side for most projects: still
+        enough to do some tests, and if your data needs a powerful geo-location backend to show its true meaning, definitely consider this option.
+      </p>
+
+      <p>
+        Since the data I'm studying for the GDELT project was already located in Spain, and I didn't really care about the <b>exact</b> location
+        of the data but in the underlying concepts hiding beneath, I had to dismiss this option.
+      </p>
+    </div>
+    <div class="col-md-6">
+      <a target="_blank" href="https://cartodb.com/gallery/google-news-lab/" class="thumbnail">
+        <img src="{{ url_for('static', filename='img/project/cartodb.png') }}"
+             alt="Visualizing data with Elasticsearch, Logstash and Kibana">
+        <span class="small caption">CartoDB-powered real time event information<br/>(source: http://cartodb.com/)</span>
+      </a>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h5>Tableau</h5>
+
+      <p>
+        Tableau is a paid tool with a very useful but limited free version, that makes the process of creating dashboards and views
+        over your data amazingly fast and easy. It's known for being an invaluable tool for Business Intelligence.
+      </p>
+
+      <p>
+        It has connectors to all the Big Data technologies you might need to use in a project, and when you've imported the data you will find that
+        it offers many different ways of showing results: maps, stacked bars/charts, histograms, and a grand <i>etcetera</i>.
+      </p>
+
+      <p>
+        For me, being a paid tool was the main reason for not choosing it among the others: despite its ease of use, it's a powerhouse when it
+        comes to graphics, and it definitely worth a try.
+      </p>
+    </div>
+    <div class="col-md-6">
+      <a target="_blank" href="http://www.tableau.com/products/server" class="thumbnail">
+        <img src="{{ url_for('static', filename='img/project/tableau.png') }}"
+             alt="Visualizing data with Elasticsearch, Logstash and Kibana">
+        <span class="small caption">Tableau server for BI (source: http://www.tableau.com)</span>
+      </a>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h5>Kibana</h5>
+
+      <p>
+        Kibana is a technology <b>directly</b> powered by Elastic Search: It can connect to you search engine, auto configure the indexes you
+        tell him to use, and help you setup some awesome dashboards using different views over your data.
+      </p>
+
+      <p>
+        The reason I haven't chosen this, despite having an Elastic Search backend, is that the dashboard-based visualization was not what I wanted
+        to use to communicate my results, since I had a very specific layout in mind.
+      </p>
+
+      <p>
+        It's still a very promising tool, it's free to use, and even more awesome when if you have an Elastic Search / Logstash setup.
+      </p>
+    </div>
+    <div class="col-md-6">
+      <a target="_blank" href="http://blog.webkid.io/visualize-datasets-with-elk/" class="thumbnail">
+        <img src="{{ url_for('static', filename='img/project/kibana.png') }}"
+             alt="Visualizing data with Elasticsearch, Logstash and Kibana">
+        <span class="small caption">Kibana-based dashboard (source: blog.webkid.io)</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <h5>And the winner is ...</h5>
+
+      <p>From the <a href="http://d3js.org" target="_blank">d3.js</a> homepage:<br/>
+        <i>&quot;D3 allows you to bind arbitrary data to a Document Object Model (DOM), and then apply data-driven transformations to the document.
+          For
+          example, you can use D3 to generate an HTML table from an array of numbers. Or, use the same data to create an interactive SVG bar chart
+          with
+          smooth transitions and interaction. &quot;</i>
+      </p>
+
+      <p>
+        This data-driven approach is what makes this technology exciting, specially from a programmer's point of view. Essentially,
+        once you understand the way d3.js allows you to play with data, the options that you have in front of you are only limited
+        by your imagination.
+      </p>
+
+      <p>
+        In my opinion, the biggest problem this technology has, as opposed as the rest of the options I've reviewed, is that the entry barrier
+        is high enough to discourage many, as you'll find some problems that are not straightforward to solve... without help!
+      </p>
+
+      <p>
+        The reason I chose d3.js was not only that it allows you to do potentially <b>anything you can imagine</b> to your data: It's a totally free,
+        open source project, with a huge community, and the amount of tutorials and help you can get in the Internet is insane:
+      </p>
+      <ul>
+        <li><a href="https://github.com/mbostock/d3/wiki/Tutorials" target="_blank">The bible</a>, this has mostly everything you'd ever need to
+          know related to d3.js
+        </li>
+        <li><a href="https://www.dashingd3js.com/table-of-contents" target="_blank">Dashing D3</a>, a series of tutorials and articles</li>
+        <li><a href="http://www.d3noob.org/" target="_blank">D3 for n00bs</a>, very specialized and interesting blog.</li>
+      </ul>
+    </div>
+    <div class="col-md-6">
+
+      <a target="_blank" href="http://d3js.org" class="thumbnail">
+        <img src="{{ url_for('static', filename='img/project/d3js.png') }}"
+             alt="Visualizing data with Elasticsearch, Logstash and Kibana">
+        <span class="small caption">Gallery of d3js-powered projects (source: d3js.org)</span>
+      </a>
+    </div>
+  </div>
+  {{ widgets.subSectionEnd() }}
+
+  {{ widgets.sectionEnd() }}
+
+{% endblock %}

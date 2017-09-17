@@ -1,0 +1,263 @@
+{% extends 'AFProjectBundle:Default:project_base.html.twig' %}
+{% import '@AFProject/Default/widgets.html.twig' as widgets %}
+
+{% block content %}
+
+    {{ widgets.sectionStart(
+    "The problem to solve"
+    ) }}
+
+    <p>Before starting to describe the algorithms used, it's a good idea to formalize the problem that we need to
+        solve:</p>
+    <p class="box">
+        We want to find out what were the topics that were common in Spain-related news since GDELT stated adding URLs
+        to its database (roughly March
+        2013) in order to help journalists' researching trends and hot topics.
+    </p>
+
+    {{ widgets.sectionEnd() }}
+
+
+    {{ widgets.sectionStart(
+    "Getting the data into the system"
+    ) }}
+
+    <p>
+        Among the options I presented earlier for getting the data to work with, I finally chose Google's Big Query
+        service, because it allows me to
+        download a file with roughly all the data would otherwise need to filter through some GB of files, making the
+        process of
+        <span style="color:red">test</span>-<span style="color:green">code</span>-<span
+                style="color:#ffe545">refactor</span> much faster than crawling
+        over the data again and again.
+    </p>
+
+    {{ widgets.subSectionStart(
+    "Data retrieval phase"
+    ) }}
+
+    <p>
+        The query I sent to GDELT, using its own Domain Language, was simple
+    </p>
+    <i>Give me all the events in your database that match:
+        <ul class="bullets">
+            <li>Either Actor1 or Actor2 have their location set to Spain, and</li>
+            <li>Either the Action or the ActorGeographies are set to Spain.</li>
+        </ul>
+    </i>
+    <p>
+        This query yielded roughly 390000 results, so in order to download them all I had to sign up for a free trial in
+        Google CLoud Computing. The
+        result was that I had a 128MB file full of event data, and amongst that, 390K of URLs that had to be queried,
+        downloaded and parsed.
+    </p>
+
+    <p>
+        Since doing that proved to be quite slow and painful, I limited the query a little bit more offline, by cleaning
+        the CSV file of URLs that were
+        empty, and of media not in <i>.es</i> domains (with the exception of "elpais.com"). This was much better, since
+        I ended up with a file of 50000
+        rows coming from Spanish media.
+    </p>
+
+    {{ widgets.subSectionEnd() }}
+
+    {{ widgets.subSectionStart(
+    "Data cleaning phase"
+    ) }}
+
+    <p>
+        Even though the service was to be trusted, and since I had already coded parsers for GDELT rows, I ran the whole
+        file through a Spark job that
+        will distribute through the cluster the following tasks:
+    </p>
+    <ul class="bullets">
+        <li>Model each row and filter it through the conditions of our problem</li>
+        <li>Download the data (if it exists still) and distribute the text content using the date as keys</li>
+        <li>Gather all the text for each date into a single HDFS file</li>
+    </ul>
+
+    <p>
+        The result of this processing is a file for each date in the study, containing the text of all the relevant news
+        published that day. This is
+        perfect for the following step!
+    </p>
+    <p>
+        Some notes about this step:
+    </p>
+    <ul class="bullets">
+        <li>
+            For both data files (the 390K and the 50K one) there was a reasonable amount of documents that pointed to
+            invalid
+            URLs, around 10% in the smaller file (already cleaned) and up to a 30% in the big one.
+        </li>
+        <li>
+            This alone was the reason I had to force a timeout of just 2 seconds for connecting to the URLs, otherwise
+            te process took way too long,
+            and hanging the workers in Spark is a very undesirable situation as it seems to take long to recover.
+            <ul class="bullets">
+                <li>Just by setting this value up, the process was so much faster, that I could work with the small file
+                    in local instead of the cluster
+                </li>
+            </ul>
+        </li>
+        <li>
+            The default parallelization level of Spark RDD's was not enough: I had better performance by hardcoding 100
+            tasks at the same time, rather
+            than using the default 10-12 suggested by Spark's internal planner. This also has the bonus that it's much
+            easier to track progress in a 4
+            hours task when you have 100 hundred workers.
+        </li>
+    </ul>
+
+    {{ widgets.subSectionEnd() }}
+
+    {{ widgets.sectionEnd() }}
+
+    {{ widgets.sectionStart(
+    "Analyzing data: Topic Modeling"
+    ) }}
+
+    {{ widgets.subSectionStart(
+    "Training the algorithm"
+    ) }}
+
+    <p>With this data ready, I could feed it to the LDA implementation in Spark's MLLib, that uses Spark for its two
+        main steps:</p>
+    <ul class="bullets">
+        <li>
+            <p>
+                Preprocessing the data using Spark's <i>wholeTextFiles</i> method that returns an RDD of files with it's
+                names (which are the dates under
+                study!!) and returning a Vector of vocabs with their number of occurencies.
+            </p>
+
+            <p>This alone makes using this version worth it, since it takes full advantage of both running in a Cluster,
+                and the power of Spark.</p>
+        </li>
+        <li>
+            Taking as input an RDD of vocabs in the whole cluster, start applying LDA to create a model, that returns
+            (locally) an structure
+            composed of arrays of Topics, with an associated array of the terms that compose it and its relative weight
+            inside that topic.
+        </li>
+    </ul>
+
+    <p>
+        It's remarkable here that I found a Spark setting that is tweakable with this algorithm, the <i>checkPointInterval</i>.
+        This setting tells Spark to shuffle data to disk every N iterations, and thus making it use less RAM memory (way
+        less, actually). By tweaking
+        this value, It's way easier to run the algorithm locally, at the cost of speed.
+    </p>
+    <p>
+        A configuration value that can be used to
+    </p>
+
+    {{ widgets.subSectionEnd() }}
+
+    {{ widgets.subSectionStart(
+    "Topic inference"
+    ) }}
+
+    <p>
+        Once the algorithm is trained, we'd like to apply that model to new data, or the data we've already parsed, to
+        let it tell us what topics were
+        most likely to be found for a given date.
+    </p>
+    <p>
+        As stated earlier, topic inference is something that as of today (2015/07/25) is yet to be added to MLLib.</p>
+    <p>
+        Ideally one could use Mallet here, since it has a valid implementation of topic inference, but it feeds off its
+        own model, so I'd need to
+        retrain with Mallet, or adapt the input files and resultant model to Mallet format; apart from that, it won't be
+        able to take advantage of
+        running on the cluster.
+    </p>
+    <p>
+        Since for me it was very important to be able to distribute the job, I tought I could use a "dumber" inference
+        logic from the data I had, that
+        could be executed distributedly in the cluster, returning sub-optimal results that can still be used to draw the
+        visualization, find hunches on
+        the pattern, and follow them to see if there is something worth researching further there!
+    </p>
+
+    <h5>Naive implementation</h5>
+    <p>
+        This dumb algorithm code returns a score for each date and topic that can be used to plot the results nicely
+    </p>
+
+    <ul class="bullets">
+        <li>Combine the data from the LDA model with the text contained in HDFS for each date, and distribute that
+            evenly across the cluster using
+            date as a key
+        </li>
+        <li>For each time a term is mentioned that day, add its weight to a score counter, and distriute again the date,
+            the topic, and the score
+            counter
+        </li>
+        <li>Collect all data by key</li>
+    </ul>
+
+    <p>
+        <strong>Problem</strong>:&nbsp;It favours those terms that appear more often, which is bad since LDA could have
+        disregarded that frequency
+        if it
+        wasn't in the context of the rest of the terms for each topic. It's also slow, since it loops over terms AND
+        text at each worker.
+    </p>
+
+    <h5>Optimization</h5>
+
+    <ul class="bullets">
+        <li>Using a similar approach as before, use Spark to distributedly count terms for each file, but this time
+            create an RDD for each date
+        </li>
+        <li>Distribute the topics array to all the nodes, so it can be read at each worker</li>
+        <li>
+            For each term that is found on the wordcount, calculate the partial score as <i>&beta; - e<sup>-&alpha;*#wordCountValue</sup></i>
+        </li>
+        <li>Add up the scores, and return as in the past step</li>
+    </ul>
+
+    <p>
+        This optimization is far from optimal yet, but it now gives a lower score to terms that appear too often.
+        Optimizations to &alpha; and &beta;
+        will yield more robust results, I've used <i>&alpha; = &beta; = 1</i> for this proof of concept. It also removes
+        the biggest of the loops,
+        since we've aggregated data before using Spark.
+    </p>
+    <p>
+        It also makes better use of the cluster resources, so I think it's a good path to consider researching into.
+    </p>
+
+    {{ widgets.subSectionEnd() }}
+
+    {{ widgets.subSectionStart(
+    "Main program output"
+    ) }}
+
+    <p>Find below all of the options that are tweakable in the JAR I've created, with an explanation and its default
+        values (if optional)</p>
+    <pre>
+    Application of Spark's LDA to research topics on GDELT data.
+    Usage: Topic Modeling [options] &lt;input&gt;
+
+    --topicNumber &lt;value&gt; number of topics. default: 3
+    --maxIterations &lt;value&gt; number of iterations of learning. default: 100
+    --vocabSize &lt;value&gt; number of distinct word types to use, chosen by frequency. (-1=all) default: 30000
+    --checkpointInterval &lt;value&gt; If checkpointDir is set, set the number of intervals between checkpoints default: 10
+    --algorithm &lt;value&gt; inference algorithm to use. em and online are supported. default: em
+    --stopwordFile &lt;value&gt; filepath for a list of stopwords. Note: This must fit on a single machine.
+    --indexName &lt;value&gt; Name for the default index in Elastic Search to store data in default: results
+    --checkpointDir &lt;value&gt; Path to directory where checkpointing will be stored Checkpointing helps with recovery and eliminates temporary
+    shuffle files on disk. default: None
+    --overwrite &lt;value&gt; Whether to overwrite output directory on new run default: false
+    &lt;input&gt; input path to file containting GDELT data 
+    --outputDir &lt;value&gt; Path to directory where resulting files will be left
+  </pre>
+    {{ widgets.subSectionEnd() }}
+
+    {{ widgets.sectionEnd() }}
+
+
+{% endblock %}

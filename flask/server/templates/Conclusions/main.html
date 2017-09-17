@@ -1,0 +1,148 @@
+{% extends 'AFProjectBundle:Default:project_base.html.twig' %}
+{% import '@AFProject/Default/widgets.html.twig' as widgets %}
+
+{% block content %}
+
+
+  {{ widgets.sectionStart(
+  "Lessons learned"
+  ) }}
+
+  <p>
+    Related to the goals I set myself at the start of the journey, there are some lessons I learned that I didn't know before:
+  </p>
+
+  {{ widgets.subSectionStart(
+  "Spark's computing model"
+  ) }}
+
+  <p>
+    Spark indeed feels faster than all the things I've done with Hadoop MapReduce until now; but you can get into trouble when you generate way too
+    much intermediate data that it needs to flush to disk and you start losing performance.
+  </p>
+  <p>
+    I also noticed that the cluster was very unstable when I didn't have checkpointing enabled, and I was letting the URL downloads time out
+    naturally (which was an absurd timeout). Even downloading 15K documents took a long time, and more had a tendency to leave tasks hanging
+    seemingly forever. My guess is that being virtualized we're losing real performance on I/O trashing; but a proper configuration of the job did
+    fix the issue.
+  </p>
+
+  {{ widgets.subSectionEnd() }}
+
+  {{ widgets.subSectionStart(
+  "Scala language"
+  ) }}
+
+  <p>
+    It's hard at the beginning, since I didn't have a strong functional-programming background. Still it pays off as
+    soon as you do some research on the new tools you have at your disposal, and specially if you setup a good development environment, where you
+    can debug Spark jobs locally in your machine.
+  </p>
+  <p>
+    I personally loved modeling behaviours using multiple traits, and the way that chaining methods flow with Scala DSL.
+  </p>
+  {{ widgets.subSectionEnd() }}
+
+  {{ widgets.subSectionStart(
+  "Elastic Search and Kibana"
+  ) }}
+
+  <p>
+    Same as Scala, at first the document model seems daunting, and it seems cumbersome to search for simple elements. But it soon becames apparent
+    that it's handling all the nasty details from the application, and returning documents is really fast and powerful.
+  </p>
+  <p>
+    In my case I used a well-known Scala library called <a href="https://github.com/sksamuel/elastic4s" target="_blank">Elastic4S</a>
+    for the interaction from Spark, which has a very decent documentation: Still, it's lacking an automated way of returning data from searches
+    directly into your domain model, you seem to need to de-serialize data manually.
+  </p>
+  <p>
+    Regarding not using Kibana despite having it installed in a Docker container, the reason was that I found no way of adding the data I wanted to
+    the Y axis, I was tied to what Elastic Search aggregations return: counts, sums, averages...
+  </p>
+  <p>
+    I still think that it's a very powerful combination of technologies, and along and intermediate tool to put stuff in the search engine (such as
+    Logstash in the ELK Stack), it's a tool that I'll add to my toolbelt from now on.
+  </p>
+  {{ widgets.subSectionEnd() }}
+
+  {{ widgets.subSectionStart(
+  "Launching your own cluster"
+  ) }}
+
+  <p>
+    I loved the opportunity to setup and maintain my own cluster, I learned a lot on how Ambari manages configurations, and its blueprints to share
+    cluster setups, and reproduce them later.
+  </p>
+  <p>
+    Unfortunately, I didn't deep much further, since after much optimizations the code can be run locally without many performance hit, and the
+    blueprints feature got shadowed by a script wrapping around Virtualbox snapshotting.
+  </p>
+
+  {{ widgets.subSectionEnd() }}
+
+  {{ widgets.sectionEnd() }}
+
+  {{ widgets.sectionStart(
+  "The code"
+  ) }}
+
+  <p>
+    I've setup a <a href="https://github.com/misterarias/portfolio" target="_blank">Github repository</a> with all the code used in this project so
+    far:
+  </p>
+  <ul class="bullets">
+    <li>A Scala project</li>
+    <li>A Symfony project to develop this web page</li>
+    <li>The Vagrant scripts needed to bring up and configure the Ambari cluster</li>
+    <li>A <i>docker_composer.yml</i> file to bring up some essential services, such as Elastic Search or the web server where this page was
+      tested
+    </li>
+  </ul>
+
+  <p>
+    In the Readme file there is more information on how to set everything up.
+  </p>
+  {{ widgets.sectionEnd() }}
+
+  {{ widgets.sectionStart(
+  "Future steps"
+  ) }}
+
+  <p>Projects like this are never really finished, and less in the time I had to do it. There are literally dozens of tasks I would have love to
+    do, and that are now in the list of <i>"add this later"</i>
+  </p>
+  <ul class="bullets">
+    <li>
+      The topic inferring logic needs to be reviewed, maybe by trying to adapt what Mallet does to a distributed environment: there are already
+      many bright people working on it, and will be probably be released in one of the next releases of MLLib.
+    </li>
+    <li>
+      The visualization can be further improved in speed and functionality. Unfortunately d3.js is very time demanding for the amount of code you
+      end up writing, but I've got some ideas to apply that should make it both smoother and more useful.
+    </li>
+    <li>
+      Code needs some serious refactor, specially the LDA part I wrote, and the d3.js code
+    </li>
+    <li>
+      For that, I need more tests. Much more of them, so I could setup a Jenkins server to watch over the code for me every night.
+    </li>
+    <li>
+      After refactoring the code, I'd like to make it easily available on my repo as pluggable libraries, instead of one huge project.
+    </li>
+  </ul>
+  {{ widgets.sectionEnd() }}
+
+
+  {{ widgets.sectionStart(
+  "Acknowledgements"
+  ) }}
+
+  <p>
+    I couldn't finish this project summary without giving thanks to all my teachers at U-tad, with a special mention to my tutor Carlos del Cacho,
+    Chief Data Scientist of Job&Talent and the mastermind behind the idea: he's helped me a lot in this project, which I found extremely
+    interesting as a deep-dive into my first Big Data problem.
+  </p>
+
+  {{ widgets.sectionEnd() }}
+{% endblock %}
