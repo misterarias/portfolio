@@ -1,12 +1,12 @@
 from flask import Flask, render_template, request, jsonify # ,redirect, url_for ,jsonify ,flash, session
 import actors
-from modules import get_modules, index_module, project_module
+from modules import *
 
 app = Flask(__name__)
 view_data = {}
 
 
-def render(template, args):
+def render(template, args={}):
     args['available_modules'] = get_modules()
     try:
         return render_template(template, **args)
@@ -37,6 +37,23 @@ def project():
     view_data['active_module'] = project_module
 
     return render('Project/main.html', view_data)
+
+@app.route(data_module.path, strict_slashes=False)
+def data():
+    view_data['active_module'] = data_module
+    return render("Data/main.html", view_data)
+
+
+@app.route(processor_module.path, strict_slashes=False)
+def processor():
+    view_data['active_module'] = processor_module
+    return render("Processor/main.html", view_data)
+
+
+@app.route(conclussions_module.path, strict_slashes=False)
+def conclussions():
+    view_data['active_module'] = conclussions_module
+    return render("Conclusions/main.html", view_data)
 
 
 if __name__ == '__main__':

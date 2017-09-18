@@ -1,5 +1,5 @@
-{% extends 'AFProjectBundle:Default:project_base.html.twig' %}
-{% import '@AFProject/Default/widgets.html.twig' as widgets %}
+{% extends 'Default/project_base.html' %}
+{% import 'Default/widgets.html' as widgets %}
 
 {% block content %}
 
@@ -252,7 +252,7 @@
     --checkpointDir &lt;value&gt; Path to directory where checkpointing will be stored Checkpointing helps with recovery and eliminates temporary
     shuffle files on disk. default: None
     --overwrite &lt;value&gt; Whether to overwrite output directory on new run default: false
-    &lt;input&gt; input path to file containting GDELT data 
+    &lt;input&gt; input path to file containting GDELT data
     --outputDir &lt;value&gt; Path to directory where resulting files will be left
   </pre>
     {{ widgets.subSectionEnd() }}

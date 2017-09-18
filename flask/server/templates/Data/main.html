@@ -1,15 +1,12 @@
-{% extends 'AFProjectBundle:Default:project_base.html.twig' %}
-{% import 'AFProjectBundle:Default:widgets.html.twig' as widgets %}
+{% extends 'Default/project_base.html' %}
+{% import 'Default/widgets.html' as widgets %}
 
 {% block stylesheets %}
 
-  {{ parent() }}
-  {% stylesheets
-  '@AFProjectBundle/Resources/public/css/lda_viz.css'
-  '@AFProjectBundle/Resources/public/css/bootstrap-slider.css'
-  filter='cssrewrite' %}
-  <link rel="stylesheet" href="{{ asset_url }}">
-  {% endstylesheets %}
+  {{ super() }}
+
+  <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/lda_viz.css') }}" >
+  <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/bootstrap-slider.css') }}" >
 
 {% endblock %}
 
@@ -71,7 +68,7 @@
   </div>
 
 
-  <input type="hidden" id="json-data_locator" value="{{ asset('bundles/afproject/static/project_elastic_dump.json') }}">
+  <input type="hidden" id="json-data_locator" value="{{ url_for('static', filename='data/project_elastic_dump.json') }}">
 
   {% for i in range(0, 5) %}
     <div class="row hide" id="topic_{{ i }}">
@@ -98,15 +95,12 @@
 
 {% block javascripts %}
 
-  {{ parent() }}
+  {{ super() }}
 
-  {% javascripts
-  '@AFProjectBundle/Resources/public/js/d3.js'
-  '@AFProjectBundle/Resources/public/js/bootstrap-slider.js'
-  '@AFProjectBundle/Resources/public/js/topics.js'
-  '@AFProjectBundle/Resources/public/js/inference.js'
-  '@AFProjectBundle/Resources/public/js/main.js' %}
-  <script src="{{ asset_url }}"></script>
-  {% endjavascripts %}
+  <script src="{{ url_for('static', filename='js/d3.js') }}" /></script>
+  <script src="{{ url_for('static', filename='js/bootstrap-slider.js') }}" /></script>
+  <script src="{{ url_for('static', filename='js/topics.js') }}" /></script>
+  <script src="{{ url_for('static', filename='js/inference.js') }}" /></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}" /></script>
 
 {% endblock %}

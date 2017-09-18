@@ -2,9 +2,6 @@ class Module(object):
     title = None
     subtitle = None
 
-    def navigation(self):
-        pass
-
     def get_title(self):
         return self.title
 
@@ -36,13 +33,50 @@ class Project(Module):
     path = '/project'
 
     def next_module(self):
-        return None
+        return processor_module
 
     def previous_module(self):
         return index_module
 
+class Processor(Module):
+    label = "Processing"
+    title = "The data processing layer"
+    subtitle = "Train LDA over 50000 documents using Spark and MLLib"
+    path = '/processor'
+
+    def next_module(self):
+        return data_module
+
+    def previous_module(self):
+        return project_module
+
+class Data(Module):
+    path = '/data'
+    label = "Visualization"
+    title = "The data visualization layer"
+    subtitle = "Representation of the topics inferred from the data"
+    def next_module(self):
+        return conclussions_module
+
+    def previous_module(self):
+        return processor_module
+
+class Conclusions(Module):
+    path = '/conclussions'
+    label = "Conclussions"
+    title = "Project conclusions"
+    subtitle = "Summary of lessons learned and future steps that would be taken"
+    def next_module(self):
+        return None
+
+    def previous_module(self):
+        return data_module
 
 index_module = Index()
 project_module = Project()
+processor_module = Processor()
+data_module = Data()
+conclussions_module = Conclusions()
+
 def get_modules():
-    return [index_module, project_module]
+    return [index_module, project_module, processor_module, data_module, conclussions_module]
