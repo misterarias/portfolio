@@ -95,7 +95,7 @@
 {% macro navigationButtons(module) %}
   <div class="navigation-buttons">
     <div class="row">
-      {% if module.previous_module  %}
+      {% if module.previous_module()  %}
         <div class="col-sm-2 col-xs-4">
           <p>
             <a class="btn  btn-default" href="{{ module.previous_module().path }}" role="button">
@@ -104,7 +104,7 @@
           </p>
         </div>
       {% endif %}
-      {% if module.next_module  %}
+      {% if module.next_module() %}
         <div class="col-sm-offset-10 col-xs-offset-8">
           <p>
             <a class="btn btn-primary btn-default" href="{{ module.next_module().path }}" role="button">
