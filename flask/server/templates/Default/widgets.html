@@ -23,11 +23,11 @@
   </div>
 {%- endmacro -%}
 
-{%- macro navbar(availableModules, active_module) -%}
+{%- macro navbar(available_modules, active_module) -%}
   <ul class="nav navbar-right navbar-nav">
-    {% for module in availableModules %}
+    {% for module in available_modules %}
       <li {% if active_module.name == module.name %}class="active"{% endif %}>
-        <a href="{{ path( module.path ) }}">{{ module.label }}</a>
+        <a href="{{ module.path }}">{{ module.label }}</a>
       </li>
     {% endfor %}
   </ul>
