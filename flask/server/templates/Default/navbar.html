@@ -13,7 +13,7 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <span class="navbar-brand hidden">{{ active_module.getHeaderTitle }}</span>
+        <span class="navbar-brand hidden">{{ active_module.get_title() }}</span>
       </div>
       <div id="navbar" class="collapse navbar-collapse">
         {{ widgets.navbar(available_modules, active_module) }}
@@ -23,8 +23,8 @@
   </nav>
 
   <div class="container">
-    <h2 id="header_title">{{ active_module.getHeaderTitle }}</h2>
+    <h2 id="header_title">{{ active_module.get_title() }}</h2>
 
-    <p id="header_subtitle">{{ active_module.getHeaderSubtitle }}</p>
+    <p id="header_subtitle">{{ active_module.get_subtitle() }}</p>
   </div>
 </div>

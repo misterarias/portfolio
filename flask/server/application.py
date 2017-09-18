@@ -24,7 +24,7 @@ def render(template, args):
 @app.route(index_module.path, strict_slashes=False)
 def index():
 
-    view_data['active_module'] = index_module.navigation()
+    view_data['active_module'] = index_module
     view_data['juan'] = actors.juan
     view_data['utad'] = actors.utad
 
@@ -34,7 +34,7 @@ def index():
 @app.route(project_module.path, strict_slashes=False)
 def project():
 
-    view_data['active_module'] = project_module.navigation()
+    view_data['active_module'] = project_module
 
     return render('Project/main.html', view_data)
 
