@@ -1,0 +1,27 @@
+FROM python:3-alpine
+
+# Create and switch to non-root user
+RUN set -ex \
+  && mkdir -p /opt/flask \
+  && adduser -D flask \
+  && chown -R flask:flask /opt/flask
+USER flask
+WORKDIR /opt/flask/
+
+# Install requirements
+COPY image/requirements.txt .
+RUN pip install --no-cache-dir --user -r requirements.txt
+
+# Copy actual files
+COPY server/ /opt/flask/
+
+# Port the app will listen to
+EXPOSE 8080
+
+# Environment variables
+ENV DEBUG_MODE 0
+ENV HTTP_PORT 8080
+
+# This is the start script
+COPY image/start.sh .
+ENTRYPOINT "./start.sh"

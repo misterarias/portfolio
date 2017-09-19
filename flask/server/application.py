@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, render_template, request, jsonify # ,redirect, url_for ,jsonify ,flash, session
 import actors
 from modules import *
@@ -5,18 +7,23 @@ from modules import *
 app = Flask(__name__)
 view_data = {}
 
+# Environment variables
+debug_mode = str(os.environ.get('DEBUG_MODE', '0')) == '1'
+http_port = int(os.environ.get('HTTP_PORT', '8080'))
 
 def render(template, args={}):
     args['available_modules'] = get_modules()
     try:
         return render_template(template, **args)
     except Exception as e:
-        response = jsonify({
+        response_body = {
             'status': 'error',
             'message': 'page not found in this server',
-            'exception': "{}".format(e)
             }
-        )
+        if debug_mode:
+            response_body['exception'] = "{}".format(e)
+
+        response = jsonify(response_body)
         response.status_code = 404
         return response
 
@@ -55,6 +62,10 @@ def conclussions():
     view_data['active_module'] = conclussions_module
     return render("Conclusions/main.html", view_data)
 
-
 if __name__ == '__main__':
-    app.run(debug=True, threaded=True, host='0.0.0.0', port=80)
+    app.run(
+            debug=debug_mode,
+            threaded=True,
+            host='0.0.0.0',
+            port=http_port
+            )
